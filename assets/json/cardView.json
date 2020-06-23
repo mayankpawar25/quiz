@@ -2,7 +2,8 @@
     "view": {
         "type": "AdaptiveCard",
         "version": "1.0",
-        "body": [{
+        "body": [
+            {
                 "id": "Sender",
                 "type": "TextBlock",
                 "text": "Sender: ${creator[0].displayName}",
@@ -12,7 +13,7 @@
             {
                 "id": "Title",
                 "type": "TextBlock",
-                "text": "Title: ${instance.title}",
+                "text": "Title: ${action.displayName}",
                 "size": "large",
                 "maxLines": 3,
                 "wrap": true,
@@ -23,13 +24,15 @@
                 "id": "Questions",
                 "type": "Container",
                 "style": "emphasis",
-                "items": [{
-                    "type": "TextBlock",
-                    "text": "Questions: ${count(instance.columns)}",
-                    "size": "medium",
-                    "wrap": true,
-                    "spacing": "medium"
-                }]
+                "items": [
+                    {
+                        "type": "TextBlock",
+                        "text": "Questions: ${count(action.dataTables[0].dataColumns)}",
+                        "size": "medium",
+                        "wrap": true,
+                        "spacing": "medium"
+                    }
+                ]
             },
             {
                 "id": "Summary",
@@ -42,11 +45,12 @@
                 "spacing": "small"
             }
         ],
-        "actions": [{
+        "actions": [
+            {
                 "id": "RespondButton",
-                "$when": "${equals(instance.Status, 'Active')}",
+                "$when": "${equals(action.status, 'Active')}",
                 "title": "Respond",
-                "command": "LaunchActionView",
+                "command": "LaunchActionPackageView",
                 "parameters": {
                     "viewName": "UpdateView"
                 }
@@ -54,7 +58,7 @@
             {
                 "id": "ResultButton",
                 "title": "View Result",
-                "command": "LaunchActionView",
+                "command": "LaunchActionPackageView",
                 "parameters": {
                     "viewName": "DetailView"
                 }
@@ -62,20 +66,20 @@
         ]
     },
     "data": {
-        "instance": {
-            "command": "GetActionInstance"
+        "action": {
+            "command": "GetAction"
         },
         "summary": {
-            "command": "GetActionInstanceSummary",
+            "command": "GetActionDataRowsSummary",
             "parameters": {
-                "isShortSummary": true
+                "addDefaultAggregates": true
             }
         },
         "creator": {
-            "command": "GetUserProfiles",
+            "command": "GetSubscriptionMembers",
             "parameters": {
-                "userIds": [
-                    "$ActionInstanceCreator"
+                "memberIds": [
+                    "$ActionCreator"
                 ]
             }
         }
