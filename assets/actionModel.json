@@ -1,0 +1,14 @@
+{
+    "properties": {
+        "canAddMore": true
+    },
+    "dataTables": {
+        "canAddMore": false,
+        "values": [{
+            "name": "TestDataTable",
+            "dataColumns": {
+                "canAddMore": true
+            }
+        }]
+    }
+}

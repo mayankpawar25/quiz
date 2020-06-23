@@ -1,0 +1,83 @@
+{
+    "view": {
+        "type": "AdaptiveCard",
+        "version": "1.0",
+        "body": [{
+                "id": "Sender",
+                "type": "TextBlock",
+                "text": "Sender: ${creator[0].displayName}",
+                "size": "small",
+                "wrap": true
+            },
+            {
+                "id": "Title",
+                "type": "TextBlock",
+                "text": "Title: ${instance.title}",
+                "size": "large",
+                "maxLines": 3,
+                "wrap": true,
+                "weight": "bolder",
+                "spacing": "small"
+            },
+            {
+                "id": "Questions",
+                "type": "Container",
+                "style": "emphasis",
+                "items": [{
+                    "type": "TextBlock",
+                    "text": "Questions: ${count(instance.columns)}",
+                    "size": "medium",
+                    "wrap": true,
+                    "spacing": "medium"
+                }]
+            },
+            {
+                "id": "Summary",
+                "type": "TextBlock",
+                "text": "Responses: ${summary.rowCount}, Responders: ${summary.rowCreatorCount}",
+                "size": "small",
+                "weight": "bolder",
+                "maxLines": 2,
+                "wrap": true,
+                "spacing": "small"
+            }
+        ],
+        "actions": [{
+                "id": "RespondButton",
+                "$when": "${equals(instance.Status, 'Active')}",
+                "title": "Respond",
+                "command": "LaunchActionView",
+                "parameters": {
+                    "viewName": "UpdateView"
+                }
+            },
+            {
+                "id": "ResultButton",
+                "title": "View Result",
+                "command": "LaunchActionView",
+                "parameters": {
+                    "viewName": "DetailView"
+                }
+            }
+        ]
+    },
+    "data": {
+        "instance": {
+            "command": "GetActionInstance"
+        },
+        "summary": {
+            "command": "GetActionInstanceSummary",
+            "parameters": {
+                "isShortSummary": true
+            }
+        },
+        "creator": {
+            "command": "GetUserProfiles",
+            "parameters": {
+                "userIds": [
+                    "$ActionInstanceCreator"
+                ]
+            }
+        }
+    }
+}

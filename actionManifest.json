@@ -1,0 +1,42 @@
+{
+    "id": "com.microsoft.sample.quiz.mike0001",
+    "name": "Quiz WebcraftIT",
+    "description": "Quiz",
+    "provider": {
+        "name": "Microsoft",
+        "websiteUrl": "https://www.microsoft.com/",
+        "privacyUrl": "https://www.microsoft.com/privacy",
+        "termsOfUseUrl": "https://www.microsoft.com/app-tos"
+    },
+    "icon": "images/appIcon.png",
+    "actionModel": "actionModel.json",
+    "version": "1.0.0",
+    "views": {
+        "CardView": {
+            "sourceLocation": "json/cardView.json"
+        },
+        "LaunchView": {
+            "sourceLocation": "html/createView.html",
+            "header": "Quiz"
+        },
+        "UpdateView": {
+            "sourceLocation": "html/updateView.html",
+            "header": "Fill out Check-In"
+        },
+        "DetailView": {
+            "sourceLocation": "html/detailView.html",
+            "header": "Results view"
+        }
+    },
+    "localizationInfo": {
+        "defaultLocale": "en-us",
+        "localeFiles": {
+            "en-us": "strings/strings.json"
+        }
+    },
+    "whitelistedUrlDomains": [
+        "ajax.googleapis.com",
+        "cdnjs.cloudflare.com",
+        "maxcdn.bootstrapcdn.com",
+    ]
+}

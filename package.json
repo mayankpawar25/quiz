@@ -1,0 +1,31 @@
+{
+    "name": "check-in",
+    "description": "Survey for employee sentiment",
+    "version": "1.0.0",
+    "scripts": {
+        "build": "webpack --env.mode=dev --env.watch=false",
+        "zip": "cd ./output && bestzip ./ActionPackage.zip *",
+        "upload-with-teams": "upload-action-package -z ./output/ActionPackage.zip -t ./output/ -e http://bc4600fa2ece.in.ngrok.io",
+        "upload-without-teams": "upload-action-package -z ./output/ActionPackage.zip -e http://bc4600fa2ece.in.ngrok.io",
+        "deploy-with-teams": "npm run build && npm run zip && npm run upload-with-teams",
+        "deploy-without-teams": "npm run build && npm run zip && npm run upload-without-teams"
+    },
+    "license": "ISC",
+    "devDependencies": {
+        "action-package-deploy": "^1.0.7",
+        "bestzip": "^2.1.5",
+        "clean-webpack-plugin": "^3.0.0",
+        "copy-webpack-plugin": "^5.1.1",
+        "file-loader": "^6.0.0",
+        "html-loader": "^1.1.0",
+        "ts-loader": "^7.0.0",
+        "typescript": "^3.8.3",
+        "webpack": "^4.42.1",
+        "webpack-cli": "^3.3.11"
+    },
+    "dependencies": {
+        "action-sdk-sunny": "1.0.21",
+        "lodash": "^4.17.15",
+        "uuid": "^8.0.0"
+    }
+}

@@ -1,0 +1,21 @@
+{
+    "editor.detectIndentation": false,
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "editor.trimAutoWhitespace": true,
+    "editor.formatOnSave": true,
+    "files.trimFinalNewlines": true,
+    "files.insertFinalNewline": false,
+    "formatFiles.excludePattern": "**/node_modules,**/.vscode,**/dist/**,**/.chrome,**/AriaSDK*,**/strings/*/*.json",
+    "[json]": {
+        "editor.defaultFormatter": "vscode.json-language-features",
+        "files.trimFinalNewlines": false,
+        "files.insertFinalNewline": true,
+    },
+    "[typescript, javascript, typescriptreact, javascriptreact]": {
+        "editor.defaultFormatter": "vscode.typescript-language-features"
+    },
+    "[html]": {
+        "editor.defaultFormatter": "vscode.html-language-features"
+    }
+}

@@ -1,0 +1,43 @@
+    {
+        "id": "com.microsoft.test.mike010",
+        "name": "Quiz WebcraftIT",
+        "description": "Quiz Description",
+        "provider": {
+            "name": "Webcraft",
+            "websiteUrl": "https://www.webcraftit.com/",
+            "privacyUrl": "https://www.webcraftit.com/privacy.html",
+            "termsOfUseUrl": "https://www.webcraftit.com/terms-of-use.html"
+        },
+        "icon": "images/appIcon.png",
+        "version": "1.0.1",
+        "actionModel": "actionModel.json",
+        "views": {
+            "CardView": {
+                "sourceLocation": "json/cardView.json"
+            },
+            "LaunchView": {
+                "sourceLocation": "html/createView.html",
+                "header": "Quiz Create View"
+            },
+            "UpdateView": {
+                "sourceLocation": "html/updateView.html",
+                "header": "Quiz Update View"
+            },
+            "DetailView": {
+                "sourceLocation": "html/detailView.html",
+                "header": "Quiz Detail View"
+            }
+        },
+        "localizationInfo": {
+            "defaultLocale": "en-us",
+            "localeFiles": {
+                "en-us": "strings/strings.json"
+            }
+        },
+        "whitelistedUrlDomains": [
+            "ajax.googleapis.com",
+            "cdnjs.cloudflare.com",
+            "maxcdn.bootstrapcdn.com",
+            "unpkg.com"
+        ]
+    }
