@@ -1,0 +1,211 @@
+import * as actionSDK from "action-sdk-sunny";
+
+$(document).ready(function() {
+    OnPageLoad();
+});
+
+let actionContext = null;
+let actionInstance = null;
+let actionSummary = null;
+let actionDataRows = null;
+let actionDataRowsLength = 0;
+let ResponderDate = [];
+let actionNonResponders = [];
+let myUserId = "";
+var root = document.getElementById("root");
+
+/* console.log(JSON.stringify(actionSDK.GetContext.Request()));
+console.log(JSON.stringify(actionSDK.GetContext.Response)); */
+
+function OnPageLoad() {
+    console.log("onload");
+    console.log(JSON.stringify(actionSDK.GetContext.Request()));
+    actionSDK
+        .executeApi(new actionSDK.GetContext.Request())
+        .then(function(response) {
+            console.log("here");
+            console.info("GetContext - Response: " + JSON.stringify(response));
+            actionContext = response.context;
+            getDataRows(response.context.actionId);
+            console.log("actionContext: " + JSON.stringify(actionContext));
+        })
+        .catch(function(error) {
+            console.error("GetContext - Error: " + JSON.stringify(error));
+        });
+    console.log("onload end");
+}
+
+function getDataRows(actionId) {
+    console.log("getDataRows load");
+    var getActionRequest = new actionSDK.GetAction.Request(actionId);
+    var getSummaryRequest = new actionSDK.GetActionDataRowsSummary.Request(
+        actionId,
+        true
+    );
+
+    var getDataRowsRequest = new actionSDK.GetActionDataRows.Request(actionId);
+    var batchRequest = new actionSDK.BaseApi.BatchRequest([
+        getActionRequest,
+        getSummaryRequest,
+        getDataRowsRequest,
+    ]);
+
+    actionSDK
+        .executeBatchApi(batchRequest)
+        .then(function(batchResponse) {
+            console.info("BatchResponse: " + JSON.stringify(batchResponse));
+            actionInstance = batchResponse.responses[0].action;
+            actionSummary = batchResponse.responses[1].summary;
+            actionDataRows = batchResponse.responses[2].dataRows;
+            actionDataRowsLength = actionDataRows == null ? 0 : actionDataRows.length;
+
+            console.log("actionInstance " + JSON.stringify(actionInstance));
+            console.log("actionSummary " + JSON.stringify(actionSummary));
+            console.log("actionDataRows " + JSON.stringify(actionDataRows));
+            console.log(
+                "actionDataRowsLength " + JSON.stringify(actionDataRowsLength)
+            );
+
+            createBody();
+        })
+        .catch(function(error) {
+            console.log("Console log: Error: " + JSON.stringify(error));
+        });
+}
+
+function createBody() {
+    head();
+    var tabs = $("#tabs-content").clone();
+    $("#root").append(tabs);
+
+    getUserprofile();
+
+    /*  Add Responders  */
+    get_responders();
+
+    /*  Add Non-reponders  */
+    // get_nonresponders();
+    return true;
+    /* const dueDate = UxUtils.getDiv();
+                                                                                                                                                                                                                    UxUtils.setClass(dueDate, "subHeading");
+                                                                                                                                                                                                                    UxUtils.setText(dueDate, UxUtils.getString("dueBy", new Date(actionInstance.expiryTime).toDateString()));
+
+                                                                                                                                                                                                                    UxUtils.addElement(title, headerContainer);
+                                                                                                                                                                                                                    UxUtils.addElement(dueDate, headerContainer);
+                                                                                                                                                                                                                    UxUtils.addElement(headerContainer, root);
+                                                                                                                                                                                                                    await getUserprofile();
+                                                                                                                                                                                                                    UxUtils.addElement(await mainPage(), root);
+                                                                                                                                                                                                                    getResNonResTabs();
+                                                                                                                                                                                                                    getResponderListPagePerQuestion();
+                                                                                                                                                                                                                    getPageResponsePerUser(); */
+}
+
+function head() {
+    var title = actionInstance.displayName;
+    var description = actionInstance.properties[0]["value"];
+    var dueby = new Date(actionInstance.expiryTime).toDateString();
+
+    var title_sec = document.createElement("h5");
+    var hr_sec = document.createElement("hr");
+    var description_sec = document.createElement("small");
+    var dueby_sec = document.createElement("p");
+    title_sec.innerHTML = title;
+    description_sec.innerHTML = description;
+    dueby_sec.innerHTML = "Due by " + dueby;
+
+    console.log(title + " " + description + " " + dueby);
+
+    root.appendChild(title_sec);
+    root.appendChild(description_sec);
+    root.appendChild(dueby_sec);
+    root.appendChild(hr_sec);
+}
+
+function getUserprofile() {
+    let memberIds = [];
+    if (actionDataRowsLength > 0) {
+        for (let i = 0; i < actionDataRowsLength; i++) {
+            memberIds.push(actionDataRows[i].creatorId);
+            let requestResponders = new actionSDK.GetSubscriptionMembers.Request(
+                actionContext.subscription, [actionDataRows[i].creatorId]
+            ); // ids of responders
+
+            let responseResponders = actionSDK
+                .executeApi(requestResponders)
+                .then(function(resp) {
+                    console.log(JSON.stringify(resp));
+                })
+                .catch(function(error) {
+                    console.log("Console log: Error: " + JSON.stringify(error));
+                });
+
+            console.log("requestResponders: " + JSON.stringify(requestResponders));
+            console.log("responseResponders: " + JSON.stringify(responseResponders));
+            // return true;
+
+            if (responseResponders.length > 0) {
+                let perUserProfile = responseResponders.members;
+                console.log("perUserProfile: " + perUserProfile);
+                ResponderDate.push({
+                    label: perUserProfile[0].displayName,
+                    value: new Date(actionDataRows[i].updateTime).toDateString(),
+                    value2: perUserProfile[0].id,
+                });
+            }
+        }
+    }
+
+    myUserId = actionContext.userId;
+    // console.log(myUserId);
+    let requestNonResponders = new actionSDK.GetActionSubscriptionNonParticipants.Request(
+        actionContext.actionId,
+        actionContext.subscription.id
+    );
+    let responseNonResponders = actionSDK.executeApi(requestNonResponders);
+    let tempresponse = responseNonResponders.nonParticipants;
+    console.log(
+        "responseNonResponders: " + JSON.stringify(responseNonResponders)
+    );
+    console.log("tempresponse: " + tempresponse);
+    if (tempresponse != null) {
+        for (let i = 0; i < tempresponse.length; i++) {
+            actionNonResponders.push({
+                label: tempresponse[i].displayName,
+                value2: tempresponse[i].id,
+            });
+        }
+    }
+    console.log("actionNonResponders:" + actionNonResponders);
+}
+
+function get_responders() {
+    for (let itr = 0; itr < ResponderDate.length; itr++) {
+        var id = ResponderDate[itr].value2;
+        var name = "";
+        if (ResponderDate[itr].value2 == myUserId) {
+            name = "You";
+        } else {
+            name = ResponderDate[itr].label;
+        }
+        var date = ResponderDate[itr].value;
+        $("table#responder-table tbody").append(
+            "<tr><td>" + name + "</td><td>" + date + "</td></tr>"
+        );
+    }
+}
+
+function get_nonresponders() {
+    for (let itr = 0; itr < actionNonResponders.length; itr++) {
+        var id = actionNonResponders[itr].value2;
+        var name = "";
+        if (actionNonResponders[itr].value2 == myUserId) {
+            name = "You";
+        } else {
+            name = actionNonResponders[itr].label;
+        }
+        var date = actionNonResponders[itr].value;
+        $("table#non-responder-table tbody").append(
+            "<tr><td>" + name + "</td><td>" + date + "</td></tr>"
+        );
+    }
+}

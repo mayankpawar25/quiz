@@ -1,6 +1,6 @@
 {
-    "id": "com.microsoft.sample.quiz.mike0001",
-    "name": "Quiz WebcraftIT",
+    "id": "com.microsoft.sample.quiz.mayank02072001",
+    "name": "Quiz WebcraftT",
     "description": "Quiz",
     "provider": {
         "name": "Microsoft",
@@ -10,7 +10,7 @@
     },
     "icon": "images/appIcon.png",
     "actionModel": "actionModel.json",
-    "version": "1.0.0",
+    "version": "1.2.49",
     "views": {
         "CardView": {
             "sourceLocation": "json/cardView.json"
@@ -38,5 +38,7 @@
         "ajax.googleapis.com",
         "cdnjs.cloudflare.com",
         "maxcdn.bootstrapcdn.com",
+        "ajax.aspnetcdn.com",
+        "int.actions.office365.com"
     ]
 }

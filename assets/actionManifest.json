@@ -1,6 +1,6 @@
     {
-        "id": "com.microsoft.test.mike010",
-        "name": "Quiz WebcraftIT",
+        "id": "com.microsoft.test.mike240620200001",
+        "name": "Quiz(WebcraftIT)",
         "description": "Quiz Description",
         "provider": {
             "name": "Webcraft",
@@ -9,7 +9,7 @@
             "termsOfUseUrl": "https://www.webcraftit.com/terms-of-use.html"
         },
         "icon": "images/appIcon.png",
-        "version": "1.0.1",
+        "version": "1.0.0",
         "actionModel": "actionModel.json",
         "views": {
             "CardView": {
@@ -37,7 +37,6 @@
         "whitelistedUrlDomains": [
             "ajax.googleapis.com",
             "cdnjs.cloudflare.com",
-            "maxcdn.bootstrapcdn.com",
-            "unpkg.com"
+            "maxcdn.bootstrapcdn.com"
         ]
     }

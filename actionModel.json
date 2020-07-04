@@ -4,13 +4,12 @@
     },
     "dataTables": {
         "canAddMore": false,
-        "values": [
-            {
-                "name": "TestDataTable",
-                "dataColumns": {
-                    "canAddMore": true
-                }
-            }
-        ]
+        "values": [{
+            "name": "TestDataTable",
+            "dataColumns": {
+                "canAddMore": true
+            },
+            "attachments": {}
+        }]
     }
 }
