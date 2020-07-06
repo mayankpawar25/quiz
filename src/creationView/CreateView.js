@@ -42,7 +42,7 @@ $(document).on("click", ".remove-question", function() {
 /* Add Options */
 $(document).on("click", ".add-options", function() {
     if (
-        $(this).parents("div.container").find("div.input-group.mb-2").length > 10
+        $(this).parents("div.container").find("div.option-div > div.input-group.mb-2 > input[type='text']").length >= 10
     ) {
         alert("Maximum 10 options allowed for a Question");
         return false;

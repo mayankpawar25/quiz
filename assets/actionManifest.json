@@ -9,7 +9,7 @@
             "termsOfUseUrl": "https://www.webcraftit.com/terms-of-use.html"
         },
         "icon": "images/appIcon.png",
-        "version": "1.0.0",
+        "version": "1.0.1",
         "actionModel": "actionModel.json",
         "views": {
             "CardView": {

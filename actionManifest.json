@@ -1,6 +1,6 @@
 {
-    "id": "com.microsoft.sample.quiz.mayank02072001",
-    "name": "Quiz WebcraftT",
+    "id": "com.microsoft.sample.quiz.mike06072001",
+    "name": "Quiz",
     "description": "Quiz",
     "provider": {
         "name": "Microsoft",
@@ -10,7 +10,7 @@
     },
     "icon": "images/appIcon.png",
     "actionModel": "actionModel.json",
-    "version": "1.2.49",
+    "version": "1.0.12",
     "views": {
         "CardView": {
             "sourceLocation": "json/cardView.json"

@@ -1,6 +1,6 @@
 import * as actionSDK from "action-sdk-sunny";
 
-$(document).ready(function() {
+$(document).ready(function () {
     OnPageLoad();
 });
 
@@ -14,29 +14,20 @@ let actionNonResponders = [];
 let myUserId = "";
 var root = document.getElementById("root");
 
-/* console.log(JSON.stringify(actionSDK.GetContext.Request()));
-console.log(JSON.stringify(actionSDK.GetContext.Response)); */
-
 function OnPageLoad() {
-    console.log("onload");
-    console.log(JSON.stringify(actionSDK.GetContext.Request()));
     actionSDK
         .executeApi(new actionSDK.GetContext.Request())
-        .then(function(response) {
-            console.log("here");
+        .then(function (response) {
             console.info("GetContext - Response: " + JSON.stringify(response));
             actionContext = response.context;
             getDataRows(response.context.actionId);
-            console.log("actionContext: " + JSON.stringify(actionContext));
         })
-        .catch(function(error) {
+        .catch(function (error) {
             console.error("GetContext - Error: " + JSON.stringify(error));
         });
-    console.log("onload end");
 }
 
 function getDataRows(actionId) {
-    console.log("getDataRows load");
     var getActionRequest = new actionSDK.GetAction.Request(actionId);
     var getSummaryRequest = new actionSDK.GetActionDataRowsSummary.Request(
         actionId,
@@ -51,23 +42,15 @@ function getDataRows(actionId) {
 
     actionSDK
         .executeBatchApi(batchRequest)
-        .then(function(batchResponse) {
+        .then(function (batchResponse) {
             console.info("BatchResponse: " + JSON.stringify(batchResponse));
             actionInstance = batchResponse.responses[0].action;
             actionSummary = batchResponse.responses[1].summary;
             actionDataRows = batchResponse.responses[2].dataRows;
             actionDataRowsLength = actionDataRows == null ? 0 : actionDataRows.length;
-
-            console.log("actionInstance " + JSON.stringify(actionInstance));
-            console.log("actionSummary " + JSON.stringify(actionSummary));
-            console.log("actionDataRows " + JSON.stringify(actionDataRows));
-            console.log(
-                "actionDataRowsLength " + JSON.stringify(actionDataRowsLength)
-            );
-
             createBody();
         })
-        .catch(function(error) {
+        .catch(function (error) {
             console.log("Console log: Error: " + JSON.stringify(error));
         });
 }
@@ -87,6 +70,8 @@ async function createBody() {
         getSubscriptionCount
     ));
 
+    var $pcard = $('<div class="card"></div>');
+
     let memberCount = response.memberCount;
     let participationPercentage = 0;
 
@@ -96,11 +81,15 @@ async function createBody() {
 
     var xofy = actionSummary.rowCount + ' of ' + memberCount + ' people responded';
 
-    $('#root').append('<h5>Participation ' + participationPercentage + '% </h5><div class="progress"><div class="progress-bar bg-info" role="progressbar" style="width: ' + participationPercentage + '%" aria-valuenow="' + participationPercentage + '" aria-valuemin="0" aria-valuemax="100"></div></div>');
-    $("#root").append(xofy);
 
+    $pcard.append('<label><strong>Participation ' + participationPercentage + '% </strong></label><div class="progress"><div class="progress-bar bg-primary" role="progressbar" style="width: ' + participationPercentage + '%" aria-valuenow="' + participationPercentage + '" aria-valuemin="0" aria-valuemax="100"></div></div>');
+    $pcard.append('<label>' + xofy + '</label>');
+    $('#root').append($pcard);
+
+    var $card1 = $('<div class="card"></div>');
     var tabs = $(".tabs-content").clone();
-    $("#root").append(tabs.clone());
+    $card1.append(tabs.clone());
+    $("#root").append($card1);
 
     await getUserprofile();
 
@@ -117,7 +106,19 @@ function head() {
     var description = actionInstance.properties[0]["value"];
     var dueby = new Date(actionInstance.expiryTime).toDateString();
 
-    var title_sec = document.createElement("h5");
+    var $card = $('<div class="card"></div>');
+    var $title_sec = $('<h4>' + title + '</h4>');
+    var $description_sec = $('<small>' + description + '</small>');
+    var $date_sec = $('<small class="date-color">' + 'Due by ' + dueby + '</small>');
+
+    $card.append($title_sec);
+    $card.append($description_sec);
+    $card.append("<hr>");
+    $card.append($date_sec);
+
+    $('#root').append($card);
+
+    /* var title_sec = document.createElement("h5");
     var hr_sec = document.createElement("hr");
     var description_sec = document.createElement("small");
     var dueby_sec = document.createElement("p");
@@ -128,7 +129,7 @@ function head() {
     root.appendChild(title_sec);
     root.appendChild(description_sec);
     root.appendChild(dueby_sec);
-    root.appendChild(hr_sec);
+    root.appendChild(hr_sec); */
 }
 
 async function getUserprofile() {
@@ -197,7 +198,7 @@ function getResponders() {
         }
         var date = ResponderDate[itr].value;
 
-        $(".tabs-content:first").find("table#responder-table tbody").append('<tr id="' + ResponderDate[itr].value2 + '" class="getresult"><td>' + name + '</td><td  class="text-right">' + date + '</td></tr>');
+        $(".tabs-content:first").find("table#responder-table tbody").append('<tr id="' + ResponderDate[itr].value2 + '" class="getresult"><td><span>' + name + '</span></td><td  class="text-right">' + date + '</td></tr>');
     }
 }
 
@@ -218,7 +219,7 @@ function getNonresponders() {
     }
 }
 
-$(document).on('click', '.getresult', function() {
+$(document).on('click', '.getresult', function () {
     var userId = $(this).attr('id');
     console.log(userId);
 
@@ -240,18 +241,21 @@ function createQuestionView(userId) {
     var count = 1;
     // console.log(JSON.stringify(actionInstance));
     actionInstance.dataTables.forEach((dataTable) => {
-        // var qDiv = document.createElement("div");
-        var $qDiv = $('<div class="col-sm-12"></div>');
 
-        var $linebreak = $("<br>");
-        $qDiv.append($linebreak);
+        // var $linebreak = $("<br>");
+        // $qDiv.append($linebreak);
 
         dataTable.dataColumns.forEach((question, ind) => {
+            var $cardDiv = $('<div class="card"></div>');
+            var $rowdDiv = $('<div class="row"></div>');
+            var $qDiv = $('<div class="col-sm-12"></div>');
+            $cardDiv.append($rowdDiv);
+            $rowdDiv.append($qDiv);
+
             var count = ind + 1;
-            var $questionHeading = $('<h5></h5>');
-            $questionHeading.html("Question" + count + ". " + question.displayName);
-            $qDiv.append($questionHeading);
-            // qDiv.appendChild(questionHeading);
+            var $questionHeading = $('<label></label>');
+            $questionHeading.append("<strong>Question" + count + ". " + question.displayName + "</strong>");
+            $cardDiv.append($questionHeading);
 
             question.options.forEach((option) => {
 
@@ -327,12 +331,10 @@ function createQuestionView(userId) {
                     correctAnswer
                 );
                 console.log($radioOption);
-                $qDiv.append($radioOption);
+                $cardDiv.append($radioOption);
             });
-
+            $('div.question-content:first').append($cardDiv);
         });
-
-        $('div.question-content:first').append($qDiv);
         count++;
     });
 }
@@ -342,17 +344,17 @@ function getOptions(text, name, id, userResponse, correctAnswer) {
 
     console.log(text + ', ' + name + ', ' + id + ', ' + userResponse + ', ' + correctAnswer);
     var $oDiv = $('<div class="form-group"></div>');
-    /*  If answer is correct  */
+    /*  If answer is correct  and answered */
     if (userResponse == id && correctAnswer == id) {
-        $oDiv.append('<div class="border border-danger">' + text + ' <i class="fa fa-pull-right fa-check-square"></i> </div>');
+        $oDiv.append('<div class="form-group alert alert-success"><p class="mb0">' + text + ' <i class="fa  pull-right fa-check"></i> </p></div>');
     } else if (userResponse != id && correctAnswer == id) {
-        /* If User Response is incorrect */
-        $oDiv.append('<div class="">' + text + ' <i class="fa fa-pull-right fa-check-square"></i> </div>');
+        /* If User Response is incorrect and not answered */
+        $oDiv.append('<div class="form-group"><p class="mb0">' + text + ' <i class="fa fa-pull-right text-success fa-check"></p></div>');
     } else if (userResponse == id && correctAnswer != id) {
-        /* If User Response is incorrect */
-        $oDiv.append('<div class="border border-danger">' + text + ' <i class="fa fa-pull-right fa-window-close"></div>');
+        /* If User Response is incorrect and answered */
+        $oDiv.append('<div class="form-group alert alert-danger"><p class="mb0">' + text + '<i class="fa fa-pull-right fa-close"></i></p></div>');
     } else {
-        $oDiv.append('<div class="">' + text + ' </div>');
+        $oDiv.append('<div class="form-group"><p class="mb0">' + text + '</p></div>');
     }
 
     return $oDiv;
@@ -368,9 +370,9 @@ function isJson(str) {
 }
 
 function footer() {
-    $('#root').append('<button class="btn btn-primary back">Back</button>');
+    $('div.question-content:last').append('<button class="btn btn-primary float-right back">Back</button>');
 }
 
-$(document).on('click', '.back', function() {
+$(document).on('click', '.back', function () {
     createBody();
 });
