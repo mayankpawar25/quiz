@@ -220,6 +220,7 @@ function getNonresponders() {
 }
 
 $(document).on('click', '.getresult', function () {
+
     var userId = $(this).attr('id');
     console.log(userId);
 
@@ -238,6 +239,7 @@ $(document).on('click', '.getresult', function () {
 
 
 function createQuestionView(userId) {
+    $('div#root > div.question-content').html('');
     var count = 1;
     // console.log(JSON.stringify(actionInstance));
     actionInstance.dataTables.forEach((dataTable) => {
