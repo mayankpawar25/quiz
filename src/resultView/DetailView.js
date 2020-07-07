@@ -370,7 +370,7 @@ function isJson(str) {
 }
 
 function footer() {
-    $('div.question-content:last').append('<button class="btn btn-primary float-right back">Back</button>');
+    $('div.question-content').append('<button class="btn btn-primary float-right back">Back</button>');
 }
 
 $(document).on('click', '.back', function () {
