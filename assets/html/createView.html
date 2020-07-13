@@ -18,30 +18,33 @@
 <body>
 
     <form>
-        <div class="container pt-4">
-            <div id="root" class="card">
-                <!-- <script src="../CreateView.js"></script> -->
+        <div class="section-1">
+            <div class="container pt-4">
+                <div id="root" class="card">
+                    <!-- <script src="../CreateView.js"></script> -->
 
-                <div class="form-group">
-                    <label><strong>Quiz Title</strong></label>
-                    <input type="Text" placeholder="Enter title here" class="in-t form-control" id="quiz-title" />
+                    <div class="form-group">
+                        <label><strong>Quiz Title</strong></label>
+                        <input type="Text" placeholder="Enter title here" class="in-t form-control" id="quiz-title" />
+                    </div>
+
+                    <div class="form-group">
+                        <label><strong>Quiz Description</strong></label>
+                        <input type="Text" placeholder="What is this Quiz about?" class="in-t form-control"
+                            id="quiz-description" />
+                    </div>
                 </div>
+            </div>
 
+            <div class="container">
                 <div class="form-group">
-                    <label><strong>Quiz Description</strong></label>
-                    <input type="Text" placeholder="What is this Quiz about?" class="in-t form-control" id="quiz-description" />
+                    <button type="button" class="btn btn-primary-outline btn-sm" id="add-questions"> + Add
+                        Questions</button>
+                    <!-- <button type="button" class="btn btn-primary btn-sm pull-right" id="submit"> Submit</button> -->
+                    <button type="button" class="btn btn-primary btn-sm pull-right" id="next"> Next</button>
                 </div>
             </div>
         </div>
-
-        <div class="container">
-            <div class="form-group">
-                <button type="button" class="btn btn-primary-outline btn-sm" id="add-questions"> + Add
-                    Questions</button>
-                <button type="button" class="btn btn-primary btn-sm pull-right" id="submit"> Submit</button>
-            </div>
-        </div>
-
     </form>
 
     <div style="display: none;" id="question-section">
@@ -65,7 +68,8 @@
 
                     <div class="option-div">
                         <div class="input-group mb-2 ">
-                            <input type="text" class="form-control" placeholder="Option 1" aria-label="Recipient's username" aria-describedby="basic-addon2" id="option1">
+                            <input type="text" class="form-control" placeholder="Option 1"
+                                aria-label="Recipient's username" aria-describedby="basic-addon2" id="option1">
                             <div class="input-group-append">
                                 <span class="input-group-text remove-option" style="cursor: pointer;"><i
                                         class="fa fa-trash font-sm" aria-hidden="true"></i></span>
@@ -80,7 +84,8 @@
                     </div>
                     <div class="option-div">
                         <div class="input-group mb-2">
-                            <input type="text" class="form-control" placeholder="Option 2" aria-label="Recipient's username" aria-describedby="basic-addon2" id="option2">
+                            <input type="text" class="form-control" placeholder="Option 2"
+                                aria-label="Recipient's username" aria-describedby="basic-addon2" id="option2">
                             <div class="input-group-append">
                                 <span class="input-group-text remove-option" style="cursor: pointer;"><i
                                         class="fa fa-trash font-sm" aria-hidden="true"></i></span>
@@ -102,7 +107,8 @@
     <div style="display: none;" id="option-section">
         <div class="option-div">
             <div class="input-group mb-2">
-                <input type="text" class="form-control" placeholder="Option" aria-label="Recipient's username" aria-describedby="basic-addon2" id="option-1">
+                <input type="text" class="form-control" placeholder="Option" aria-label="Recipient's username"
+                    aria-describedby="basic-addon2" id="option-1">
                 <div class="input-group-append">
                     <span class="input-group-text remove-option" style="cursor: pointer;"><i class="fa fa-trash font-sm"
                             aria-hidden="true"></i></span>
@@ -115,6 +121,71 @@
             <hr>
         </div>
     </div>
+
+    <div class="hide" id="setting">
+        <div class="container setting-section">
+            <div class="card">
+                <div class="form-group">
+                    <h4>Settings</h4>
+                </div>
+                <div class="form-group">
+                    <label>Quiz ends on: </label><br>
+                    <input type="date" name="expiry_date" id="expiry-date" value="" />
+                    <input type="time" name="expiry_time" id="expiry-time" value="23:59" /><br>
+                    <small>Set deadline for the quiz</small>
+                </div>
+            </div>
+            <div class="card">
+                <div class="form-group">
+                    <label>Result Visible to everyone: </label><br>
+                    <label><input type="radio" name="visible_to" id="visible-to" value="Everyone" checked />
+                        Everyone</label><br>
+                    <label><input type="radio" name="visible_to" id="visible-to" value="Only me" /> Only me</label><br>
+                    <small>Specify who will be able to see the quiz result</small>
+                </div>
+            </div>
+            <div class="card">
+                <div class="form-group">
+                    <label>Show correct answer after each question: </label><br>
+                    <label></albel><input type="checkbox" name="show_correct_answer" id="show-correct-answer"
+                            value="Yes" />
+                        <small>Answer cannot be changed if this option is seleted</small></label>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="form-group">
+                <button type="button" class="btn btn-primary btn-sm pull-right" id="submit"> Submit</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
+        aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    ...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="save-changes">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+        Launch demo modal
+    </button> -->
 
     <!-- jQuery library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
