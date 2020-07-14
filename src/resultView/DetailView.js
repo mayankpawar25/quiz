@@ -117,19 +117,6 @@ function head() {
     $card.append($date_sec);
 
     $('#root').append($card);
-
-    /* var title_sec = document.createElement("h5");
-    var hr_sec = document.createElement("hr");
-    var description_sec = document.createElement("small");
-    var dueby_sec = document.createElement("p");
-    title_sec.innerHTML = title;
-    description_sec.innerHTML = description;
-    dueby_sec.innerHTML = "Due by " + dueby;
-    console.log(title + " " + description + " " + dueby);
-    root.appendChild(title_sec);
-    root.appendChild(description_sec);
-    root.appendChild(dueby_sec);
-    root.appendChild(hr_sec); */
 }
 
 async function getUserprofile() {
@@ -306,7 +293,7 @@ function createQuestionView(userId) {
                 }
 
                 /* Correct Answer */
-                var correctResponse = JSON.parse(actionInstance.properties[1].value);
+                var correctResponse = JSON.parse(actionInstance.properties[4].value);
                 var correctResponseLength = Object.keys(correctResponse).length;
                 var correctAnswer = '';
                 for (let j = 0; j < correctResponseLength; j++) {

@@ -129,32 +129,31 @@
                     <h4>Settings</h4>
                 </div>
                 <div class="form-group">
-                    <label>Quiz ends on: </label><br>
+                    <label><b>Quiz due by: </b></label><br>
                     <input type="date" name="expiry_date" id="expiry-date" value="" />
                     <input type="time" name="expiry_time" id="expiry-time" value="23:59" /><br>
-                    <small>Set deadline for the quiz</small>
                 </div>
-            </div>
-            <div class="card">
+                <br>
                 <div class="form-group">
-                    <label>Result Visible to everyone: </label><br>
+                    <label><b>Result Visible to: </b></label><br>
                     <label><input type="radio" name="visible_to" id="visible-to" value="Everyone" checked />
                         Everyone</label><br>
                     <label><input type="radio" name="visible_to" id="visible-to" value="Only me" /> Only me</label><br>
-                    <small>Specify who will be able to see the quiz result</small>
+
                 </div>
-            </div>
-            <div class="card">
+                <br>
                 <div class="form-group">
-                    <label>Show correct answer after each question: </label><br>
-                    <label></albel><input type="checkbox" name="show_correct_answer" id="show-correct-answer"
-                            value="Yes" />
-                        <small>Answer cannot be changed if this option is seleted</small></label>
+                    <label><b>Show correct answer after each question: </b></label><br>
+                    <label>
+                        <input type="checkbox" name="show_correct_answer" id="show-correct-answer" value="Yes" />
+                        <small>Answer cannot be changed if this option is seleted</small>
+                    </label>
                 </div>
             </div>
         </div>
         <div class="container">
             <div class="form-group">
+                <button type="button" class="btn btn-primary-outline btn-sm prev-form">Previous</button>
                 <button type="button" class="btn btn-primary btn-sm pull-right" id="submit"> Submit</button>
             </div>
         </div>

@@ -49,9 +49,6 @@ $(document).on("click", ".remove-question", function () {
     }
 });
 
-
-
-
 /* Add Options */
 $(document).on("click", ".add-options", function () {
     if (
@@ -140,7 +137,9 @@ $(document).on("click", '#next', function () {
     console.log('error_text.length: ' + error_text.length);
     if ($.trim(error_text).length <= 0) {
         $('.section-1').hide();
-        $('form').append($('#setting').clone());
+        if ($('form #setting').length == 0) {
+            $('form').append($('#setting').clone());
+        }
         $('form #setting').show();
     } else {
         // alert(error_text);
@@ -309,7 +308,7 @@ function createAction(actionPackageId) {
         displayName: quizTitle,
         description: quizDescription,
         // expiryTime: new Date().getTime() + 7 * 24 * 60 * 60 * 1000,
-        expiryTime: new Date(quizExpireDate + ' ' + quizExpireTime),
+        expiryTime: new Date(quizExpireDate + ' ' + quizExpireTime).getTime(),
         customProperties: properties,
         dataTables: [{
             name: "TestDataSet",
@@ -343,6 +342,14 @@ function generateGUID() {
 
 $(document).ready(function () {
     $("#add-questions").click();
-    var today = new Date().toISOString().split('T')[0];
+
+    /*  Add one week from current date */
+    var today = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
     $('#expiry-date').val(today).attr({ 'min': today });
 });
+
+$(document).on('click', '.prev-form', function () {
+    $('.section-1').show();
+    $('form #setting').hide();
+
+})

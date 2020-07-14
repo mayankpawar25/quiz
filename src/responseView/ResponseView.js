@@ -41,24 +41,37 @@ function getActionInstance(actionId) {
 }
 
 function createBody() {
-    var $card = $('<div class="card"></div>');
-    var $title = $("<h4>" + actionInstance.displayName + "</h4>");
-    var $hr = $("<hr>");
-    var $description = $('<p class="mb0">' + actionInstance.properties[0].value + '</p>');
-    console.log(actionInstance);
-    $card.append($title);
-    $card.append($description);
-    $root.append($card);
-    createQuestionView();
-    $root.append($hr);
 
-    var $spDiv = $('<div class="col-sm-12"></div>');
-    var $sDiv = $('<div class="form-group"></div>');
-    var $submit = $('<button class="btn btn-primary btn-sm float-right submit-form" >Submit</button>'); // Create a <button> element
-    $sDiv.append($submit);
-    $spDiv.append($sDiv);
-    $root.append($spDiv);
-    return;
+    /*  Check Expiry date time  */
+    var current_time = new Date().getTime();
+    if (actionInstance.expiryTime <= current_time) {
+        var $card = $('<div class="card"></div>');
+        var $spDiv = $('<div class="col-sm-12"></div>');
+        var $sDiv = $('<div class="form-group">Quiz Expired...</div>');
+        $card.append($spDiv);
+        $spDiv.append($sDiv);
+        $root.append($card);
+    } else {
+
+        var $card = $('<div class="card"></div>');
+        var $title = $("<h4>" + actionInstance.displayName + "</h4>");
+        var $hr = $("<hr>");
+        var $description = $('<p class="mb0">' + actionInstance.properties[0].value + '</p>');
+        console.log(actionInstance);
+        $card.append($title);
+        $card.append($description);
+        $root.append($card);
+        createQuestionView();
+        $root.append($hr);
+
+        var $spDiv = $('<div class="col-sm-12"></div>');
+        var $sDiv = $('<div class="form-group"></div>');
+        var $submit = $('<button class="btn btn-primary btn-sm float-right submit-form" >Submit</button>'); // Create a <button> element
+        $sDiv.append($submit);
+        $spDiv.append($sDiv);
+        $root.append($spDiv);
+        return;
+    }
 }
 
 $(document).on('click', '.submit-form', function () {
@@ -145,7 +158,59 @@ function submitForm() {
         .executeApi(new actionSDK.GetContext.Request())
         .then(function (response) {
             console.info("GetContext - Response: " + JSON.stringify(response));
-            addDataRows(response.context.actionId);
+
+            /*  Check Show Correct Answer  */
+            if (Object.keys(row).length > 0) {
+                if (actionInstance.properties[3].value == 'Yes') {
+                    var correct_answer = $.parseJSON(actionInstance.properties[4].value);
+                    console.log('correct_answer: ');
+                    console.log(correct_answer);
+                    var count = 0;
+
+                    var ans_rsp = '';
+                    $('#root').find('div.card').each(function (i, val) {
+                        if (i > 0) {
+                            var searchIDs = $(val).find('input:checked').map(function () {
+                                return $(this).attr('id');
+                            });
+
+                            var correct_ans = '';
+                            if (JSON.stringify(correct_answer[count]) == JSON.stringify(searchIDs.get())) {
+                                $.each(correct_answer[count], function (ind, ans_id) {
+                                    correct_ans += $.trim($(val).find('input#' + ans_id).parents('label').text()) + '<br>';
+                                })
+
+                                ans_rsp += '<div class="form-group"><h4>Question' + i + ' Answer is Correct. </h4 > <label> Your answer is <br>' + correct_ans + '</label><hr></div>';
+
+                                /*  Answer is correct  */
+                                // alert('Question' + i + ' Answer is Correct.\nYour Answer is ' + correct_ans);
+                            } else {
+                                /*  Answer is incorrect  */
+                                $.each(correct_answer[count], function (ind, ans_id) {
+                                    correct_ans += $.trim($(val).find('input#' + ans_id).parents('label').text()) + ' <br>';
+                                })
+                                // alert('Question' + i + ' Answer is Incorrect. \nCorrect Answer is ' + correct_ans);
+                                ans_rsp += '<div class="form-group"><h4>Question' + i + ' Answer is Incorrect. </h4> <label> Correct Answer is <br>' + correct_ans + '</label><hr></div>';
+                            }
+
+                            count++;
+                        }
+                    });
+
+                    $('#exampleModalCenter').find('#exampleModalLongTitle').html('<img src="images/warning.png"/> Answer response!');
+                    $('#exampleModalCenter').find('.modal-body').html(ans_rsp);
+                    $('#exampleModalCenter').find('.modal-footer').html('<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>');
+                    $('#exampleModalCenter').find('#save-changes').hide();
+                    $('#exampleModalCenter').modal('show');
+
+                    $("#exampleModalCenter").on("hidden.bs.modal", function () {
+                        // put your default event here
+                        addDataRows(response.context.actionId);
+                    });
+                } else {
+                    addDataRows(response.context.actionId);
+                }
+            }
         })
         .catch(function (error) {
             console.error("GetContext - Error: " + JSON.stringify(error));
