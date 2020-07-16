@@ -2,11 +2,10 @@
     "view": {
         "type": "AdaptiveCard",
         "version": "1.0",
-        "body": [
-            {
+        "body": [{
                 "id": "Sender",
                 "type": "TextBlock",
-                "text": "Sender: ${creator[0].displayName}",
+                "text": "${creator[0].displayName} sent a Quiz(WebcraftIT)",
                 "size": "small",
                 "wrap": true
             },
@@ -24,15 +23,13 @@
                 "id": "Questions",
                 "type": "Container",
                 "style": "emphasis",
-                "items": [
-                    {
-                        "type": "TextBlock",
-                        "text": "Questions: ${count(action.dataTables[0].dataColumns)}",
-                        "size": "medium",
-                        "wrap": true,
-                        "spacing": "medium"
-                    }
-                ]
+                "items": [{
+                    "type": "TextBlock",
+                    "text": "Questions: ${count(action.dataTables[0].dataColumns)}",
+                    "size": "medium",
+                    "wrap": true,
+                    "spacing": "medium"
+                }]
             },
             {
                 "id": "Summary",
@@ -45,8 +42,7 @@
                 "spacing": "small"
             }
         ],
-        "actions": [
-            {
+        "actions": [{
                 "id": "RespondButton",
                 "$when": "${equals(action.status, 'Active')}",
                 "title": "Respond",
