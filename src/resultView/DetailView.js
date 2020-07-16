@@ -70,7 +70,7 @@ async function createBody() {
         getSubscriptionCount
     ));
 
-    var $pcard = $('<div class="card"></div>');
+    var $pcard = $('<div class=""></div>');
 
     let memberCount = response.memberCount;
     let participationPercentage = 0;
@@ -83,10 +83,10 @@ async function createBody() {
 
 
     $pcard.append('<label><strong>Participation ' + participationPercentage + '% </strong></label><div class="progress"><div class="progress-bar bg-primary" role="progressbar" style="width: ' + participationPercentage + '%" aria-valuenow="' + participationPercentage + '" aria-valuemin="0" aria-valuemax="100"></div></div>');
-    $pcard.append('<label>' + xofy + '</label>');
+    $pcard.append('<p>' + xofy + '</p>');
     $('#root').append($pcard);
 
-    var $card1 = $('<div class="card"></div>');
+    var $card1 = $('<div class="card-box"></div>');
     var tabs = $(".tabs-content").clone();
     $card1.append(tabs.clone());
     $("#root").append($card1);
@@ -103,18 +103,18 @@ async function createBody() {
 
 function head() {
     var title = actionInstance.displayName;
-    var description = actionInstance.properties[0]["value"];
+    var description = actionInstance.customProperties[0]["value"];
     var dueby = new Date(actionInstance.expiryTime).toDateString();
 
-    var $card = $('<div class="card"></div>');
+    var $card = $('<div class=""></div>');
     var $title_sec = $('<h4>' + title + '</h4>');
-    var $description_sec = $('<small>' + description + '</small>');
-    var $date_sec = $('<small class="date-color">' + 'Due by ' + dueby + '</small>');
+    var $description_sec = $('<p>' + description + '</p>');
+    var $date_sec = $('<p><small class="date-color md-0">' + 'Due by ' + dueby + '</small></p>');
 
     $card.append($title_sec);
     $card.append($description_sec);
-    $card.append("<hr>");
     $card.append($date_sec);
+    $card.append("<hr>");
 
     $('#root').append($card);
 }
@@ -235,7 +235,7 @@ function createQuestionView(userId) {
         // $qDiv.append($linebreak);
 
         dataTable.dataColumns.forEach((question, ind) => {
-            var $cardDiv = $('<div class="card"></div>');
+            var $cardDiv = $('<div class="card-box"></div>');
             var $rowdDiv = $('<div class="row"></div>');
             var $qDiv = $('<div class="col-sm-12"></div>');
             $cardDiv.append($rowdDiv);
@@ -243,7 +243,7 @@ function createQuestionView(userId) {
 
             var count = ind + 1;
             var $questionHeading = $('<label></label>');
-            $questionHeading.append("<strong>Question" + count + ". " + question.displayName + "</strong>");
+            $questionHeading.append("<strong>" + count + ". " + question.displayName + "</strong>");
             $cardDiv.append($questionHeading);
 
             question.options.forEach((option) => {
@@ -293,7 +293,7 @@ function createQuestionView(userId) {
                 }
 
                 /* Correct Answer */
-                var correctResponse = JSON.parse(actionInstance.properties[4].value);
+                var correctResponse = JSON.parse(actionInstance.customProperties[4].value);
                 var correctResponseLength = Object.keys(correctResponse).length;
                 var correctAnswer = '';
                 for (let j = 0; j < correctResponseLength; j++) {
@@ -359,7 +359,7 @@ function isJson(str) {
 }
 
 function footer() {
-    $('div.question-content').append('<button class="btn btn-primary float-right back">Back</button>');
+    $('div.question-content').append('<div class="footer"><div class="footer-padd bt"><div class="container "><div class="row"><div class="col-9"><a class="cursur-pointer back" id="hide2"><svg role="presentation" focusable="false" viewBox="8 8 16 16" class="gt ki gs"><path class="ui-icon__outline gr" d="M16.38 20.85l7-7a.485.485 0 0 0 0-.7.485.485 0 0 0-.7 0l-6.65 6.64-6.65-6.64a.485.485 0 0 0-.7 0 .485.485 0 0 0 0 .7l7 7c.1.1.21.15.35.15.14 0 .25-.05.35-.15z"></path><path class="ui-icon__filled" d="M16.74 21.21l7-7c.19-.19.29-.43.29-.71 0-.14-.03-.26-.08-.38-.06-.12-.13-.23-.22-.32s-.2-.17-.32-.22a.995.995 0 0 0-.38-.08c-.13 0-.26.02-.39.07a.85.85 0 0 0-.32.21l-6.29 6.3-6.29-6.3a.988.988 0 0 0-.32-.21 1.036 1.036 0 0 0-.77.01c-.12.06-.23.13-.32.22s-.17.2-.22.32c-.05.12-.08.24-.08.38 0 .28.1.52.29.71l7 7c.19.19.43.29.71.29.28 0 .52-.1.71-.29z"></path></svg> Back</a></div><div class="col-3"><button class="btn btn-tpt">&nbsp;</button></div></div></div></div></div>');
 }
 
 $(document).on('click', '.back', function () {

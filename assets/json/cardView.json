@@ -2,7 +2,8 @@
     "view": {
         "type": "AdaptiveCard",
         "version": "1.0",
-        "body": [{
+        "body": [
+            {
                 "id": "Sender",
                 "type": "TextBlock",
                 "text": "${creator[0].displayName} sent a Quiz(WebcraftIT)",
@@ -20,21 +21,43 @@
                 "spacing": "small"
             },
             {
+                "id": "ResultVisibility",
+                "type": "TextBlock",
+                "text": "${if(equals(action.dataTables[0].rowsVisibility, 'All'), 'Responses are visible to everyone', 'Responses are visible to sender only')}",
+                "maxLines": 2,
+                "wrap": true,
+                "isSubtle": true,
+                "size": "small",
+                "spacing": "none"
+            },
+            {
+                "id": "AnswerVisibility",
+                "type": "TextBlock",
+                "text": "${if(equals(action.customProperties[3].value, 'Yes'), 'Show correct answer', '')}",
+                "maxLines": 2,
+                "wrap": true,
+                "isSubtle": true,
+                "size": "small",
+                "spacing": "none"
+            },
+            {
                 "id": "Questions",
                 "type": "Container",
                 "style": "emphasis",
-                "items": [{
-                    "type": "TextBlock",
-                    "text": "Questions: ${count(action.dataTables[0].dataColumns)}",
-                    "size": "medium",
-                    "wrap": true,
-                    "spacing": "medium"
-                }]
+                "items": [
+                    {
+                        "type": "TextBlock",
+                        "text": "Questions: ${count(action.dataTables[0].dataColumns)}",
+                        "size": "medium",
+                        "wrap": true,
+                        "spacing": "medium"
+                    }
+                ]
             },
             {
                 "id": "Summary",
                 "type": "TextBlock",
-                "text": "Responses: ${summary.rowCount}, Responders: ${summary.rowCreatorCount}",
+                "text": "${if(summary.rowCreatorCount > 0, summary.rowCreatorCount + ' Responded', 'Be the first one to respond')}",
                 "size": "small",
                 "weight": "bolder",
                 "maxLines": 2,
@@ -42,7 +65,8 @@
                 "spacing": "small"
             }
         ],
-        "actions": [{
+        "actions": [
+            {
                 "id": "RespondButton",
                 "$when": "${equals(action.status, 'Active')}",
                 "title": "Respond",

@@ -9,10 +9,11 @@
         Create Question
     </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link href="css/style-default.css" rel="stylesheet" id="theme" />
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <!-- <script src="./node_modules/action-sdk-sunny/dist/ActionSDK.min.js" crossorigin="anonymous"></script> -->
+    <link href="css/style-default.css" rel="stylesheet" id="theme" />
+
 </head>
 
 <body>
@@ -21,22 +22,20 @@
         <div class="section-1">
             <div class="container pt-4">
                 <div id="root">
-                    <!-- <script src="../CreateView.js"></script> -->
-
                     <div class="form-group">
-                        <label><strong>Quiz Title</strong></label>
-                        <input type="Text" placeholder="Enter title here" class="in-t form-control" id="quiz-title" />
+                        <input type="Text" placeholder="Quiz Title" class="in-t input-lg form-control"
+                            id="quiz-title" />
                     </div>
 
                     <div class="form-group">
-                        <label><strong>Quiz Description</strong></label>
-                        <input type="Text" placeholder="What is this Quiz about?" class="in-t form-control" id="quiz-description" />
+                        <input type="Text" placeholder="Quiz Description" class="in-t form-control"
+                            id="quiz-description" />
                     </div>
                 </div>
             </div>
 
-            <div class="container">
-                <div class="form-group">
+            <div class="container pb-5">
+                <div class="form-group pb-5">
                     <button type="button" class="btn btn-primary btn-sm" id="add-questions"> <svg role="presentation"
                             focusable="false" viewBox="8 8 16 16" class="cc gs gt wh gv">
                             <path class="ui-icon__outline cc"
@@ -49,14 +48,16 @@
                 </div>
             </div>
         </div>
-        <br><br><br><br>
+
         <div class="footer">
             <div class="footer-padd bt">
                 <div class="container ">
                     <div class="row">
                         <div class="col-9">
                             <a class="theme-color cursur-pointer show-setting" id="hide1">
-                                <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 368 368" xml:space="preserve" class="gt ha gs">
+                                <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
+                                    xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 368 368"
+                                    xml:space="preserve" class="gt ha gs">
                                     <g>
                                         <g>
                                             <path d="M344,144h-29.952c-2.512-8.2-5.8-16.12-9.792-23.664l21.16-21.16c4.528-4.528,7.024-10.56,7.024-16.984c0-6.416-2.496-12.448-7.024-16.976l-22.64-22.64c-9.048-9.048-24.888-9.072-33.952,0l-21.16,21.16 c-7.536-3.992-15.464-7.272-23.664-9.792V24c0-13.232-10.768-24-24-24h-32c-13.232,0-24,10.768-24,24v29.952
@@ -104,11 +105,12 @@
                                     <g></g>
                                     <g></g>
                                     <g></g>
-                                </svg> Due in 1 week, Results visible to everyone
+                                </svg><span id="due"> Due in 1 week, Results visible to everyone</span>
                             </a>
 
                         </div>
-                        <div class="col-3 text-right"> <button type="button" class="btn btn-primary btn-sm pull-right" id="submit"> Submit</button></div>
+                        <div class="col-3 text-right"> <button type="button" class="btn btn-primary btn-sm pull-right"
+                                id="submit"> Submit</button></div>
                     </div>
                 </div>
             </div>
@@ -119,11 +121,11 @@
         <div class="container question-container">
             <div class="card-box">
                 <div class="form-group">
-                    <div class="hover-btn remove-question mb-2">
-                        <button type="button" class="close" data-dismiss="alert">
+                    <div class="hover-btn mb-2 h-32">
+                        <button type="button" class="close remove-question" data-dismiss="alert">
                             <span aria-hidden="true">
                                 <svg height="427pt" viewBox="-40 0 427 427.00131" width="427pt"
-                                    style="margin-top: -25px;" xmlns="http://www.w3.org/2000/svg" class="gt gs">
+                                    xmlns="http://www.w3.org/2000/svg" class="gt gs">
                                     <path
                                         d="m232.398438 154.703125c-5.523438 0-10 4.476563-10 10v189c0 5.519531 4.476562 10 10 10 5.523437 0 10-4.480469 10-10v-189c0-5.523437-4.476563-10-10-10zm0 0" />
                                     <path
@@ -140,9 +142,11 @@
                     <div class="clearfix"></div>
                     <div class="input-group mb-2 ">
                         <div class="input-group-append">
-                            <span class="question-number input-group-text input-tpt pl-0 strong" style="cursor: pointer;">1.</span>
+                            <span class="question-number input-group-text input-tpt pl-0 strong"
+                                style="cursor: pointer;">1.</span>
                         </div>
-                        <input type="text" class="form-control in-t" placeholder="Enter the question" aria-label="Enter the question" aria-describedby="basic-addon2" id="question-title">
+                        <input type="text" class="form-control in-t" placeholder="Enter the question"
+                            aria-label="Enter the question" aria-describedby="basic-addon2" id="question-title">
                     </div>
                 </div>
                 <div class="d-flex">
@@ -151,7 +155,8 @@
                         <label><strong>Choices</strong></label>
                         <div class="option-div">
                             <div class="input-group input-group-tpt mb-2 ">
-                                <input type="text" class="form-control in-t" placeholder="Option 1" aria-label="Option 1" aria-describedby="basic-addon2" id="option1">
+                                <input type="text" class="form-control in-t" placeholder="Option 1"
+                                    aria-label="Option 1" aria-describedby="basic-addon2" id="option1">
                                 <div class="input-group-append">
                                     <span class="input-group-text remove-option input-tpt" style="cursor: pointer;">
                                         <svg height="427pt" viewBox="-40 0 427 427.00131" width="427pt"
@@ -177,7 +182,8 @@
                         </div>
                         <div class="option-div">
                             <div class="input-group input-group-tpt mb-2">
-                                <input type="text" class="form-control in-t" placeholder="Option 2" aria-label="Option 2" aria-describedby="basic-addon2" id="option2">
+                                <input type="text" class="form-control in-t" placeholder="Option 2"
+                                    aria-label="Option 2" aria-describedby="basic-addon2" id="option2">
                                 <div class="input-group-append">
                                     <span class="input-group-text remove-option input-tpt" style="cursor: pointer;"><svg
                                             height="427pt" viewBox="-40 0 427 427.00131" width="427pt"
@@ -219,7 +225,8 @@
     <div style="display: none;" id="option-section">
         <div class="option-div">
             <div class="input-group input-group-tpt mb-2">
-                <input type="text" class="form-control in-t" placeholder="Option" aria-label="Recipient's username" aria-describedby="basic-addon2" id="option-1">
+                <input type="text" class="form-control in-t" placeholder="Option" aria-label="Recipient's username"
+                    aria-describedby="basic-addon2" id="option-1">
                 <div class="input-group-append">
                     <span class="input-group-text remove-option input-tpt" style="cursor: pointer;">
                         <svg height="427pt" viewBox="-40 0 427 427.00131" width="427pt"
@@ -253,114 +260,14 @@
                 <div class="col-1"></div>
                 <div class="col-5">
                     <div class="input-group input-group-tpt mb-2">
-                        <input type="text" name="expiry_date" class="form-control in-t" placeholder="Date" aria-label="Expiry Date" aria-describedby="basic-addon2" id="expiry-date">
-                        <div class="input-group-append">
-                            <span class="input-group-text remove-option input-tpt" style="cursor: pointer;"> <svg
-                                    class="cc gs gt  gv" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
-                                    xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 383.9 383.9"
-                                    style="enable-background:new 0 0 383.9 383.9;" xml:space="preserve">
-                                    <g>
-                                        <g>
-                                            <path d="M344.1,50H320V30.9c0-5.5-4.5-10-10-10s-10,4.5-10,10V50h-98V30.9c0-5.5-4.5-10-10-10s-10,4.5-10,10V50H83V30.9
-                                       c0-5.5-4.5-10-10-10s-10,4.5-10,10V50H39.9C17.9,50,0,68.5,0,90.5V323c0,22.1,17.8,40,39.9,40H344c22.1,0,39.9-17.9,39.9-39.9
-                                       V90.5C384,68.5,366.1,50,344.1,50z M364,323c0,11-8.8,19.9-19.8,20h-0.1H39.9c-11,0-19.9-8.9-19.9-19.9V323V90.5
-                                       C20,79.4,28.9,70,39.9,70H63v14.5c0,5.5,4.5,10,10,10s10-4.5,10-10V70h99v14.5c0,5.5,4.5,10,10,10s10-4.5,10-10V70h98v14.5
-                                       c0,5.5,4.5,10,10,10s10-4.5,10-10V70h24.1c11.1,0,19.9,9.5,19.9,20.5V323z" />
-                                        </g>
-                                    </g>
-                                    <g>
-                                        <g>
-                                            <path
-                                                d="M165.7,135h-17.5c-5.5,0-10,4.5-10,10s4.5,10,10,10h17.5c5.5,0,10-4.5,10-10S171.2,135,165.7,135z" />
-                                        </g>
-                                    </g>
-                                    <g>
-                                        <g>
-                                            <path
-                                                d="M235.3,135h-17.5c-5.5,0-10,4.5-10,10s4.5,10,10,10h17.5c5.5,0,10-4.5,10-10S240.9,135,235.3,135z" />
-                                        </g>
-                                    </g>
-                                    <g>
-                                        <g>
-                                            <path
-                                                d="M305.5,135H288c-5.5,0-10,4.5-10,10s4.5,10,10,10h17.5c5.5,0,10-4.5,10-10S311,135,305.5,135z" />
-                                        </g>
-                                    </g>
-                                    <g>
-                                        <g>
-                                            <path
-                                                d="M165.7,204h-17.5c-5.5,0-10,4.5-10,10s4.5,10,10,10h17.5c5.5,0,10-4.5,10-10S171.2,204,165.7,204z" />
-                                        </g>
-                                    </g>
-                                    <g>
-                                        <g>
-                                            <path
-                                                d="M95.6,204H78c-5.5,0-10,4.5-10,10s4.5,10,10,10h17.5c5.5,0,10-4.5,10-10S101.1,204,95.6,204z" />
-                                        </g>
-                                    </g>
-                                    <g>
-                                        <g>
-                                            <path
-                                                d="M235.3,204h-17.5c-5.5,0-10,4.5-10,10s4.5,10,10,10h17.5c5.5,0,10-4.5,10-10S240.9,204,235.3,204z" />
-                                        </g>
-                                    </g>
-                                    <g>
-                                        <g>
-                                            <path
-                                                d="M305.5,204H288c-5.5,0-10,4.5-10,10s4.5,10,10,10h17.5c5.5,0,10-4.5,10-10S311,204,305.5,204z" />
-                                        </g>
-                                    </g>
-                                    <g>
-                                        <g>
-                                            <path
-                                                d="M165.7,272h-17.5c-5.5,0-10,4.5-10,10s4.5,10,10,10h17.5c5.5,0,10-4.5,10-10S171.2,272,165.7,272z" />
-                                        </g>
-                                    </g>
-                                    <g>
-                                        <g>
-                                            <path
-                                                d="M95.6,272H78c-5.5,0-10,4.5-10,10s4.5,10,10,10h17.5c5.5,0,10-4.5,10-10S101.1,272,95.6,272z" />
-                                        </g>
-                                    </g>
-                                    <g>
-                                        <g>
-                                            <path
-                                                d="M235.3,272h-17.5c-5.5,0-10,4.5-10,10s4.5,10,10,10h17.5c5.5,0,10-4.5,10-10S240.9,272,235.3,272z" />
-                                        </g>
-                                    </g>
-                                    <g> </g>
-                                    <g> </g>
-                                    <g> </g>
-                                    <g> </g>
-                                    <g> </g>
-                                    <g> </g>
-                                    <g> </g>
-                                    <g> </g>
-                                    <g> </g>
-                                    <g> </g>
-                                    <g> </g>
-                                    <g> </g>
-                                    <g> </g>
-                                    <g> </g>
-                                    <g> </g>
-                                </svg> </span>
-                        </div>
+                        <input type="date" name="expiry_date" class="form-control in-t" placeholder="Date"
+                            aria-label="Expiry Date" aria-describedby="basic-addon2" id="expiry-date">
                     </div>
                 </div>
                 <div class="col-5">
                     <div class="input-group input-group-tpt mb-2">
-                        <input type="time" name="expiry_time" class="form-control in-t" placeholder="Time" aria-label="Time" aria-describedby="basic-addon2" id="expiry-time" value="23:59">
-                        <div class="input-group-append">
-                            <span class="input-group-text remove-option input-tpt" style="cursor: pointer;"><svg
-                                    role="presentation" focusable="false" viewBox="8 8 16 16" class="cc gs gt gu gv">
-                                    <path class="ui-icon__outline cc"
-                                        d="M16.38 20.85l7-7a.485.485 0 0 0 0-.7.485.485 0 0 0-.7 0l-6.65 6.64-6.65-6.64a.485.485 0 0 0-.7 0 .485.485 0 0 0 0 .7l7 7c.1.1.21.15.35.15.14 0 .25-.05.35-.15z">
-                                    </path>
-                                    <path class="ui-icon__filled gr"
-                                        d="M16.74 21.21l7-7c.19-.19.29-.43.29-.71 0-.14-.03-.26-.08-.38-.06-.12-.13-.23-.22-.32s-.2-.17-.32-.22a.995.995 0 0 0-.38-.08c-.13 0-.26.02-.39.07a.85.85 0 0 0-.32.21l-6.29 6.3-6.29-6.3a.988.988 0 0 0-.32-.21 1.036 1.036 0 0 0-.77.01c-.12.06-.23.13-.32.22s-.17.2-.22.32c-.05.12-.08.24-.08.38 0 .28.1.52.29.71l7 7c.19.19.43.29.71.29.28 0 .52-.1.71-.29z">
-                                    </path>
-                                </svg></span>
-                        </div>
+                        <input type="time" name="expiry_time" class="form-control in-t" placeholder="Time"
+                            aria-label="Time" aria-describedby="basic-addon2" id="expiry-time" value="23:59">
                     </div>
                 </div>
                 <div class="clearfix"></div>
@@ -383,11 +290,11 @@
                 <div class="col-1"></div>
                 <div class="col-11">
                     <div class="row">
-                        <div class="col-5">
+                        <div class="col-12">
                             <label>
                                 <input type="checkbox" name="show_correct_answer" id="show-correct-answer"
                                     value="Yes" />
-                                <small>Answer cannot be changed if this option is selected</small>
+                                Answer cannot be changed if this option is selected
                             </label>
                         </div>
                     </div>
@@ -398,7 +305,7 @@
                     <div class="container ">
                         <div class="row">
                             <div class="col-9">
-                                <a class=" cursur-pointer" id="hide2">
+                                <a class=" cursur-pointer" id="back">
                                     <svg role="presentation" focusable="false" viewBox="8 8 16 16" class="gt ki gs">
                                         <path class="ui-icon__outline gr"
                                             d="M16.38 20.85l7-7a.485.485 0 0 0 0-.7.485.485 0 0 0-.7 0l-6.65 6.64-6.65-6.64a.485.485 0 0 0-.7 0 .485.485 0 0 0 0 .7l7 7c.1.1.21.15.35.15.14 0 .25-.05.35-.15z">
@@ -418,7 +325,7 @@
             </div>
 
 
-            <div class="card">
+            <!-- <div class="card">
                 <div class="form-group">
                     <h4>Settings</h4>
                 </div>
@@ -443,19 +350,20 @@
                         <small>Answer cannot be changed if this option is selected</small>
                     </label>
                 </div>
-            </div>
+            </div> -->
         </div>
-        <div class="container">
+        <!-- <div class="container">
             <div class="form-group">
                 <button type="button" class="btn btn-primary-outline btn-sm prev-form">Previous</button>
                 <button type="button" class="btn btn-primary btn-sm pull-right" id="submit"> Submit</button>
             </div>
-        </div>
+        </div> -->
     </div>
 
 
     <!-- Modal -->
-    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
+        aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">

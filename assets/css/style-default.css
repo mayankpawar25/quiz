@@ -1,4 +1,4 @@
-    @charset "utf-8";
+﻿    @charset "utf-8";
     /* CSS Document */
     
     body {
@@ -282,7 +282,6 @@
     }
     
     .btn {
-        font-size: 1rem !important;
         padding: .25rem 1.5rem;
     }
     
@@ -335,11 +334,11 @@
     .btn.close {
         font-size: 1rem !important;
     }
-    
-    body {
-        font-weight: 300;
-        font-size: 13px;
-    }
+
+body {
+    font-weight: 300;
+    font-size: 0.875rem;
+}
     
     .app-black-color {
         color: #252423;
@@ -363,7 +362,7 @@
     }
     
     .modal-body {
-        font-size: 14px;
+        font-size: 0.875rem;
     }
     
     .modal-content {
@@ -530,6 +529,8 @@
         bottom: 0px;
         width: 100%;
         background-color: #ffffff;
+        z-index: 100;
+        left:0px;
     }
     
     .bt {
@@ -566,3 +567,18 @@
         border-color: rgb(98, 100, 167);
         background-color: rgb(98, 100, 167)
     }
+.btn:focus {
+    outline: none;
+    box-shadow:none;
+}
+.close{
+    opacity:1;
+}
+#hide1 {
+    margin-top: 5px;
+    display: block;
+}
+#hide2 {
+    margin-top: 5px;
+    display: block;
+}

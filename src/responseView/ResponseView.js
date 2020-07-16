@@ -53,10 +53,10 @@ function createBody() {
         $root.append($card);
     } else {
 
-        var $card = $('<div class="card"></div>');
+        var $card = $('<div class=""></div>');
         var $title = $("<h4>" + actionInstance.displayName + "</h4>");
         var $hr = $("<hr>");
-        var $description = $('<p class="mb0">' + actionInstance.properties[0].value + '</p>');
+        var $description = $('<p class="">' + actionInstance.customProperties[0].value + '</p>');
         console.log(actionInstance);
         $card.append($title);
         $card.append($description);
@@ -64,12 +64,12 @@ function createBody() {
         createQuestionView();
         $root.append($hr);
 
-        var $spDiv = $('<div class="col-sm-12"></div>');
+        /* var $spDiv = $('<div class="col-sm-12"></div>');
         var $sDiv = $('<div class="form-group"></div>');
         var $submit = $('<button class="btn btn-primary btn-sm float-right submit-form" >Submit</button>'); // Create a <button> element
         $sDiv.append($submit);
         $spDiv.append($sDiv);
-        $root.append($spDiv);
+        $root.append($spDiv); */
         return;
     }
 }
@@ -83,8 +83,8 @@ function createQuestionView() {
     actionInstance.dataTables.forEach((dataTable) => {
         dataTable.dataColumns.forEach((question, ind) => {
             var count = ind + 1;
-            var $questionHeading = $("<label>" + count + ". " + question.displayName + "</label>"); // Heading of For
-            var $card = $('<div class="card"></div>');
+            var $card = $('<div class="card-box"></div>');
+            var $questionHeading = $("<label><strong>" + count + ". " + question.displayName + "</strong></label>"); // Heading of For
             $card.append($questionHeading);
             var choice_occurance = 0;
             /* Check multichoice or single choice options  */
@@ -127,7 +127,7 @@ function createQuestionView() {
 
 function getRadioButton(text, name, id) {
     var $oDiv = $('<div class="form-group radio-section" id="' + id + '" columnId="' + name + '" ></div>');
-    var $soDiv = $('<div class="custom-control custom-checkbox"></div>');
+    var $soDiv = $('<div class="custom-control custom-radio"></div>');
     var radiobox = '<input type="radio" name="' + name + '" id="' + id + '">';
     var $lDiv = $("<label>" + radiobox + " " + text + "</label>");
     $oDiv.append($soDiv);
@@ -161,45 +161,45 @@ function submitForm() {
 
             /*  Check Show Correct Answer  */
             if (Object.keys(row).length > 0) {
-                if (actionInstance.properties[3].value == 'Yes') {
-                    var correct_answer = $.parseJSON(actionInstance.properties[4].value);
+                if (actionInstance.customProperties[3].value == 'Yes') {
+                    var correct_answer = $.parseJSON(actionInstance.customProperties[4].value);
                     console.log('correct_answer: ');
                     console.log(correct_answer);
                     var count = 0;
 
                     var ans_rsp = '';
-                    $('#root').find('div.card').each(function (i, val) {
-                        if (i > 0) {
-                            var searchIDs = $(val).find('input:checked').map(function () {
-                                return $(this).attr('id');
-                            });
+                    $('#root').find('div.card-box').each(function (i, val) {
 
-                            var correct_ans = '';
-                            if (JSON.stringify(correct_answer[count]) == JSON.stringify(searchIDs.get())) {
-                                $.each(correct_answer[count], function (ind, ans_id) {
-                                    correct_ans += $.trim($(val).find('input#' + ans_id).parents('label').text()) + '<br>';
-                                })
+                        var searchIDs = $(val).find('input:checked').map(function () {
+                            return $(this).attr('id');
+                        });
 
-                                ans_rsp += '<div class="form-group"><h4>Question' + i + ' Answer is Correct. </h4 > <label> Your answer is <br>' + correct_ans + '</label><hr></div>';
+                        var correct_ans = '';
+                        if (JSON.stringify(correct_answer[count]) == JSON.stringify(searchIDs.get())) {
+                            $.each(correct_answer[count], function (ind, ans_id) {
+                                correct_ans += $.trim($(val).find('input#' + ans_id).parents('label').text()) + '<br>';
+                            })
 
-                                /*  Answer is correct  */
-                                // alert('Question' + i + ' Answer is Correct.\nYour Answer is ' + correct_ans);
-                            } else {
-                                /*  Answer is incorrect  */
-                                $.each(correct_answer[count], function (ind, ans_id) {
-                                    correct_ans += $.trim($(val).find('input#' + ans_id).parents('label').text()) + ' <br>';
-                                })
-                                // alert('Question' + i + ' Answer is Incorrect. \nCorrect Answer is ' + correct_ans);
-                                ans_rsp += '<div class="form-group"><h4>Question' + i + ' Answer is Incorrect. </h4> <label> Correct Answer is <br>' + correct_ans + '</label><hr></div>';
-                            }
+                            ans_rsp += '<div class="form-group"><h4>' + (i + 1) + ' Answer is Correct. </h4 > <label> Your answer is <br>' + correct_ans + '</label><hr></div>';
 
-                            count++;
+                            /*  Answer is correct  */
+                            // alert('Question' + i + ' Answer is Correct.\nYour Answer is ' + correct_ans);
+                        } else {
+                            /*  Answer is incorrect  */
+                            $.each(correct_answer[count], function (ind, ans_id) {
+                                correct_ans += $.trim($(val).find('input#' + ans_id).parents('label').text()) + ' <br>';
+                            })
+                            // alert('Question' + i + ' Answer is Incorrect. \nCorrect Answer is ' + correct_ans);
+                            ans_rsp += '<div class="form-group"><h4>' + (i + 1) + ' Answer is Incorrect. </h4> <label> Correct Answer is <br>' + correct_ans + '</label><hr></div>';
                         }
+
+                        count++;
+
                     });
 
                     $('#exampleModalCenter').find('#exampleModalLongTitle').html('<img src="images/warning.png"/> Answer response!');
                     $('#exampleModalCenter').find('.modal-body').html(ans_rsp);
-                    $('#exampleModalCenter').find('.modal-footer').html('<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>');
+                    $('#exampleModalCenter').find('.modal-footer').html('<button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Next</button>');
                     $('#exampleModalCenter').find('#save-changes').hide();
                     $('#exampleModalCenter').modal('show');
 

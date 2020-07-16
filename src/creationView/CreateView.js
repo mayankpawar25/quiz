@@ -5,16 +5,17 @@ import { GetContext } from "../../assets/ActionSDK";
 var questionCount = 0;
 let questions = new Array();
 let validate = true;
+let setting_text = ' Due in 1 week, Results visible to everyone';
 
 var question_section = $("#question-section div.container").clone();
 var opt = $("div#option-section .option-div").clone();
 
 /* Add Questions */
-$(document).on("click", "#add-questions", function() {
+$(document).on("click", "#add-questions", function () {
     var question_counter;
     $(this).parents("div.container").before(question_section.clone());
 
-    $("div.question-container:visible").each(function(index, elem) {
+    $("div.question-container:visible").each(function (index, elem) {
         question_counter = index + 1;
         $(elem)
             .find("span.question-number")
@@ -25,7 +26,7 @@ $(document).on("click", "#add-questions", function() {
 });
 
 /* Remove Questions */
-$(document).on("click", ".remove-question", function() {
+$(document).on("click", ".remove-question", function () {
     var element = $(this);
     if ($("div.question-container:visible").length > 1) {
         $("#exampleModalCenter")
@@ -37,16 +38,16 @@ $(document).on("click", ".remove-question", function() {
         $("#exampleModalCenter")
             .find(".modal-footer")
             .html(
-                '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button><button type="button" class="btn btn-primary" id="delete-question">Ok</button>'
+                '<button type="button" class="btn btn-outline-secondary btn-sm" data-dismiss="modal">Close</button><button type="button" class="btn btn-primary" id="delete-question">Ok</button>'
             );
         $("#exampleModalCenter").modal("show");
 
-        $(document).on("click", "#delete-question", function() {
+        $(document).on("click", "#delete-question", function () {
             $("#exampleModalCenter").modal("hide");
 
             element.parents("div.question-container").remove();
             var question_counter;
-            $("div.question-container:visible").each(function(index, elem) {
+            $("div.question-container:visible").each(function (index, elem) {
                 question_counter = index + 1;
                 $(elem).find("span.question-number").text(question_counter);
                 $(elem).attr({ id: "question" + question_counter });
@@ -62,18 +63,18 @@ $(document).on("click", ".remove-question", function() {
         $("#exampleModalCenter")
             .find(".modal-footer")
             .html(
-                '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>'
+                '<button type="button" class="btn btn-outline-secondary btn-sm" data-dismiss="modal">Close</button>'
             );
         $("#exampleModalCenter").modal("show");
     }
 });
 
 /* Add Options */
-$(document).on("click", ".add-options", function() {
+$(document).on("click", ".add-options", function () {
     if (
         $(this)
-        .parents("div.container")
-        .find("div.option-div > div.input-group > input[type='text']").length >=
+            .parents("div.container")
+            .find("div.option-div > div.input-group > input[type='text']").length >=
         10
     ) {
         alert("Maximum 10 options allowed for a Question");
@@ -85,7 +86,7 @@ $(document).on("click", ".add-options", function() {
     var selector = $(this).parents("div.container");
     $(selector)
         .find('div.option-div > div.input-group > input[type="text"]')
-        .each(function(index, elem) {
+        .each(function (index, elem) {
             var counter = index + 1;
             $(elem).attr({
                 placeholder: "Option " + counter,
@@ -99,7 +100,7 @@ $(document).on("click", ".add-options", function() {
 });
 
 /* Remove Options */
-$(document).on("click", ".remove-option", function(eve) {
+$(document).on("click", ".remove-option", function (eve) {
     if (
         $(this).parents("div.question-container").find("div.option-div").length > 2
     ) {
@@ -107,7 +108,7 @@ $(document).on("click", ".remove-option", function(eve) {
         $(this).parents("div.option-div").remove();
         $(selector)
             .find('div.option-div > div.input-group > input[type="text"]')
-            .each(function(index, elem) {
+            .each(function (index, elem) {
                 var counter = index + 1;
                 $(elem).attr({
                     placeholder: "Option " + counter,
@@ -128,26 +129,25 @@ $(document).on("click", ".remove-option", function(eve) {
         $("#exampleModalCenter")
             .find(".modal-footer")
             .html(
-                '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>'
+                '<button type="button" class="btn btn-outline-secondary btn-sm" data-dismiss="modal">Close</button>'
             );
         $("#exampleModalCenter").modal("show");
     }
 });
 
-$(document).on("click", ".show-setting", function() {
+$(document).on("click", ".show-setting", function () {
     $(".section-1").hide();
-    $("form").append($("#setting").clone());
     $("form #setting").show();
 });
 
-$(document).on("click", "#next", function() {
+$(document).on("click", "#next", function () {
     /* Validate */
     var error_text = "";
     var question_number = 0;
 
     $("form")
         .find("input[type='text']")
-        .each(function() {
+        .each(function () {
             var element = $(this);
             if (element.val() == "") {
                 validate = false;
@@ -158,9 +158,9 @@ $(document).on("click", "#next", function() {
                     if (
                         question_number !=
                         element
-                        .parents("div.form-group")
-                        .find("span.question-number")
-                        .text()
+                            .parents("div.form-group")
+                            .find("span.question-number")
+                            .text()
                     ) {
                         question_number = element
                             .parents("div.form-group")
@@ -204,14 +204,14 @@ $(document).on("click", "#next", function() {
         $("#exampleModalCenter")
             .find(".modal-footer")
             .html(
-                '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>'
+                '<button type="button" class="btn btn-outline-secondary btn-sm" data-dismiss="modal">Close</button>'
             );
         $("#exampleModalCenter").find("#save-changes").hide();
         $("#exampleModalCenter").modal("show");
     }
 });
 
-$(document).on("click", "#submit", function() {
+$(document).on("click", "#submit", function () {
     submitForm();
 });
 
@@ -225,7 +225,7 @@ function submitForm() {
 
     $("form")
         .find("input[type='text']")
-        .each(function() {
+        .each(function () {
             var element = $(this);
             if (element.val() == "") {
                 validate = false;
@@ -270,11 +270,11 @@ function submitForm() {
     if ($.trim(error_text).length <= 0) {
         actionSDK
             .executeApi(new actionSDK.GetContext.Request())
-            .then(function(response) {
+            .then(function (response) {
                 console.info("GetContext - Response: " + JSON.stringify(response));
                 createAction(response.context.actionPackageId);
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 console.error("GetContext - Error: " + JSON.stringify(error));
             });
     } else {
@@ -294,7 +294,7 @@ function getQuestionSet() {
         /* Looping for options */
         $("#question" + i)
             .find("div.option-div")
-            .each(function(index, elem) {
+            .each(function (index, elem) {
                 var count = index + 1;
                 var opt_id = "question" + i + "option" + count;
                 var opt_title = $("#question" + i)
@@ -303,8 +303,8 @@ function getQuestionSet() {
 
                 if (
                     $("#question" + i)
-                    .find("#check" + count)
-                    .is(":checked")
+                        .find("#check" + count)
+                        .is(":checked")
                 ) {
                     // if it is checked
                     is_selected++;
@@ -344,7 +344,7 @@ function getQuestionSet() {
                 .addClass("danger");
 
             $("#question" + i)
-                .parents("div.card-box")
+                .find("div.card-box")
                 .removeClass("card-box")
                 .addClass("card-box-alert");
 
@@ -371,13 +371,13 @@ function getCorrectAnswer() {
         /* Looping for options */
         $("#question" + i)
             .find("div.option-div")
-            .each(function(index, elem) {
+            .each(function (index, elem) {
                 var count = index + 1;
 
                 if (
                     $("#question" + i)
-                    .find("#check" + count)
-                    .is(":checked")
+                        .find("#check" + count)
+                        .is(":checked")
                 ) {
                     var opt_id = "question" + i + "option" + count;
 
@@ -450,7 +450,7 @@ function createAction(actionPackageId) {
             itemsEditable: false,
             canUserAddMultipleItems: false,
             dataColumns: questionsSet,
-        }, ],
+        },],
     };
     console.log("action: ");
     console.log(JSON.stringify(action));
@@ -458,31 +458,35 @@ function createAction(actionPackageId) {
     var request = new actionSDK.CreateAction.Request(action);
     actionSDK
         .executeApi(request)
-        .then(function(response) {
+        .then(function (response) {
             console.info("CreateAction - Response: " + JSON.stringify(response));
         })
-        .catch(function(error) {
+        .catch(function (error) {
             console.error("CreateAction - Error: " + JSON.stringify(error));
         });
 }
 
 function generateGUID() {
-    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
         var r = (Math.random() * 16) | 0,
             v = c == "x" ? r : (r & 0x3) | 0x8;
         return v.toString(16);
     });
 }
 
-$(document).ready(function() {
+$(document).ready(function () {
     let request = new actionSDK.GetContext.Request();
     getTheme(request);
 
     $("#add-questions").click();
-    var today = new Date(new Date().setDate(new Date().getDate() + 7))
+    var week_date = new Date(new Date().setDate(new Date().getDate() + 7))
         .toISOString()
         .split("T")[0];
-    $("#expiry-date").val(today).attr({ min: today });
+    var today = new Date()
+        .toISOString()
+        .split("T")[0];
+    $("#expiry-date").val(week_date).attr({ min: today });
+    $("form").append($("#setting").clone());
 });
 
 async function getTheme(request) {
@@ -493,4 +497,59 @@ async function getTheme(request) {
     $("form.section-1").show();
     var theme = context.theme;
     // $("link#theme").attr("href", "css/style-" + theme + ".css");
+}
+
+$(document).on("click", "#back", function () {
+    $(".section-1").show();
+    $("form #setting").hide();
+    console.log('setting_text ' + setting_text);
+    $('#due').text(setting_text);
+
+});
+
+$(document).on("change", "#expiry-date, #expiry-time, #visible-to", function () {
+    var end = new Date($('input[name="expiry_date"]').val() + ' ' + $('input[name="expiry_time"]').val());
+    var start = new Date();
+    var days = calc_date_diff(start, end);
+    var result_visible = $('#visible-to:checked').val() == 'Everyone' ? 'Results visible to everyone' : 'Results visible to only me';
+    console.log('due: ' + days + ', ' + result_visible);
+    setting_text = ' Due in ' + days + ', ' + result_visible;
+});
+
+function calc_date_diff(start, end) {
+    var days = (end - start) / (1000 * 60 * 60 * 24);
+    console.log('days: ' + days);
+    if (days > 6) {
+        var weeks = Math.ceil(days) / 7;
+        return Math.floor(weeks) + ' week';
+    } else {
+        if (days < 1) {
+            var t1 = start.getTime();
+            var t2 = end.getTime();
+
+            var minsDiff = Math.floor((t2 - t1) / 1000 / 60);
+            var hourDiff = Math.floor(minsDiff / 60);
+            minsDiff = minsDiff % 60;
+
+            if (hourDiff > 1) {
+                var hourText = 'hours';
+            } else {
+                var hourText = 'hour';
+            }
+            if (hourDiff > 1) {
+                var minuteText = 'minutes';
+            } else {
+                var minuteText = 'minute';
+            }
+            if (hourDiff > 0 && minsDiff > 0) {
+                return hourDiff + ' ' + hourText + ', ' + minsDiff + ' ' + minuteText;
+            } else if (hourDiff > 0 && minsDiff <= 0) {
+                return hourDiff + ' ' + hourText;
+            } else if (hourDiff <= 0 && minsDiff > 0) {
+                return minsDiff + ' ' + minuteText;
+            }
+        } else {
+            return Math.ceil(days) + ' days';
+        }
+    }
 }
