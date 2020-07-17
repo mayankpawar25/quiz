@@ -361,10 +361,13 @@ $(document).on('click', '#show-responders', function () {
 
     if (actionInstance.customProperties[2].value == 'Only me') {
         if (actionContext.userId == actionInstance.creatorId) {
-            var $card1 = $('<div class="card-box"></div>');
-            var tabs = $(".tabs-content").clone();
-            $card1.append(tabs.clone());
-            $("#root").append($card1);
+
+            if ($(".tabs-content:visible").length <= 0) {
+                var $card1 = $('<div class="card-box"></div>');
+                var tabs = $(".tabs-content").clone();
+                $card1.append(tabs.clone());
+                $("#root").append($card1);
+            }
 
             /*  Add Responders  */
             getResponders();
@@ -375,10 +378,13 @@ $(document).on('click', '#show-responders', function () {
             alert('Visible to sender only');
         }
     } else {
-        var $card1 = $('<div class="card-box"></div>');
-        var tabs = $(".tabs-content").clone();
-        $card1.append(tabs.clone());
-        $("#root").append($card1);
+        if ($(".tabs-content:visible").length <= 0) {
+            var $card1 = $('<div class="card-box"></div>');
+            var tabs = $(".tabs-content").clone();
+            $card1.append(tabs.clone());
+            $("#root").append($card1);
+        }
+
 
         /*  Add Responders  */
         getResponders();
