@@ -11,6 +11,14 @@
                 "wrap": true
             },
             {
+                "id": "Expiry",
+                "type": "TextBlock",
+                "text": "${if(equals(action.status, 'Active'), 'Quiz Active','Quiz Expired')}",
+                "color": "${if(equals(action.status, 'Active'), 'default','attention')}",
+                "size": "small",
+                "wrap": true
+            },
+            {
                 "id": "Title",
                 "type": "TextBlock",
                 "text": "Title: ${action.displayName}",
@@ -19,6 +27,16 @@
                 "wrap": true,
                 "weight": "bolder",
                 "spacing": "small"
+            },
+            {
+                "id": "Expiry Date",
+                "type": "TextBlock",
+                "text": "{{DATE(${action.customProperties[1].value}, SHORT)}} {{TIME(${action.customProperties[1].value})}}",
+                "maxLines": 2,
+                "wrap": true,
+                "isSubtle": true,
+                "size": "small",
+                "spacing": "none"
             },
             {
                 "id": "ResultVisibility",

@@ -175,26 +175,37 @@ function submitForm() {
                         });
 
                         var correct_ans = '';
+                        var your_ans = '';
+
                         if (JSON.stringify(correct_answer[count]) == JSON.stringify(searchIDs.get())) {
-                            $.each(correct_answer[count], function (ind, ans_id) {
-                                correct_ans += $.trim($(val).find('input#' + ans_id).parents('label').text()) + '<br>';
-                            })
-
-                            ans_rsp += '<div class="form-group"><h4>' + (i + 1) + ' Answer is Correct. </h4 > <label> Your answer is <br>' + correct_ans + '</label><hr></div>';
-
                             /*  Answer is correct  */
-                            // alert('Question' + i + ' Answer is Correct.\nYour Answer is ' + correct_ans);
+                            $.each(correct_answer[count], function (ind, ans_id) {
+                                correct_ans += '<div class="alert alert-success"><p class="mb0">' + $.trim($(val).find('input#' + ans_id).parents('label').text()) + '<i class="fa fa-pull-right fa-check"></i></p></div>';
+                            });
+                            console.log('correct_ans' + correct_ans);
+
+                            ans_rsp += '<p class="mb0"><strong>' + (i + 1) + '. Your Answer is right. </strong ></p> <p> Your answer is </p>' + correct_ans;
+
                         } else {
                             /*  Answer is incorrect  */
-                            $.each(correct_answer[count], function (ind, ans_id) {
-                                correct_ans += $.trim($(val).find('input#' + ans_id).parents('label').text()) + ' <br>';
+                            $.each(searchIDs.get(), function (yind, yans_id) {
+                                console.log('your ans: ' + $(val).find('input#' + yans_id).attr('id'));
+                                console.log(JSON.stringify(correct_answer[count]));
+                                if ($.inArray($(val).find('input#' + yans_id).attr('id'), correct_answer[count]) != -1) {
+                                    // found it
+                                    your_ans += '<div class="alert alert-success"><p class="mb0">' + $.trim($(val).find('input#' + yans_id).parents('label').text()) + '<i class="fa fa-pull-right fa-check"></i></p></div>';
+                                } else {
+                                    your_ans += '<div class="alert alert-danger"><p class="mb0">' + $.trim($(val).find('input#' + yans_id).parents('label').text()) + '<i class="fa fa-pull-right fa-close"></i></p></div>';
+                                }
                             })
-                            // alert('Question' + i + ' Answer is Incorrect. \nCorrect Answer is ' + correct_ans);
-                            ans_rsp += '<div class="form-group"><h4>' + (i + 1) + ' Answer is Incorrect. </h4> <label> Correct Answer is <br>' + correct_ans + '</label><hr></div>';
+
+                            $.each(correct_answer[count], function (ind, ans_id) {
+                                correct_ans += '<div class="alert alert-success"><p class="mb0">' + $.trim($(val).find('input#' + ans_id).parents('label').text()) + '<i class="fa fa-pull-right fa-check"></i></p></div>';
+                            })
+
+                            ans_rsp += '<p class="mb0"><strong>' + (i + 1) + '. Your Answer is wrong. </strong></p> <p>Your Answer is </p> ' + your_ans + ' <p> Right Answer is </p>' + correct_ans;
                         }
-
                         count++;
-
                     });
 
                     $('#exampleModalCenter').find('#exampleModalLongTitle').html('<img src="images/warning.png"/> Answer response!');

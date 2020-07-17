@@ -83,21 +83,11 @@ async function createBody() {
 
 
     $pcard.append('<label><strong>Participation ' + participationPercentage + '% </strong></label><div class="progress"><div class="progress-bar bg-primary" role="progressbar" style="width: ' + participationPercentage + '%" aria-valuenow="' + participationPercentage + '" aria-valuemin="0" aria-valuemax="100"></div></div>');
-    $pcard.append('<p>' + xofy + '</p>');
+    $pcard.append('<p class="date-color cursur-pointer md-0" id="show-responders">' + xofy + '</p>');
     $('#root').append($pcard);
-
-    var $card1 = $('<div class="card-box"></div>');
-    var tabs = $(".tabs-content").clone();
-    $card1.append(tabs.clone());
-    $("#root").append($card1);
 
     await getUserprofile();
 
-    /*  Add Responders  */
-    getResponders();
-
-    /*  Add Non-reponders  */
-    getNonresponders();
     return true;
 }
 
@@ -326,6 +316,7 @@ function createQuestionView(userId) {
         });
         count++;
     });
+    $('div.question-content:first').append('<div class="ht-100"></div>');
 }
 
 
@@ -338,12 +329,12 @@ function getOptions(text, name, id, userResponse, correctAnswer) {
         $oDiv.append('<div class="form-group alert alert-success"><p class="mb0">' + text + ' <i class="fa  pull-right fa-check"></i> </p></div>');
     } else if (userResponse != id && correctAnswer == id) {
         /* If User Response is incorrect and not answered */
-        $oDiv.append('<div class="form-group"><p class="mb0">' + text + ' <i class="fa fa-pull-right text-success fa-check"></p></div>');
+        $oDiv.append('<div class="form-group alert alert-normal"><p class="mb0">' + text + ' <i class="fa fa-pull-right text-success fa-check"></p></div>');
     } else if (userResponse == id && correctAnswer != id) {
         /* If User Response is incorrect and answered */
-        $oDiv.append('<div class="form-group alert alert-danger"><p class="mb0">' + text + '<i class="fa fa-pull-right fa-close"></i></p></div>');
+        $oDiv.append('<div class="alert alert-danger"><p class="mb0">' + text + '<i class="fa fa-pull-right fa-close"></i></p></div>');
     } else {
-        $oDiv.append('<div class="form-group"><p class="mb0">' + text + '</p></div>');
+        $oDiv.append('<div class="form-group alert alert-normal""><p class="mb0">' + text + '</p></div>');
     }
 
     return $oDiv;
@@ -364,4 +355,35 @@ function footer() {
 
 $(document).on('click', '.back', function () {
     createBody();
+});
+
+$(document).on('click', '#show-responders', function () {
+
+    if (actionInstance.customProperties[2].value == 'Only me') {
+        if (actionContext.userId == actionInstance.creatorId) {
+            var $card1 = $('<div class="card-box"></div>');
+            var tabs = $(".tabs-content").clone();
+            $card1.append(tabs.clone());
+            $("#root").append($card1);
+
+            /*  Add Responders  */
+            getResponders();
+
+            /*  Add Non-reponders  */
+            getNonresponders();
+        } else {
+            alert('Visible to sender only');
+        }
+    } else {
+        var $card1 = $('<div class="card-box"></div>');
+        var tabs = $(".tabs-content").clone();
+        $card1.append(tabs.clone());
+        $("#root").append($card1);
+
+        /*  Add Responders  */
+        getResponders();
+
+        /*  Add Non-reponders  */
+        getNonresponders();
+    }
 });
