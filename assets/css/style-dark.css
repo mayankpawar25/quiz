@@ -2,11 +2,11 @@
     /* CSS Document */
     
     body {
-        background-color: transparent !important;
-        font-family: "Segoe UI";
+        background-color: #2d2c2c !important;
+        /* font-family: Segoe UI; */
         font-weight: 300;
         font-size: 0.875rem;
-        color: #252423;
+        color: #f3f2f1;
     }
     
     * {
@@ -52,10 +52,10 @@
     }
 
     .card-bg{
-        background-color: #F3F2F1;
+        background-color: #201F1E;
     }
     .card-border{
-        border: 1px solid #E1DFDD
+        border: 1px solid #11100F
     }
 
 
@@ -71,7 +71,7 @@
     .close {
         float: right;
         text-decoration: none;
-        color: #000;
+        color: #BEBBB8;
     }
     
     
@@ -147,7 +147,7 @@
     label {
         display: inline-block;
         margin-bottom: 8px !important;
-        color: #484644
+        color: #BEBBB8
     }
     
     .project-tab {
@@ -324,10 +324,10 @@
     }
     
     .in-t {
-        background-color: #E1DFDD !important;
+        background-color: #11100F !important;
         border-radius: 0px !important;
         border: none !important;
-        border-bottom: 2px solid rgb(243, 242, 241) !important;
+        border-bottom: 2px #11100F !important;
         transition: all ease-in-out 0.3s;
             height: 32px;
     padding: 8px 12px;
@@ -342,7 +342,7 @@
     .input-lg {
         font-size: 16px;
         font-weight: 600;
-        color: #000;
+        
         height: calc(1.8em + .75rem + 2px);
         padding: .9rem .75rem;
     }
@@ -356,10 +356,10 @@
     }
     
     .card-box-alert {
-        border: 1px solid #CC4A31;
+        border: 2px solid #CC4A31;
         margin-bottom: 16px;
         padding: 16px;
-        background-color: #fce2e5;
+        
         position: relative;
     }
     
@@ -370,6 +370,7 @@
     .input-tpt {
         background-color: transparent !important;
         border: none !important;
+        color: #C8C6C4;
     }
     
     .pl-0 {
@@ -381,12 +382,13 @@
     }
     
     .input-group-tpt .in-t {
-        background-color: #E1DFDD !important;
+        background-color: #11100F !important;
         border-radius: 0px !important;
         border: none !important;
-        border-bottom: 2px #E1DFDD !important;
+        border-bottom: 2px #11100F !important;
         transition: all ease-in-out 0.3s;
         font-size: 13px;
+        color: #C8C6C4
     }
     
     .label-alert {
@@ -415,6 +417,7 @@
     .input-group-tpt .in-t {
         width: 100%;
         padding-right: 30px;
+        color: #C8C6C4
     }
     
     .input-group-tpt .input-group-append {
@@ -456,9 +459,19 @@
     .wh {
         fill: #ffffff;
     }
+    .input-tpt svg{
+    	 fill: #BEBBB8;
+    }
     
+    .svg-bk{
+    	fill: #BEBBB8;
+    }
+
     .h-32 {
         height: 32px;
+    }
+    .h-32 svg{
+        fill:#BEBBB8;
     }
     
     .btn svg {
@@ -467,18 +480,21 @@
     .mt-3{
         margin-top: -3px !important
     }
+    #back svg{
+    	fill:#fff;
+    }
     
     .footer {
         position: fixed;
         bottom: 0px;
         width: 100%;
-        /* background-color: #ffffff; */
+        background-color: #2d2c2c;
         z-index: 100;
         left: 0px;
     }
     
     .bt {
-        border-top: 1px solid #ddd;
+        border-top: 1px solid #11100F;
     }
     
     .ki {
@@ -592,24 +608,30 @@
 
 .radio-block {
  position: absolute;
-    top: 2px;
+    top: 3px;
     left: 0;
     height: 14px;
     width: 14px;
   background-color: transparent;
   border-radius: 50%;
-  border: 1px solid #252423
+  border: 1px solid #BEBBB8
 }
 
 
-.custom-radio:hover input ~ .radio-block {
-  background-color: #ccc;
+ 
+
+
+
+.custom-radio input:focus ~ .radio-block {
+ box-shadow: 0px 0px 2px 2px #6264A7;
 }
-
-
+.custom-radio input:hover ~ .radio-block {
+ box-shadow: 0px 0px 2px 2px #6264A7;
+}
 .custom-radio input:checked ~ .radio-block {
   background-color: #6264A7;
 }
+
 
 .custom-radio:after {
   content: "";
@@ -659,18 +681,22 @@
 
 .checkmark {
   position: absolute;
-  top: 0;
+  top: 2px;
   left: 0;
   height: 16px;
   width: 16px;
   background-color:transparent;
-  border: 1px solid #252423;
+  border: 1px solid #BEBBB8;
   border-radius: 2px;
 }
 
-.custom-check:hover input ~ .checkmark {
-  background-color: #ccc;
+.custom-check:focus input ~ .checkmark {
+  box-shadow: 0px 0px 2px 2px #6264A7;
 }
+.custom-check:hover input ~ .checkmark {
+  box-shadow: 0px 0px 2px 2px #6264A7;
+}
+
 
 
 .custom-check input:checked ~ .checkmark {
@@ -700,4 +726,50 @@
   -webkit-transform: rotate(45deg);
   -ms-transform: rotate(45deg);
   transform: rotate(45deg);
+}
+
+input[type="date"] {
+  position: relative;
+  padding: 10px;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  color: transparent;
+  background: none;
+  z-index: 1;
+}
+
+input[type="date"]:before {
+  color: transparent;
+  background: none;
+  display: block;
+  font-family: 'FontAwesome';
+  content: '\f073';
+
+  width: 15px;
+  height: 20px;
+  position: absolute;
+  top: 7px;
+  right: 25px;
+  color: #C8C6C4;
+}
+nput[type="time"]::-webkit-calendar-picker-indicator {
+  color: transparent;
+  background: none;
+  z-index: 1;
+}
+
+input[type="time"]:before {
+  color: transparent;
+  background: none;
+  display: block;
+  font-family: 'FontAwesome';
+  content: '\f017';
+      width: 18px;
+    height: 23px;
+    position: absolute;
+    top: 4px;
+    right: 29px;
+    color: #C8C6C4;
+    font-size: 16px;∂
 }

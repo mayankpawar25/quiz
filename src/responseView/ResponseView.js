@@ -3,15 +3,32 @@ import * as actionSDK from "action-sdk-sunny";
 // ActionSDK.APIs.actionViewDidLoad(true /*success*/ );
 
 // Fetching HTML Elements in Variables by ID.
-var root = document.getElementById("root");
-var $root = $("#root");
+var $root = "";
 let row = {};
 let actionInstance = null;
-// let resp_data = '{"action":{"id":"e38c2aa3-46dc-481c-99ba-99dec68467d8","creatorId":"0:a2c90ce0-a0da-4596-8f4a-3d1aa8ced6c8","createTime":1592204119381,"updateTime":1592204119381,"title":"Quiz Title","expiryTime":1592808910291,"version":1,"status":"Active","actionPackageId":"com.microsoft.test.mike006","subscriptions":[{"id":"19:5e1c941d899f4438b0fab5c05aaebe9c@thread.tacv2","type":"Group","source":"Teams","properties":{"teamId":"19:5e1c941d899f4438b0fab5c05aaebe9c@thread.tacv2","aadObjectId":"2949ba24-14ba-4f35-b4c5-57b1e726ca69"}}],"dataSets":[{"id":"Default","itemsVisibility":"All","itemsEditable":true,"canUserAddMultipleItems":true,"dataFields":[{"id":"1","title":"1","type":"SingleOption","allowNullValue":false,"options":[{"id":"question1option1","title":"o1"},{"id":"question1option2","title":"o2"},{"id":"question1option3","title":"o3"},{"id":"question1option4","title":"o4"}]},{"id":"2","title":"q2","type":"SingleOption","allowNullValue":false,"options":[{"id":"question2option1","title":"op1"},{"id":"question2option2","title":"op2"}]}]}]}}';
+
+async function getTheme(request) {
+    let response = await actionSDK.executeApi(request);
+    let context = response.context;
+    console.log("getContext response: ");
+    console.log(JSON.stringify(context));
+    $("form.section-1").show();
+    var theme = context.theme;
+    console.log(`theme: ${context.theme}`)
+    $("link#theme").attr("href", "css/style-" + theme + ".css");
+
+    $('div.section-1').append(`<div class="row"><div class="col-12"><div id="root"></div></div></div>`);
+    $('div.section-1').after(modal_section);
+    $('div.section-1').after(footer_section);
+    $root = $("#root")
+
+    OnPageLoad();
+}
 
 // *********************************************** HTML ELEMENT***********************************************
 $(document).ready(function () {
-    OnPageLoad();
+    let request = new actionSDK.GetContext.Request();
+    getTheme(request);
 });
 
 function OnPageLoad() {
@@ -34,10 +51,9 @@ function getActionInstance(actionId) {
             actionInstance = response.action;
             createBody();
         })
-        /* .catch(function(error) {
+        .catch(function (error) {
             console.log("Error: " + JSON.stringify(error));
-        }) */
-        ;
+        });
 }
 
 function createBody() {
@@ -83,7 +99,7 @@ function createQuestionView() {
     actionInstance.dataTables.forEach((dataTable) => {
         dataTable.dataColumns.forEach((question, ind) => {
             var count = ind + 1;
-            var $card = $('<div class="card-box"></div>');
+            var $card = $('<div class="card-box card-border card-bg"></div>');
             var $questionHeading = $("<label><strong>" + count + ". " + question.displayName + "</strong></label>"); // Heading of For
             $card.append($questionHeading);
             var choice_occurance = 0;
@@ -126,24 +142,22 @@ function createQuestionView() {
 }
 
 function getRadioButton(text, name, id) {
-    var $oDiv = $('<div class="form-group radio-section" id="' + id + '" columnId="' + name + '" ></div>');
-    var $soDiv = $('<div class="custom-control custom-radio"></div>');
-    var radiobox = '<input type="radio" name="' + name + '" id="' + id + '">';
-    var $lDiv = $("<label>" + radiobox + " " + text + "</label>");
-    $oDiv.append($soDiv);
-    $soDiv.append($lDiv);
-    return $oDiv;
+    var $div_data = $(`<div class="form-group radio-section custom-radio-outer" id="${id}" columnId="${name}" ><label class="custom-radio"><input type="radio" name="${name}" id="${id}"> <span class="radio-block"></span> ${text}</label></div>`)
+    return $div_data;
 }
 
 function getCheckboxButton(text, name, id) {
-    var $oDiv = $('<div class="form-group radio-section" id="' + id + '" columnId="' + name + '" ></div>');
-    var $soDiv = $('<div class="custom-control custom-checkbox"></div>');
-    var radiobox = '<input type="checkbox" name="' + name + '" id="' + id + '">';
-    var $lDiv = $('<label>' + radiobox + ' ' + text + '</label>');
+    /* var $oDiv = $('<div class="form-group radio-section custom-check-outer" id="' + id + '" columnId="' + name + '" ></div>');
+    var $soDiv = $('<label class="custom-check form-check-label"></label>');
+    var radiobox = '<input type="checkbox" class="form-check-input" name="' + name + '" id="' + id + '">';
+    var $lDiv = $(radiobox + ' <span class="checkmark"></span>' + text);
     $oDiv.append($soDiv);
     $soDiv.append($lDiv);
-    return $oDiv;
+    return $oDiv; */
+    var div_data = $(`<div class="form-group radio-section custom-check-outer" id="${id}" columnId="${name}" ><label class="custom-check form-check-label"><input type="checkbox" class="form-check-input" name="${name}" id="${id}"><span class="checkmark"></span> ${text}</label></div>`)
+    return div_data;
 }
+
 $(document).on('click', 'div.radio-section', function () {
     radiobuttonclick($(this).id, $(this).attr('columnId'));
 })
@@ -289,3 +303,37 @@ function addDataRows(actionId) {
 }
 
 // *********************************************** SUBMIT ACTION END***********************************************
+
+var footer_section = `<div class="footer">
+        <div class="footer-padd bt">
+            <div class="container ">
+                <div class="row">
+
+                    <div class="col-12 text-right">
+                        <button class="btn btn-primary btn-sm float-right submit-form">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>`;
+
+var modal_section = `<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
+        aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title app-black-color" id="exampleModalLongTitle">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body app-black-color">
+                    ...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-dismiss="modal">Back</button>
+                    <button type="button" class="btn btn-primary btn-sm" id="save-changes">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>`;
