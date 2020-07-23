@@ -1,6 +1,6 @@
 import * as actionSDK from "action-sdk-sunny";
 
-$(document).ready(function () {
+$(document).ready(function() {
     OnPageLoad();
 });
 
@@ -26,7 +26,7 @@ async function getTheme(request) {
     console.log(JSON.stringify(context));
     $("form.section-1").show();
     var theme = context.theme;
-    console.log(`theme: ${context.theme}`)
+    console.log(`theme: ${context.theme}`);
     $("link#theme").attr("href", "css/style-" + theme + ".css");
 }
 
@@ -35,12 +35,12 @@ var root = document.getElementById("root");
 function OnPageLoad() {
     actionSDK
         .executeApi(new actionSDK.GetContext.Request())
-        .then(function (response) {
+        .then(function(response) {
             console.info("GetContext - Response: " + JSON.stringify(response));
             actionContext = response.context;
             getDataRows(response.context.actionId);
         })
-        .catch(function (error) {
+        .catch(function(error) {
             console.error("GetContext - Error: " + JSON.stringify(error));
         });
 }
@@ -60,7 +60,7 @@ function getDataRows(actionId) {
 
     actionSDK
         .executeBatchApi(batchRequest)
-        .then(function (batchResponse) {
+        .then(function(batchResponse) {
             console.info("BatchResponse: " + JSON.stringify(batchResponse));
             actionInstance = batchResponse.responses[0].action;
             actionSummary = batchResponse.responses[1].summary;
@@ -68,7 +68,7 @@ function getDataRows(actionId) {
             actionDataRowsLength = actionDataRows == null ? 0 : actionDataRows.length;
             createBody();
         })
-        .catch(function (error) {
+        .catch(function(error) {
             console.log("Console log: Error: " + JSON.stringify(error));
         });
 }
@@ -244,7 +244,7 @@ function getNonresponders() {
     }
 }
 
-$(document).on("click", ".getresult", function () {
+$(document).on("click", ".getresult", function() {
     var userId = $(this).attr("id");
     console.log(userId);
 
@@ -272,7 +272,7 @@ function createReponderQuestionView(userId) {
         // total = Object.keys(dataTable.dataColumns).length;
 
         dataTable.dataColumns.forEach((question, ind) => {
-            var $cardDiv = $('<div class="card-box"></div>');
+            var $cardDiv = $('<div class="card-box card-border card-bg"></div>');
             var $rowdDiv = $('<div class="row"></div>');
             var $qDiv = $('<div class="col-sm-12"></div>');
             $cardDiv.append($rowdDiv);
@@ -371,9 +371,8 @@ function createReponderQuestionView(userId) {
                 // console.log("name: " + "#status-" + question.name);
                 // console.log("answer_is: " + JSON.stringify(answer_is));
                 $cardDiv.find("#status-" + question.name).text(answer_is);
-
             });
-            if (answer_is == 'Correct') {
+            if (answer_is == "Correct") {
                 score++;
             }
             $("#root").append($cardDiv);
@@ -383,15 +382,12 @@ function createReponderQuestionView(userId) {
     $("#root").append('<div class="ht-100"></div>');
 
     total = count;
-    var scorePercentage = Math.round(
-        (score / total) * 100
-    );
+    var scorePercentage = Math.round((score / total) * 100);
 
-    $('#root > div.progress-section').after('<div class=""><label><strong>Score: </strong></label> ' + scorePercentage + '%' + '</div>');
+    $("#root > div.progress-section").after(`<div class=""><h4><strong>Score: </strong>${scorePercentage}%</h4></div>`);
 }
 
 function createQuestionView(userId) {
-    answer_is = "";
     total = 0;
     score = 0;
     $("div#root > div.question-content").html("");
@@ -402,7 +398,9 @@ function createQuestionView(userId) {
         // $qDiv.append($linebreak);
 
         dataTable.dataColumns.forEach((question, ind) => {
-            var $cardDiv = $('<div class="card-box"></div>');
+            answer_is = "";
+
+            var $cardDiv = $('<div class="card-box card-bg card-border"></div>');
             var $rowdDiv = $('<div class="row"></div>');
             var $qDiv = $('<div class="col-sm-12"></div>');
             $cardDiv.append($rowdDiv);
@@ -423,6 +421,7 @@ function createQuestionView(userId) {
                 /* User Responded */
                 var userResponse = [];
                 var userResponseAnswer = "";
+
                 for (let i = 0; i < actionDataRowsLength; i++) {
                     if (actionDataRows[i].creatorId == userId) {
                         userResponse = actionDataRows[i].columnValues;
@@ -496,7 +495,8 @@ function createQuestionView(userId) {
                 $cardDiv.append($radioOption);
                 $cardDiv.find("#status-" + question.name).text(answer_is);
             });
-            if (answer_is == 'Correct') {
+
+            if (answer_is == "Correct") {
                 score++;
             }
             $("div.question-content:first").append($cardDiv);
@@ -506,12 +506,10 @@ function createQuestionView(userId) {
     });
     $("div.question-content:first").append('<div class="ht-100"></div>');
 
-    console.log(`${score} / ${total}`)
-    var scorePercentage = Math.round(
-        (score / total) * 100
-    );
+    console.log(`${score} / ${total}`);
+    var scorePercentage = Math.round((score / total) * 100);
 
-    $('#root > div:first').after('<div class=""><label><strong>Score: </strong></label> ' + scorePercentage + '%' + '</div>');
+    $("#root > div:first").after(`<div class=""><h4><strong>Score: </strong>${scorePercentage}%</h4></div>`);
 }
 
 function getOptions(text, name, id, userResponse, correctAnswer) {
@@ -536,7 +534,6 @@ function getOptions(text, name, id, userResponse, correctAnswer) {
             text +
             ' <i class="fa fa-pull-right text-success fa-check"></p></div>'
         );
-
     } else if (userResponse == id && correctAnswer != id) {
         /* If User Response is incorrect and answered */
         $oDiv.append(
@@ -551,7 +548,6 @@ function getOptions(text, name, id, userResponse, correctAnswer) {
             text +
             "</p></div>"
         );
-
     }
 
     return $oDiv;
@@ -568,7 +564,9 @@ function isJson(str) {
 
 function footer(userId) {
     $("div.question-content").append(
-        '<div class="footer"><div class="footer-padd bt"><div class="container "><div class="row"><div class="col-9"><a class="cursur-pointer back1" userid-data="' + userId + '" id="hide2"><svg role="presentation" focusable="false" viewBox="8 8 16 16" class="gt ki gs"><path class="ui-icon__outline gr" d="M16.38 20.85l7-7a.485.485 0 0 0 0-.7.485.485 0 0 0-.7 0l-6.65 6.64-6.65-6.64a.485.485 0 0 0-.7 0 .485.485 0 0 0 0 .7l7 7c.1.1.21.15.35.15.14 0 .25-.05.35-.15z"></path><path class="ui-icon__filled" d="M16.74 21.21l7-7c.19-.19.29-.43.29-.71 0-.14-.03-.26-.08-.38-.06-.12-.13-.23-.22-.32s-.2-.17-.32-.22a.995.995 0 0 0-.38-.08c-.13 0-.26.02-.39.07a.85.85 0 0 0-.32.21l-6.29 6.3-6.29-6.3a.988.988 0 0 0-.32-.21 1.036 1.036 0 0 0-.77.01c-.12.06-.23.13-.32.22s-.17.2-.22.32c-.05.12-.08.24-.08.38 0 .28.1.52.29.71l7 7c.19.19.43.29.71.29.28 0 .52-.1.71-.29z"></path></svg> Back</a></div><div class="col-3"><button class="btn btn-tpt">&nbsp;</button></div></div></div></div></div>'
+        '<div class="footer"><div class="footer-padd bt"><div class="container "><div class="row"><div class="col-9"><a class="cursur-pointer back1" userid-data="' +
+        userId +
+        '" id="hide2"><svg role="presentation" focusable="false" viewBox="8 8 16 16" class="gt ki gs"><path class="ui-icon__outline gr" d="M16.38 20.85l7-7a.485.485 0 0 0 0-.7.485.485 0 0 0-.7 0l-6.65 6.64-6.65-6.64a.485.485 0 0 0-.7 0 .485.485 0 0 0 0 .7l7 7c.1.1.21.15.35.15.14 0 .25-.05.35-.15z"></path><path class="ui-icon__filled" d="M16.74 21.21l7-7c.19-.19.29-.43.29-.71 0-.14-.03-.26-.08-.38-.06-.12-.13-.23-.22-.32s-.2-.17-.32-.22a.995.995 0 0 0-.38-.08c-.13 0-.26.02-.39.07a.85.85 0 0 0-.32.21l-6.29 6.3-6.29-6.3a.988.988 0 0 0-.32-.21 1.036 1.036 0 0 0-.77.01c-.12.06-.23.13-.32.22s-.17.2-.22.32c-.05.12-.08.24-.08.38 0 .28.1.52.29.71l7 7c.19.19.43.29.71.29.28 0 .52-.1.71-.29z"></path></svg> Back</a></div><div class="col-3"><button class="btn btn-tpt">&nbsp;</button></div></div></div></div></div>'
     );
 }
 
@@ -578,26 +576,25 @@ function footer1() {
     );
 }
 
-$(document).on("click", ".back", function () {
+$(document).on("click", ".back", function() {
     createBody();
 });
 
-$(document).on('click', '.back1', function () {
-    var userId = $(this).attr('userid-data');
+$(document).on("click", ".back1", function() {
+    var userId = $(this).attr("userid-data");
     create_responder_nonresponders();
 });
 
-$(document).on("click", "#show-responders", function () {
+$(document).on("click", "#show-responders", function() {
     create_responder_nonresponders();
 });
 
 function create_responder_nonresponders() {
     if (actionInstance.customProperties[2].value == "Only me") {
         if (actionContext.userId == actionInstance.creatorId) {
-
-            $('#root').html('');
+            $("#root").html("");
             if ($(".tabs-content:visible").length <= 0) {
-                var $card1 = $('<div class="card-box"></div>');
+                var $card1 = $('<div class="card-box card-bg card-border"></div>');
                 var tabs = $(".tabs-content").clone();
                 $card1.append(tabs.clone());
                 $("#root").append($card1);
@@ -613,20 +610,19 @@ function create_responder_nonresponders() {
             alert("Visible to sender only");
         }
     } else {
-
-        $('#root').html('');
+        $("#root").html("");
         if ($(".tabs-content:visible").length <= 0) {
-            var $card1 = $('<div class="card-box"></div>');
+            var $card1 = $('<div class="card-box card-bg card-border"></div>');
             var tabs = $(".tabs-content").clone();
             $card1.append(tabs.clone());
             $("#root").append($card1);
             footer1();
         }
 
-        // Add Responders 
+        // Add Responders
         getResponders();
 
-        // Add Non-reponders 
+        // Add Non-reponders
         getNonresponders();
     }
 }

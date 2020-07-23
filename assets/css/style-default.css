@@ -472,7 +472,7 @@
         position: fixed;
         bottom: 0px;
         width: 100%;
-        /* background-color: #ffffff; */
+         background-color: #ffffff; 
         z-index: 100;
         left: 0px;
     }
@@ -603,7 +603,10 @@
 
 
 .custom-radio:hover input ~ .radio-block {
-  background-color: #ccc;
+  background-color: #fff;
+}
+.custom-radio:focus input ~ .radio-block {
+ box-shadow: 0px 0px 1px 1px #6264A7;
 }
 
 
@@ -659,7 +662,7 @@
 
 .checkmark {
   position: absolute;
-  top: 0;
+  top: 2px;
   left: 0;
   height: 16px;
   width: 16px;
@@ -669,9 +672,12 @@
 }
 
 .custom-check:hover input ~ .checkmark {
-  background-color: #ccc;
+  background-color: #fff;
 }
-
+.custom-check:focus input ~ .checkmark {
+ box-shadow: 0px 0px 1px 1px #6264A7;
+}
+    
 
 .custom-check input:checked ~ .checkmark {
   background-color: #6264A7;
@@ -700,4 +706,10 @@
   -webkit-transform: rotate(45deg);
   -ms-transform: rotate(45deg);
   transform: rotate(45deg);
+}
+a {
+    color: #6264A7;
+}
+a:hover {
+    color: #6264A7;
 }
