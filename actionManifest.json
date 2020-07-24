@@ -1,6 +1,6 @@
 {
     "id": "com.microsoft.sample.quiz.mike06072001",
-    "name": "Quiz",
+    "name": "Quiz(Mike)",
     "description": "Quiz",
     "provider": {
         "name": "Microsoft",
@@ -10,7 +10,7 @@
     },
     "icon": "images/appIcon.png",
     "actionModel": "actionModel.json",
-    "version": "1.1.60",
+    "version": "1.1.85",
     "views": {
         "CardView": {
             "sourceLocation": "json/cardView.json"
@@ -34,7 +34,6 @@
             "en-us": "strings/strings.json"
         }
     },
-    "showLoadingIndicator": true,
     "whitelistedUrlDomains": [
         "ajax.googleapis.com",
         "cdnjs.cloudflare.com",
