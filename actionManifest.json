@@ -1,6 +1,6 @@
 {
     "id": "com.microsoft.sample.quiz.mike06072001",
-    "name": "Quiz(Mike)",
+    "name": "Quiz",
     "description": "Quiz",
     "provider": {
         "name": "Microsoft",
@@ -8,9 +8,9 @@
         "privacyUrl": "https://www.microsoft.com/privacy",
         "termsOfUseUrl": "https://www.microsoft.com/app-tos"
     },
-    "icon": "images/appIcon.png",
+    "icon": "images/appIcon.jpg",
     "actionModel": "actionModel.json",
-    "version": "1.1.85",
+    "version": "1.1.89",
     "views": {
         "CardView": {
             "sourceLocation": "json/cardView.json"
