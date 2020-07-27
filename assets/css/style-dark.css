@@ -761,7 +761,7 @@ input[type="date"]:before {
     color: #C8C6C4;
 }
 
-nput[type="time"]::-webkit-calendar-picker-indicator {
+input[type="time"]::-webkit-calendar-picker-indicator {
     color: transparent;
     background: none;
     z-index: 1;
