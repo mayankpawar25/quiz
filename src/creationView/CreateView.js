@@ -320,9 +320,9 @@ function submitForm() {
                 console.info("GetContext - Response: " + JSON.stringify(response));
                 createAction(response.context.actionPackageId);
             })
-            .catch(function (error) {
+            /* .catch(function (error) {
                 console.error("GetContext - Error: " + JSON.stringify(error));
-            });
+            }) */;
     } else {
         $("#submit").prop('disabled', false);
         return;
@@ -338,6 +338,10 @@ function getQuestionSet() {
 
         let option = [];
         var is_selected = 0;
+
+
+        console.log('#question: #question' + i);
+
 
         /* Looping for options */
         $("#question" + i)
@@ -368,6 +372,9 @@ function getQuestionSet() {
                     option_type = actionSDK.ActionDataColumnValueType.SingleOption;
                 }
                 option.push({ name: opt_id, displayName: opt_title });
+
+                console.log('question set');
+
             });
 
         var val = {
@@ -459,6 +466,9 @@ function createAction(actionPackageId) {
         "No";
     var questionsSet = getQuestionSet();
     var getcorrectanswers = getCorrectAnswer();
+
+    console.log(`questionsSet: `);
+    console.log(`${questionsSet}`);
 
     if (questionsSet.length <= 0) {
         return;
@@ -742,7 +752,7 @@ var form_section = `<div class="section-1">
 
 // Question
 var questions_section = `<div style="display: none;" id="question-section">
-        <div class="container question-container">
+        <div class="container question-container" id="question1">
             <div class="card-box card-border card-bg">
                 <div class="form-group">
                     <div class="hover-btn mb-2 h-32">
