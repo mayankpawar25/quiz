@@ -320,9 +320,9 @@ function submitForm() {
                 console.info("GetContext - Response: " + JSON.stringify(response));
                 createAction(response.context.actionPackageId);
             })
-            /* .catch(function (error) {
+            .catch(function (error) {
                 console.error("GetContext - Error: " + JSON.stringify(error));
-            }) */;
+            });
     } else {
         $("#submit").prop('disabled', false);
         return;
