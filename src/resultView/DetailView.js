@@ -28,6 +28,9 @@ async function getTheme(request) {
     var theme = context.theme;
     console.log(`theme: ${context.theme}`);
     $("link#theme").attr("href", "css/style-" + theme + ".css");
+
+    await actionSDK.executeApi(new actionSDK.HideLoadingIndicator.Request());
+
 }
 
 var root = document.getElementById("root");
@@ -262,16 +265,18 @@ $(document).on("click", ".getresult", function () {
 });
 
 function createReponderQuestionView(userId) {
+    total = 0;
+    score = 0;
     $("div#root > div.question-content").html("");
-    var count = 1;
 
     actionInstance.dataTables.forEach((dataTable) => {
         // var $linebreak = $("<br>");
         // $qDiv.append($linebreak);
 
-        // total = Object.keys(dataTable.dataColumns).length;
+        total = Object.keys(dataTable.dataColumns).length;
 
         dataTable.dataColumns.forEach((question, ind) => {
+            answer_is = "";
             var $cardDiv = $('<div class="card-box card-border card-bg"></div>');
             var $rowdDiv = $('<div class="row"></div>');
             var $qDiv = $('<div class="col-sm-12"></div>');
@@ -369,19 +374,21 @@ function createReponderQuestionView(userId) {
                 $cardDiv.append($radioOption);
 
                 // console.log("name: " + "#status-" + question.name);
-                // console.log("answer_is: " + JSON.stringify(answer_is));
-                $cardDiv.find("#status-" + question.name).text(answer_is);
+                console.log("answer_is: " + JSON.stringify(answer_is));
+                $cardDiv.find("#status-" + question.name).html(`<span class="${answer_is == 'Correct' ? 'text-success' : 'text-danger'}">${answer_is}</span>`);
             });
+
             if (answer_is == "Correct") {
                 score++;
             }
             $("#root").append($cardDiv);
+            console.log(`question: ${question}`);
         });
-        count++;
     });
     $("#root").append('<div class="ht-100"></div>');
 
-    total = count;
+    console.log(`score: `);
+    console.log(`${score} / ${total}`)
     var scorePercentage = Math.round((score / total) * 100);
 
     $("#root > div.progress-section").after(`<div class=""><h4><strong>Score: </strong>${scorePercentage}%</h4></div>`);
@@ -391,11 +398,12 @@ function createQuestionView(userId) {
     total = 0;
     score = 0;
     $("div#root > div.question-content").html("");
-    var count = 1;
+
     // console.log(JSON.stringify(actionInstance));
     actionInstance.dataTables.forEach((dataTable) => {
         // var $linebreak = $("<br>");
         // $qDiv.append($linebreak);
+        total = Object.keys(dataTable.dataColumns).length;
 
         dataTable.dataColumns.forEach((question, ind) => {
             answer_is = "";
@@ -493,7 +501,7 @@ function createQuestionView(userId) {
                 );
                 console.log($radioOption);
                 $cardDiv.append($radioOption);
-                $cardDiv.find("#status-" + question.name).text(answer_is);
+                $cardDiv.find("#status-" + question.name).html(`<span class="${answer_is == 'Correct' ? 'text-success' : 'text-danger'}">${answer_is}</span>`);
             });
 
             if (answer_is == "Correct") {
@@ -501,11 +509,11 @@ function createQuestionView(userId) {
             }
             $("div.question-content:first").append($cardDiv);
         });
-        count++;
+
     });
     $("div.question-content:first").append('<div class="ht-100"></div>');
-    total = count;
 
+    console.log(`score: `);
     console.log(`${score} / ${total}`);
     var scorePercentage = Math.round((score / total) * 100);
 
@@ -518,7 +526,7 @@ function getOptions(text, name, id, userResponse, correctAnswer) {
     );
     var $oDiv = $('<div class="form-group"></div>');
     /*  If answer is correct  and answered */
-    if (userResponse == id && correctAnswer == id) {
+    if ($.trim(userResponse) == $.trim(id) && $.trim(correctAnswer) == $.trim(id)) {
         $oDiv.append(
             '<div class="form-group alert alert-success"><p class="mb0">' +
             text +
@@ -527,14 +535,14 @@ function getOptions(text, name, id, userResponse, correctAnswer) {
         if (answer_is == "") {
             answer_is = "Correct";
         }
-    } else if (userResponse != id && correctAnswer == id) {
+    } else if ($.trim(userResponse) != $.trim(id) && $.trim(correctAnswer) == $.trim(id)) {
         /* If User Response is incorrect and not answered */
         $oDiv.append(
             '<div class="form-group alert alert-normal"><p class="mb0">' +
             text +
             ' <i class="fa fa-pull-right text-success fa-check"></p></div>'
         );
-    } else if (userResponse == id && correctAnswer != id) {
+    } else if ($.trim(userResponse) == $.trim(id) && $.trim(correctAnswer) != $.trim(id)) {
         /* If User Response is incorrect and answered */
         $oDiv.append(
             '<div class="alert alert-danger"><p class="mb0">' +

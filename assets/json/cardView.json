@@ -6,14 +6,14 @@
             {
                 "id": "Sender",
                 "type": "TextBlock",
-                "text": "${creator[0].displayName} sent a Quiz(WebcraftIT)",
+                "text": "Quiz",
                 "size": "small",
                 "wrap": true
             },
             {
                 "id": "Expiry",
                 "type": "TextBlock",
-                "text": "${if(equals(action.status, 'Active'), 'Quiz Active','Quiz Expired')}",
+                "text": "${if(equals(action.status, 'Active'), '','Quiz Expired')}",
                 "color": "${if(equals(action.status, 'Active'), 'default','attention')}",
                 "size": "small",
                 "wrap": true
@@ -21,7 +21,7 @@
             {
                 "id": "Title",
                 "type": "TextBlock",
-                "text": "Title: ${action.displayName}",
+                "text": "${action.displayName}",
                 "size": "large",
                 "maxLines": 3,
                 "wrap": true,
@@ -42,16 +42,6 @@
                 "id": "ResultVisibility",
                 "type": "TextBlock",
                 "text": "${if(equals(action.dataTables[0].rowsVisibility, 'All'), 'Responses are visible to everyone', 'Responses are visible to sender only')}",
-                "maxLines": 2,
-                "wrap": true,
-                "isSubtle": true,
-                "size": "small",
-                "spacing": "none"
-            },
-            {
-                "id": "AnswerVisibility",
-                "type": "TextBlock",
-                "text": "${if(equals(action.customProperties[3].value, 'Yes'), 'Show correct answer', '')}",
                 "maxLines": 2,
                 "wrap": true,
                 "isSubtle": true,
