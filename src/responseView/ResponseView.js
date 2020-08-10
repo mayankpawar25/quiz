@@ -31,7 +31,7 @@ async function getTheme(request) {
 }
 
 // *********************************************** HTML ELEMENT***********************************************
-$(document).ready(function () {
+$(document).ready(function() {
     let request = new actionSDK.GetContext.Request();
     getTheme(request);
 });
@@ -39,11 +39,11 @@ $(document).ready(function () {
 function OnPageLoad() {
     actionSDK
         .executeApi(new actionSDK.GetContext.Request())
-        .then(function (response) {
+        .then(function(response) {
             console.info("GetContext - Response: " + JSON.stringify(response));
             getActionInstance(response.context.actionId);
         })
-        .catch(function (error) {
+        .catch(function(error) {
             console.error("GetContext - Error: " + JSON.stringify(error));
         });
 }
@@ -51,12 +51,12 @@ function OnPageLoad() {
 function getActionInstance(actionId) {
     actionSDK
         .executeApi(new actionSDK.GetAction.Request(actionId))
-        .then(function (response) {
+        .then(function(response) {
             console.info("Response: " + JSON.stringify(response));
             actionInstance = response.action;
             createBody();
         })
-        .catch(function (error) {
+        .catch(function(error) {
             console.log("Error: " + JSON.stringify(error));
         });
 }
@@ -83,7 +83,7 @@ function createBody() {
         $card.append($description);
         $root.append($card);
         createQuestionView();
-        $root.append($hr);
+        // $root.append($hr);
 
         /* var $spDiv = $('<div class="col-sm-12"></div>');
         var $sDiv = $('<div class="form-group"></div>');
@@ -95,7 +95,7 @@ function createBody() {
     }
 }
 
-$(document).on('click', '.submit-form', function () {
+$(document).on('click', '.submit-form', function() {
     submitForm();
 })
 
@@ -104,7 +104,7 @@ function createQuestionView() {
     actionInstance.dataTables.forEach((dataTable) => {
         dataTable.dataColumns.forEach((question, ind) => {
             var count = ind + 1;
-            var $card = $('<div class="card-box card-border card-bg"></div>');
+            var $card = $('<div class="card-box card-blank"></div>');
             var $questionHeading = $("<label><strong>" + count + ". " + question.displayName + "</strong></label>"); // Heading of For
             $card.append($questionHeading);
             var choice_occurance = 0;
@@ -163,7 +163,7 @@ function getCheckboxButton(text, name, id) {
     return div_data;
 }
 
-$(document).on('click', 'div.radio-section', function () {
+$(document).on('click', 'div.radio-section', function() {
     radiobuttonclick($(this).id, $(this).attr('columnId'));
 })
 
@@ -175,7 +175,7 @@ $(document).on('click', 'div.radio-section', function () {
 function submitForm() {
     actionSDK
         .executeApi(new actionSDK.GetContext.Request())
-        .then(function (response) {
+        .then(function(response) {
             console.info("GetContext - Response: " + JSON.stringify(response));
 
             /*  Check Show Correct Answer  */
@@ -187,9 +187,9 @@ function submitForm() {
                     var count = 0;
 
                     var ans_rsp = '';
-                    $('#root').find('div.card-box').each(function (i, val) {
+                    $('#root').find('div.card-box').each(function(i, val) {
 
-                        var searchIDs = $(val).find('input:checked').map(function () {
+                        var searchIDs = $(val).find('input:checked').map(function() {
                             return $(this).attr('id');
                         });
 
@@ -198,7 +198,7 @@ function submitForm() {
 
                         if (JSON.stringify(correct_answer[count]) == JSON.stringify(searchIDs.get())) {
                             /*  Answer is correct  */
-                            $.each(correct_answer[count], function (ind, ans_id) {
+                            $.each(correct_answer[count], function(ind, ans_id) {
                                 correct_ans += '<div class="alert alert-success"><p class="mb0">' + $.trim($(val).find('input#' + ans_id).parents('label').text()) + '<i class="fa fa-pull-right fa-check"></i></p></div>';
                             });
                             console.log('correct_ans' + correct_ans);
@@ -207,7 +207,7 @@ function submitForm() {
 
                         } else {
                             /*  Answer is incorrect  */
-                            $.each(searchIDs.get(), function (yind, yans_id) {
+                            $.each(searchIDs.get(), function(yind, yans_id) {
                                 console.log('your ans: ' + $(val).find('input#' + yans_id).attr('id'));
                                 console.log(JSON.stringify(correct_answer[count]));
                                 if ($.inArray($(val).find('input#' + yans_id).attr('id'), correct_answer[count]) != -1) {
@@ -218,7 +218,7 @@ function submitForm() {
                                 }
                             })
 
-                            $.each(correct_answer[count], function (ind, ans_id) {
+                            $.each(correct_answer[count], function(ind, ans_id) {
                                 correct_ans += '<div class="alert alert-success"><p class="mb0">' + $.trim($(val).find('input#' + ans_id).parents('label').text()) + '<i class="fa fa-pull-right fa-check"></i></p></div>';
                             })
 
@@ -237,7 +237,7 @@ function submitForm() {
                     $('#exampleModalCenter').find('#save-changes').hide();
                     $('#exampleModalCenter').modal('show');
 
-                    $("#exampleModalCenter").on("hidden.bs.modal", function () {
+                    $("#exampleModalCenter").on("hidden.bs.modal", function() {
                         // put your default event here
                         addDataRows(response.context.actionId);
                     });
@@ -246,7 +246,7 @@ function submitForm() {
                 }
             }
         })
-        .catch(function (error) {
+        .catch(function(error) {
             console.error("GetContext - Error: " + JSON.stringify(error));
         });
 }
@@ -254,7 +254,7 @@ function submitForm() {
 function radiobuttonclick(questionResponse, colomnId) {
     var data = [];
     row = {};
-    $.each($("input[type='checkbox']:checked"), function (ind, v) {
+    $.each($("input[type='checkbox']:checked"), function(ind, v) {
         var col = $(this).parents("div.form-group").attr("columnid");
         data.push($(this).attr("id"));
 
@@ -262,7 +262,7 @@ function radiobuttonclick(questionResponse, colomnId) {
         row[col] = JSON.stringify(data);
     });
 
-    $.each($("input[type='radio']:checked"), function () {
+    $.each($("input[type='radio']:checked"), function() {
         var col = $(this).parents("div.form-group").attr("columnid");
 
         if (!row[col]) row[col] = [];
@@ -273,7 +273,7 @@ function radiobuttonclick(questionResponse, colomnId) {
 }
 
 function generateGUID() {
-    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
         var r = (Math.random() * 16) | 0,
             v = c == "x" ? r : (r & 0x3) | 0x8;
         return v.toString(16);
@@ -303,10 +303,10 @@ function addDataRows(actionId) {
     ]);
     actionSDK
         .executeBatchApi(batchRequest)
-        .then(function (batchResponse) {
+        .then(function(batchResponse) {
             console.info("BatchResponse: " + JSON.stringify(batchResponse));
         })
-        .catch(function (error) {
+        .catch(function(error) {
             console.error("Error: " + JSON.stringify(error));
         });
 }
