@@ -1,6 +1,6 @@
 import * as actionSDK from "action-sdk-sunny";
 
-$(document).ready(function () {
+$(document).ready(function() {
     OnPageLoad();
 });
 
@@ -38,12 +38,12 @@ var root = document.getElementById("root");
 function OnPageLoad() {
     actionSDK
         .executeApi(new actionSDK.GetContext.Request())
-        .then(function (response) {
+        .then(function(response) {
             console.info("GetContext - Response: " + JSON.stringify(response));
             actionContext = response.context;
             getDataRows(response.context.actionId);
         })
-        .catch(function (error) {
+        .catch(function(error) {
             console.error("GetContext - Error: " + JSON.stringify(error));
         });
 }
@@ -63,7 +63,7 @@ function getDataRows(actionId) {
 
     actionSDK
         .executeBatchApi(batchRequest)
-        .then(function (batchResponse) {
+        .then(function(batchResponse) {
             console.info("BatchResponse: " + JSON.stringify(batchResponse));
             actionInstance = batchResponse.responses[0].action;
             actionSummary = batchResponse.responses[1].summary;
@@ -71,7 +71,7 @@ function getDataRows(actionId) {
             actionDataRowsLength = actionDataRows == null ? 0 : actionDataRows.length;
             createBody();
         })
-        .catch(function (error) {
+        .catch(function(error) {
             console.log("Console log: Error: " + JSON.stringify(error));
         });
 }
@@ -104,28 +104,47 @@ async function createBody() {
     $pcard.append(
         "<label><strong>Participation " +
         participationPercentage +
-        '% </strong></label><div class="progress"><div class="progress-bar bg-primary" role="progressbar" style="width: ' +
+        '% </strong></label><div class="progress mb-2"><div class="progress-bar bg-primary" role="progressbar" style="width: ' +
         participationPercentage +
         '%" aria-valuenow="' +
         participationPercentage +
         '" aria-valuemin="0" aria-valuemax="100"></div></div>'
     );
-    $pcard.append(
-        '<p class="date-color cursur-pointer md-0" id="show-responders">' +
-        xofy +
-        "</p>"
-    );
+    $pcard.append(`<p class="date-color cursur-pointer under-line md-0" id="show-responders">${xofy}</p>`);
+
     $("#root").append($pcard);
 
     await getUserprofile();
 
-    // console.log("ResponderDate: " + JSON.stringify(ResponderDate));
+    console.log("ResponderDate: " + JSON.stringify(ResponderDate));
 
-    ResponderDate.forEach((responder) => {
-        if (responder.value2 == myUserId) {
-            createReponderQuestionView(myUserId);
-        }
-    });
+    console.log(`actionContext: ${JSON.stringify(actionContext)}`);
+    if (Object.keys(ResponderDate).length > 0) {
+        ResponderDate.forEach((responder) => {
+            console.log('responder: ');
+            console.log(responder);
+            if (responder.value2 == myUserId) {
+                createReponderQuestionView(myUserId, responder);
+            }
+        });
+    } else {
+        console.log("actionNonResponders: " + JSON.stringify(actionNonResponders));
+        actionNonResponders.forEach((nonresponders) => {
+            if (nonresponders.value2 == myUserId) {
+                var name = nonresponders.label;
+                var matches = name.match(/\b(\w)/g); // [D,P,R]
+                var initials = matches.join('').substring(0, 2); // DPR
+                $('div.progress-section').after(`<hr class="small">`);
+                $('div.progress-section').after(`<div class="d-flex cursur-pointer mt-4 mb-4">
+                    <div class="avtar">
+                        ${initials}
+                    </div>
+                    <div class="avtar-txt">You are yet to respond</div>
+                </div>`);
+                $('div.progress-section').after(`<hr class="small">`);
+            }
+        })
+    }
 
     return true;
 }
@@ -137,15 +156,16 @@ function head() {
 
     var $card = $('<div class=""></div>');
     var $title_sec = $("<h4>" + title + "</h4>");
-    var $description_sec = $("<p>" + description + "</p>");
-    var $date_sec = $(
-        '<p><small class="date-color md-0">' + "Due by " + dueby + "</small></p>"
-    );
+    var $description_sec = $(`<p class="mb0">${description}</p>`);
+
+    var current_timestamp = new Date().getTime();
+
+    var $date_sec = $(`<p><small>${actionInstance.expiryTime > current_timestamp ? 'Due by ' : 'Expired on '} ${dueby}</small></p>`);
 
     $card.append($title_sec);
     $card.append($description_sec);
     $card.append($date_sec);
-    $card.append("<hr>");
+    // $card.append("<hr>");
 
     $("#root").append($card);
 }
@@ -215,16 +235,32 @@ function getResponders() {
         }
         var date = ResponderDate[itr].value;
 
+        var matches = ResponderDate[itr].label.match(/\b(\w)/g); // [D,P,R]
+        var initials = matches.join('').substring(0, 2); // DPR
+
+
         $(".tabs-content:first")
             .find("table#responder-table tbody")
             .append(
-                '<tr id="' +
-                ResponderDate[itr].value2 +
-                '" class="getresult"><td><span>' +
-                name +
-                '</span></td><td  class="text-right">' +
-                date +
-                "</td></tr>"
+                `<tr id="${ResponderDate[itr].value2}" class="getresult cursur-pointer">
+                    <td>
+                        <div class="d-flex ">
+                            <div class="avtar">
+                                ${initials}
+                            </div>
+                            <div class="avtar-txt">${name}</div>
+                        </div>
+                    </td>
+                    <td  class="text-right avtar-txt">
+                        ${date}
+                        <svg role="presentation" focusable="false" viewBox="8 8 16 16" class="right-carate">
+                            <path class="ui-icon__outline gr" d="M16.38 20.85l7-7a.485.485 0 0 0 0-.7.485.485 0 0 0-.7 0l-6.65 6.64-6.65-6.64a.485.485 0 0 0-.7 0 .485.485 0 0 0 0 .7l7 7c.1.1.21.15.35.15.14 0 .25-.05.35-.15z">
+                            </path>
+                            <path class="ui-icon__filled" d="M16.74 21.21l7-7c.19-.19.29-.43.29-.71 0-.14-.03-.26-.08-.38-.06-.12-.13-.23-.22-.32s-.2-.17-.32-.22a.995.995 0 0 0-.38-.08c-.13 0-.26.02-.39.07a.85.85 0 0 0-.32.21l-6.29 6.3-6.29-6.3a.988.988 0 0 0-.32-.21 1.036 1.036 0 0 0-.77.01c-.12.06-.23.13-.32.22s-.17.2-.22.32c-.05.12-.08.24-.08.38 0 .28.1.52.29.71l7 7c.19.19.43.29.71.29.28 0 .52-.1.71-.29z">
+                            </path>
+                        </svg>
+                    </td>
+                </tr>`
             );
     }
 }
@@ -240,14 +276,26 @@ function getNonresponders() {
         } else {
             name = actionNonResponders[itr].label;
         }
+        var matches = actionNonResponders[itr].label.match(/\b(\w)/g); // [D,P,R]
+        var initials = matches.join('').substring(0, 2); // DPR
+
         var date = actionNonResponders[itr].value;
         $(".tabs-content:first")
             .find("table#non-responder-table tbody")
-            .append("<tr><td>" + name + "</td></tr>");
+            .append(`<tr>
+                <td>
+                    <div class="d-flex">
+                        <div class="avtar">
+                            ${initials}
+                        </div>
+                        <div class="avtar-txt">${name}</div>
+                    </div>
+                </td>
+            </tr>`);
     }
 }
 
-$(document).on("click", ".getresult", function () {
+$(document).on("click", ".getresult", function() {
     var userId = $(this).attr("id");
     console.log(userId);
 
@@ -264,10 +312,24 @@ $(document).on("click", ".getresult", function () {
     footer(userId);
 });
 
-function createReponderQuestionView(userId) {
+function createReponderQuestionView(userId, responder = '') {
     total = 0;
     score = 0;
     $("div#root > div.question-content").html("");
+
+    if (responder != '') {
+        var name = responder.label;
+        var matches = name.match(/\b(\w)/g); // [D,P,R]
+        var initials = matches.join('').substring(0, 2); // DPR
+        $('div.progress-section').after(`<hr class="small">`);
+        $('div.progress-section').after(`<div class="d-flex cursur-pointer mt-4 mb-4">
+            <div class="avtar">
+                ${initials}
+            </div>
+            <div class="avtar-txt">You responded</div>
+        </div>`);
+        $('div.progress-section').after(`<hr class="small">`);
+    }
 
     actionInstance.dataTables.forEach((dataTable) => {
         // var $linebreak = $("<br>");
@@ -277,7 +339,7 @@ function createReponderQuestionView(userId) {
 
         dataTable.dataColumns.forEach((question, ind) => {
             answer_is = "";
-            var $cardDiv = $('<div class="card-box card-border card-bg"></div>');
+            var $cardDiv = $('<div class="card-box card-blank bt"></div>');
             var $rowdDiv = $('<div class="row"></div>');
             var $qDiv = $('<div class="col-sm-12"></div>');
             $cardDiv.append($rowdDiv);
@@ -391,7 +453,7 @@ function createReponderQuestionView(userId) {
     console.log(`${score} / ${total}`)
     var scorePercentage = Math.round((score / total) * 100);
 
-    $("#root > div.progress-section").after(`<div class=""><h4><strong>Score: </strong>${scorePercentage}%</h4></div>`);
+    $("#root > hr.small:last").after(`<div class=""><label><strong>Score: </strong>${scorePercentage}%</label></div>`);
 }
 
 function createQuestionView(userId) {
@@ -408,7 +470,7 @@ function createQuestionView(userId) {
         dataTable.dataColumns.forEach((question, ind) => {
             answer_is = "";
 
-            var $cardDiv = $('<div class="card-box card-bg card-border"></div>');
+            var $cardDiv = $('<div class="card-box card-blank bt"></div>');
             var $rowdDiv = $('<div class="row"></div>');
             var $qDiv = $('<div class="col-sm-12"></div>');
             $cardDiv.append($rowdDiv);
@@ -517,7 +579,7 @@ function createQuestionView(userId) {
     console.log(`${score} / ${total}`);
     var scorePercentage = Math.round((score / total) * 100);
 
-    $("#root > div:first").after(`<div class=""><h4><strong>Score: </strong>${scorePercentage}%</h4></div>`);
+    $("#root > div:first").after(`<div class=""><label><strong>Score: </strong>${scorePercentage}%</label></div>`);
 }
 
 function getOptions(text, name, id, userResponse, correctAnswer) {
@@ -545,7 +607,7 @@ function getOptions(text, name, id, userResponse, correctAnswer) {
     } else if ($.trim(userResponse) == $.trim(id) && $.trim(correctAnswer) != $.trim(id)) {
         /* If User Response is incorrect and answered */
         $oDiv.append(
-            '<div class="alert alert-danger"><p class="mb0">' +
+            '<div class="form-group alert alert-danger"><p class="mb0">' +
             text +
             '<i class="fa fa-pull-right fa-close"></i></p></div>'
         );
@@ -571,29 +633,62 @@ function isJson(str) {
 }
 
 function footer(userId) {
-    $("div.question-content").append(
-        '<div class="footer"><div class="footer-padd bt"><div class="container "><div class="row"><div class="col-9"><a class="cursur-pointer back1" userid-data="' +
-        userId +
-        '" id="hide2"><svg role="presentation" focusable="false" viewBox="8 8 16 16" class="gt ki gs"><path class="ui-icon__outline gr" d="M16.38 20.85l7-7a.485.485 0 0 0 0-.7.485.485 0 0 0-.7 0l-6.65 6.64-6.65-6.64a.485.485 0 0 0-.7 0 .485.485 0 0 0 0 .7l7 7c.1.1.21.15.35.15.14 0 .25-.05.35-.15z"></path><path class="ui-icon__filled" d="M16.74 21.21l7-7c.19-.19.29-.43.29-.71 0-.14-.03-.26-.08-.38-.06-.12-.13-.23-.22-.32s-.2-.17-.32-.22a.995.995 0 0 0-.38-.08c-.13 0-.26.02-.39.07a.85.85 0 0 0-.32.21l-6.29 6.3-6.29-6.3a.988.988 0 0 0-.32-.21 1.036 1.036 0 0 0-.77.01c-.12.06-.23.13-.32.22s-.17.2-.22.32c-.05.12-.08.24-.08.38 0 .28.1.52.29.71l7 7c.19.19.43.29.71.29.28 0 .52-.1.71-.29z"></path></svg> Back</a></div><div class="col-3"><button class="btn btn-tpt">&nbsp;</button></div></div></div></div></div>'
-    );
+    $("div.question-content").append(`
+        <div class="footer">
+            <div class="footer-padd bt">
+                <div class="container ">
+                    <div class="row">
+                        <div class="col-9">
+                            <a class="cursur-pointer back1" userid-data="${userId}" id="hide2">
+                                <svg role="presentation" focusable="false" viewBox="8 8 16 16" class="back-btn">
+                                    <path class="ui-icon__outline gr" d="M16.38 20.85l7-7a.485.485 0 0 0 0-.7.485.485 0 0 0-.7 0l-6.65 6.64-6.65-6.64a.485.485 0 0 0-.7 0 .485.485 0 0 0 0 .7l7 7c.1.1.21.15.35.15.14 0 .25-.05.35-.15z">
+                                    </path>
+                                    <path class="ui-icon__filled" d="M16.74 21.21l7-7c.19-.19.29-.43.29-.71 0-.14-.03-.26-.08-.38-.06-.12-.13-.23-.22-.32s-.2-.17-.32-.22a.995.995 0 0 0-.38-.08c-.13 0-.26.02-.39.07a.85.85 0 0 0-.32.21l-6.29 6.3-6.29-6.3a.988.988 0 0 0-.32-.21 1.036 1.036 0 0 0-.77.01c-.12.06-.23.13-.32.22s-.17.2-.22.32c-.05.12-.08.24-.08.38 0 .28.1.52.29.71l7 7c.19.19.43.29.71.29.28 0 .52-.1.71-.29z">
+                                    </path>
+                                </svg> Back
+                            </a>
+                        </div>
+                        <div class="col-3"><button class="btn btn-tpt">&nbsp;</button></div>
+                    </div>
+                </div>
+            </div>
+        </div>`);
 }
 
 function footer1() {
     $("#root > div.card-box").append(
-        '<div class="footer"><div class="footer-padd bt"><div class="container "><div class="row"><div class="col-9"><a class="cursur-pointer back" id="hide2"><svg role="presentation" focusable="false" viewBox="8 8 16 16" class="gt ki gs"><path class="ui-icon__outline gr" d="M16.38 20.85l7-7a.485.485 0 0 0 0-.7.485.485 0 0 0-.7 0l-6.65 6.64-6.65-6.64a.485.485 0 0 0-.7 0 .485.485 0 0 0 0 .7l7 7c.1.1.21.15.35.15.14 0 .25-.05.35-.15z"></path><path class="ui-icon__filled" d="M16.74 21.21l7-7c.19-.19.29-.43.29-.71 0-.14-.03-.26-.08-.38-.06-.12-.13-.23-.22-.32s-.2-.17-.32-.22a.995.995 0 0 0-.38-.08c-.13 0-.26.02-.39.07a.85.85 0 0 0-.32.21l-6.29 6.3-6.29-6.3a.988.988 0 0 0-.32-.21 1.036 1.036 0 0 0-.77.01c-.12.06-.23.13-.32.22s-.17.2-.22.32c-.05.12-.08.24-.08.38 0 .28.1.52.29.71l7 7c.19.19.43.29.71.29.28 0 .52-.1.71-.29z"></path></svg> Back</a></div><div class="col-3"><button class="btn btn-tpt">&nbsp;</button></div></div></div></div></div>'
+        `<div class="footer">
+            <div class="footer-padd bt">
+                <div class="container ">
+                    <div class="row">
+                        <div class="col-9">
+                            <a class="cursur-pointer back" id="hide2">
+                                <svg role="presentation" focusable="false" viewBox="8 8 16 16" class="back-btn">
+                                    <path class="ui-icon__outline gr" d="M16.38 20.85l7-7a.485.485 0 0 0 0-.7.485.485 0 0 0-.7 0l-6.65 6.64-6.65-6.64a.485.485 0 0 0-.7 0 .485.485 0 0 0 0 .7l7 7c.1.1.21.15.35.15.14 0 .25-.05.35-.15z">
+                                    </path>
+                                    <path class="ui-icon__filled" d="M16.74 21.21l7-7c.19-.19.29-.43.29-.71 0-.14-.03-.26-.08-.38-.06-.12-.13-.23-.22-.32s-.2-.17-.32-.22a.995.995 0 0 0-.38-.08c-.13 0-.26.02-.39.07a.85.85 0 0 0-.32.21l-6.29 6.3-6.29-6.3a.988.988 0 0 0-.32-.21 1.036 1.036 0 0 0-.77.01c-.12.06-.23.13-.32.22s-.17.2-.22.32c-.05.12-.08.24-.08.38 0 .28.1.52.29.71l7 7c.19.19.43.29.71.29.28 0 .52-.1.71-.29z">
+                                    </path>
+                                </svg> Back
+                            </a>
+                        </div>
+                        <div class="col-3"><button class="btn btn-tpt">&nbsp;</button></div>
+                    </div>
+                </div>
+            </div>
+        </div>`
     );
 }
 
-$(document).on("click", ".back", function () {
+$(document).on("click", ".back", function() {
     createBody();
 });
 
-$(document).on("click", ".back1", function () {
+$(document).on("click", ".back1", function() {
     var userId = $(this).attr("userid-data");
     create_responder_nonresponders();
 });
 
-$(document).on("click", "#show-responders", function () {
+$(document).on("click", "#show-responders", function() {
     create_responder_nonresponders();
 });
 
@@ -602,7 +697,7 @@ function create_responder_nonresponders() {
         if (actionContext.userId == actionInstance.creatorId) {
             $("#root").html("");
             if ($(".tabs-content:visible").length <= 0) {
-                var $card1 = $('<div class="card-box card-bg card-border"></div>');
+                var $card1 = $('<div class="card-box card-blank"></div>');
                 var tabs = $(".tabs-content").clone();
                 $card1.append(tabs.clone());
                 $("#root").append($card1);
@@ -620,7 +715,7 @@ function create_responder_nonresponders() {
     } else {
         $("#root").html("");
         if ($(".tabs-content:visible").length <= 0) {
-            var $card1 = $('<div class="card-box card-bg card-border"></div>');
+            var $card1 = $('<div class="card-box card-blank"></div>');
             var tabs = $(".tabs-content").clone();
             $card1.append(tabs.clone());
             $("#root").append($card1);

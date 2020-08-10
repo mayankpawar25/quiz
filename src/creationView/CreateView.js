@@ -837,11 +837,7 @@ var option_section = `<div style="display: none;" id="option-section">
     </div>`;
 
 // Setting 
-<<<<<<< HEAD
-var setting_section = `<div  id="setting" style="display:none">
-=======
 var setting_section = `<div style="display:none" id="setting">
->>>>>>> 9886ebcd2978f3c3851aefe672986d56c811411e
         <div class="container pt-4 setting-section">
             <div class="row">
                 <div class="col-sm-12">

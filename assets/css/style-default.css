@@ -136,10 +136,6 @@ form {
     margin-bottom: 10px !important;
 }
 
-.date-color {
-    color: #4e508a;
-}
-
 .bg-primary {
     background-color: #4e508a !important;
 }
@@ -147,7 +143,7 @@ form {
 label {
     display: inline-block;
     margin-bottom: 8px !important;
-    color: #484644
+    color: #252423
 }
 
 .table thead th {
@@ -406,10 +402,6 @@ strong {
     left: 0px;
 }
 
-.bt {
-    border-top: 1px solid #ddd;
-}
-
 .ki {
     transform: rotate(90deg);
 }
@@ -491,21 +483,32 @@ a#back-setting svg {
     border-color: transparent !important;
 }
 
-.project-tab #tabs .nav-tabs .nav-item.show .nav-link,
-.nav-tabs .nav-link.active {
-    color: #0062cc;
-    background-color: transparent;
-    border-color: transparent transparent #f3f3f3;
-    border-bottom: 2px #4e508a solid !important;
-}
-
 .nav-tabs .nav-link:focus,
 .nav-tabs .nav-link:hover {
-    border-color: transparent;
+    border-bottom: 0.25rem #dee2e6 solid !important;
+    border-top-color: transparent;
+    border-right-color: transparent;
+    border-left-color: transparent;
+    color: #252423;
+}
+
+.project-tab #tabs .nav-tabs .nav-item.show .nav-link,
+.nav-tabs .nav-link.active {
+    color: #4e508a;
+    background-color: transparent;
+    border-color: transparent transparent #f3f3f3;
+    border-bottom: 0.25rem #4e508a solid !important;
 }
 
 .nav-fill .nav-item {
     font-weight: 600;
+}
+
+.nav-link {
+    display: block;
+    padding: 0.25rem 0rem;
+    margin-right: 1rem;
+    color: #252423;
 }
 
 
@@ -579,7 +582,7 @@ a#back-setting svg {
 
 .radio-block {
     position: absolute;
-    top: 2px;
+    top: 3px;
     left: 0;
     height: 14px;
     width: 14px;
@@ -777,14 +780,69 @@ button:focus {
 .input-group-text {
     color: #252423;
 }
-.back-btn{
+
+.back-btn {
     width: 0.75rem;
-height: 0.75rem;
-color: #252423;
-transform: rotate(90deg);
-margin-top: -2px;
-margin-right: 10px;
+    height: 0.75rem;
+    color: #252423;
+    transform: rotate(90deg);
+    margin-top: -2px;
+    margin-right: 10px;
 }
+
 .progress {
     height: 0.5rem;
-    }
+}
+
+.btn-tpt {
+    height: 31px;
+}
+
+.card-blank {
+    margin-bottom: 0px;
+    padding: 8px 0px;
+}
+
+.date-color {
+    color: #4e508a;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+.under-line:hover {
+    text-decoration: underline;
+}
+
+.avtar {
+    width: 2.25rem;
+    height: 2.25rem;
+    background-color: #C8C6C4;
+    text-align: center;
+    line-height: 2.25rem;
+    border-radius: 100%;
+    margin-right: 0.625rem;
+}
+
+.avtar-txt {
+    line-height: 2.25rem;
+}
+
+.table td {
+    padding: 0.75rem 0.75rem 0.75rem 0;
+    border-bottom: 1px solid #f3f2f1;
+    border-top: none;
+}
+
+.right-carate {
+    width: .5rem;
+    height: .5rem;
+    transform: rotate(-90deg);
+}
+
+.nav-tabs {
+    border-bottom: 2px solid #E1DFDD;
+}
+
+.bt {
+    border-top: 1px solid #E1DFDD;
+}
