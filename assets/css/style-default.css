@@ -816,7 +816,7 @@ button:focus {
 .avtar {
     width: 2.25rem;
     height: 2.25rem;
-    background-color: #C8C6C4;
+    background-color: #E1DFDD;
     text-align: center;
     line-height: 2.25rem;
     border-radius: 100%;
@@ -845,4 +845,8 @@ button:focus {
 
 .bt {
     border-top: 1px solid #E1DFDD;
+}
+
+.indent-20 {
+    padding-left: 16px;
 }

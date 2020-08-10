@@ -6,6 +6,7 @@ import * as actionSDK from "action-sdk-sunny";
 var $root = "";
 let row = {};
 let actionInstance = null;
+let max_question_count = 0;
 
 async function getTheme(request) {
     let response = await actionSDK.executeApi(request);
@@ -19,7 +20,7 @@ async function getTheme(request) {
 
     $('div.section-1').append(`<div class="row"><div class="col-12"><div id="root"></div></div></div>`);
     $('div.section-1').after(modal_section);
-    $('div.section-1').after(footer_section);
+    // $('div.section-1').after(footer_section);
     $root = $("#root")
 
     setTimeout(() => {
@@ -31,7 +32,7 @@ async function getTheme(request) {
 }
 
 // *********************************************** HTML ELEMENT***********************************************
-$(document).ready(function() {
+$(document).ready(function () {
     let request = new actionSDK.GetContext.Request();
     getTheme(request);
 });
@@ -39,11 +40,11 @@ $(document).ready(function() {
 function OnPageLoad() {
     actionSDK
         .executeApi(new actionSDK.GetContext.Request())
-        .then(function(response) {
+        .then(function (response) {
             console.info("GetContext - Response: " + JSON.stringify(response));
             getActionInstance(response.context.actionId);
         })
-        .catch(function(error) {
+        .catch(function (error) {
             console.error("GetContext - Error: " + JSON.stringify(error));
         });
 }
@@ -51,12 +52,12 @@ function OnPageLoad() {
 function getActionInstance(actionId) {
     actionSDK
         .executeApi(new actionSDK.GetAction.Request(actionId))
-        .then(function(response) {
+        .then(function (response) {
             console.info("Response: " + JSON.stringify(response));
             actionInstance = response.action;
             createBody();
         })
-        .catch(function(error) {
+        .catch(function (error) {
             console.log("Error: " + JSON.stringify(error));
         });
 }
@@ -82,7 +83,16 @@ function createBody() {
         $card.append($title);
         $card.append($description);
         $root.append($card);
-        createQuestionView();
+        $root.append('<hr>');
+
+        var counter = actionInstance.dataTables[0].dataColumns.length
+        $root.append(text_section1);
+        $('div.card-box:last').find('span.training-type').text(counter > 1 ? "Questions" : "Question");
+        $('div.card-box:last').find('.text-description').text(`Total ${counter} ${counter > 1 ? "Questions" : "Question"} in the Quiz`);
+        $root.after(footer_section1);
+
+
+        // createQuestionView();
         // $root.append($hr);
 
         /* var $spDiv = $('<div class="col-sm-12"></div>');
@@ -95,55 +105,70 @@ function createBody() {
     }
 }
 
-$(document).on('click', '.submit-form', function() {
-    submitForm();
+$(document).on('click', '#start', function () {
+    $root.html('');
+    max_question_count = actionInstance.dataTables[0].dataColumns.length;
+    createQuestionView(0);
 })
 
-function createQuestionView() {
-    var count = 1;
+$(document).on('click', '.submit-form', function () {
+    submitForm();
+});
+
+function createQuestionView(pagenumber) {
+    $('.footer.section-1-footer').remove();
+    $root.after(pagination_footer_section);
+
+    if (pagenumber > 0) {
+        $('#previous').prop('disabled', false);
+    } else {
+        $('#previous').prop('disabled', true);
+    }
+    $('#previous').attr('data-prev-id', (parseInt(pagenumber) - 1));
+    $('#next').attr('data-next-id', (parseInt(pagenumber) + 1));
+
+    $('#xofy').text(`${parseInt(pagenumber) + 1} of ${max_question_count}`);
+
     actionInstance.dataTables.forEach((dataTable) => {
-        dataTable.dataColumns.forEach((question, ind) => {
-            var count = ind + 1;
-            var $card = $('<div class="card-box card-blank"></div>');
-            var $questionHeading = $("<label><strong>" + count + ". " + question.displayName + "</strong></label>"); // Heading of For
-            $card.append($questionHeading);
-            var choice_occurance = 0;
-            /* Check multichoice or single choice options  */
-            if (question.valueType == "SingleOption") {
-                choice_occurance = 1;
-            } else {
-                choice_occurance = 2;
-            }
+        var question = dataTable.dataColumns[pagenumber];
+        var count = parseInt(pagenumber) + 1;
+        $root.append(question_section);
+        $('#root div.card-box:visible .question-title').text(`${count}. ${question.displayName}`);
 
-            console.log("choice occurance" + choice_occurance);
-            console.log("question" + question.valueType);
+        var choice_occurance = 0;
+        /* Check multichoice or single choice options  */
+        if (question.valueType == "SingleOption") {
+            choice_occurance = 1;
+        } else {
+            choice_occurance = 2;
+        }
 
-            //add radio button
-            if (choice_occurance > 1) {
-                question.options.forEach((option) => {
-                    var $radioOption = getCheckboxButton(
-                        option.displayName,
-                        question.name,
-                        option.name
-                    );
-                    $card.append($radioOption);
-                });
-            } else {
-                //add checkbox button
-                question.options.forEach((option) => {
-                    var $radioOption = getRadioButton(
-                        option.displayName,
-                        question.name,
-                        option.name
-                    );
-                    $card.append($radioOption);
-                });
-            }
-            $root.append($card);
-        });
+        console.log("choice occurance" + choice_occurance);
+        console.log("question" + question.valueType);
 
-        count++;
+        //add radio button
+        if (choice_occurance > 1) {
+            question.options.forEach((option) => {
+                var $radioOption = getCheckboxButton(
+                    option.displayName,
+                    question.name,
+                    option.name
+                );
+                $('div.card-box:visible > .indent-20').append($radioOption);
+            });
+        } else {
+            //add checkbox button
+            question.options.forEach((option) => {
+                var $radioOption = getRadioButton(
+                    option.displayName,
+                    question.name,
+                    option.name
+                );
+                $('div.card-box:visible > .indent-20').append($radioOption);
+            });
+        }
     });
+
 }
 
 function getRadioButton(text, name, id) {
@@ -163,10 +188,48 @@ function getCheckboxButton(text, name, id) {
     return div_data;
 }
 
-$(document).on('click', 'div.radio-section', function() {
+$(document).on('click', 'div.radio-section', function () {
     radiobuttonclick($(this).id, $(this).attr('columnId'));
 })
 
+$(document).on("click", '#next', function () {
+    $root.find('.card-box').hide();
+    var pagenumber = $(this).attr('data-next-id');
+
+    console.log(` Prev: ${parseInt(pagenumber) - 1} Current: ${parseInt(pagenumber)} Next: ${parseInt(pagenumber) + 1}`)
+
+    if (pagenumber <= $root.find('div.card-box').length && pagenumber < max_question_count) {
+        createQuestionView(pagenumber);
+    } else if (pagenumber == max_question_count) {
+        /*  Submit your question  */
+        submitForm();
+    } else {
+        $root.find('root < div.card-box.card-blank:nth-child(' + pagenumber + ')').show();
+        $root.find('.card-box:nth-child(' + (parseInt(pagenumber) + 1) + ')').show();
+        $('#previous').attr('data-prev-id', (parseInt(pagenumber) - 1));
+        $('#xofy').text(`${parseInt(pagenumber)} of ${max_question_count}`);
+    }
+
+    if (pagenumber >= max_question_count) {
+        $('#next').attr('disabled', false)
+    }
+});
+
+$(document).on("click", '#previous', function () {
+    var pagenumber = $(this).attr('data-prev-id');
+    console.log(` Prev: ${parseInt(pagenumber)} Current: ${parseInt(pagenumber) + 1} Next: ${parseInt(pagenumber) + 2}`)
+
+    $root.find('.card-box').hide();
+    $root.find('.card-box:nth-child(' + (parseInt(pagenumber) + 1) + ')').show();
+    $('#previous').attr('data-prev-id', (parseInt(pagenumber)));
+    $('#next').attr('data-next-id', (parseInt(pagenumber) + 1));
+    $('#xofy').text(`${(parseInt(pagenumber + 1))} of ${max_question_count}`);
+
+    if (pagenumber <= 0) {
+        $('#previous').attr('disabled', true)
+    }
+
+});
 
 // *********************************************** HTML ELEMENT END***********************************************
 
@@ -175,7 +238,7 @@ $(document).on('click', 'div.radio-section', function() {
 function submitForm() {
     actionSDK
         .executeApi(new actionSDK.GetContext.Request())
-        .then(function(response) {
+        .then(function (response) {
             console.info("GetContext - Response: " + JSON.stringify(response));
 
             /*  Check Show Correct Answer  */
@@ -187,9 +250,9 @@ function submitForm() {
                     var count = 0;
 
                     var ans_rsp = '';
-                    $('#root').find('div.card-box').each(function(i, val) {
+                    $('#root').find('div.card-box').each(function (i, val) {
 
-                        var searchIDs = $(val).find('input:checked').map(function() {
+                        var searchIDs = $(val).find('input:checked').map(function () {
                             return $(this).attr('id');
                         });
 
@@ -198,7 +261,7 @@ function submitForm() {
 
                         if (JSON.stringify(correct_answer[count]) == JSON.stringify(searchIDs.get())) {
                             /*  Answer is correct  */
-                            $.each(correct_answer[count], function(ind, ans_id) {
+                            $.each(correct_answer[count], function (ind, ans_id) {
                                 correct_ans += '<div class="alert alert-success"><p class="mb0">' + $.trim($(val).find('input#' + ans_id).parents('label').text()) + '<i class="fa fa-pull-right fa-check"></i></p></div>';
                             });
                             console.log('correct_ans' + correct_ans);
@@ -207,7 +270,7 @@ function submitForm() {
 
                         } else {
                             /*  Answer is incorrect  */
-                            $.each(searchIDs.get(), function(yind, yans_id) {
+                            $.each(searchIDs.get(), function (yind, yans_id) {
                                 console.log('your ans: ' + $(val).find('input#' + yans_id).attr('id'));
                                 console.log(JSON.stringify(correct_answer[count]));
                                 if ($.inArray($(val).find('input#' + yans_id).attr('id'), correct_answer[count]) != -1) {
@@ -218,7 +281,7 @@ function submitForm() {
                                 }
                             })
 
-                            $.each(correct_answer[count], function(ind, ans_id) {
+                            $.each(correct_answer[count], function (ind, ans_id) {
                                 correct_ans += '<div class="alert alert-success"><p class="mb0">' + $.trim($(val).find('input#' + ans_id).parents('label').text()) + '<i class="fa fa-pull-right fa-check"></i></p></div>';
                             })
 
@@ -237,7 +300,7 @@ function submitForm() {
                     $('#exampleModalCenter').find('#save-changes').hide();
                     $('#exampleModalCenter').modal('show');
 
-                    $("#exampleModalCenter").on("hidden.bs.modal", function() {
+                    $("#exampleModalCenter").on("hidden.bs.modal", function () {
                         // put your default event here
                         addDataRows(response.context.actionId);
                     });
@@ -246,7 +309,7 @@ function submitForm() {
                 }
             }
         })
-        .catch(function(error) {
+        .catch(function (error) {
             console.error("GetContext - Error: " + JSON.stringify(error));
         });
 }
@@ -254,7 +317,7 @@ function submitForm() {
 function radiobuttonclick(questionResponse, colomnId) {
     var data = [];
     row = {};
-    $.each($("input[type='checkbox']:checked"), function(ind, v) {
+    $.each($("input[type='checkbox']:checked"), function (ind, v) {
         var col = $(this).parents("div.form-group").attr("columnid");
         data.push($(this).attr("id"));
 
@@ -262,7 +325,7 @@ function radiobuttonclick(questionResponse, colomnId) {
         row[col] = JSON.stringify(data);
     });
 
-    $.each($("input[type='radio']:checked"), function() {
+    $.each($("input[type='radio']:checked"), function () {
         var col = $(this).parents("div.form-group").attr("columnid");
 
         if (!row[col]) row[col] = [];
@@ -273,7 +336,7 @@ function radiobuttonclick(questionResponse, colomnId) {
 }
 
 function generateGUID() {
-    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
         var r = (Math.random() * 16) | 0,
             v = c == "x" ? r : (r & 0x3) | 0x8;
         return v.toString(16);
@@ -303,10 +366,10 @@ function addDataRows(actionId) {
     ]);
     actionSDK
         .executeBatchApi(batchRequest)
-        .then(function(batchResponse) {
+        .then(function (batchResponse) {
             console.info("BatchResponse: " + JSON.stringify(batchResponse));
         })
-        .catch(function(error) {
+        .catch(function (error) {
             console.error("Error: " + JSON.stringify(error));
         });
 }
@@ -346,3 +409,46 @@ var modal_section = `<div class="modal fade" id="exampleModalCenter" tabindex="-
             </div>
         </div>
     </div>`;
+
+
+var text_section1 = `<div class="card-box card-blank">
+                        <div class="form-group">
+                            <div class="hover-btn ">
+                                <label><strong><span class="training-type">Questions</span></strong> </label><span class="float-right result"></span>
+                            </div>
+                            <div class="clearfix"></div>
+                            <hr>
+                        </div>
+                        <p class="mb0 text-description">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type
+                            specimen book.</p>
+                    </div>`;
+
+var footer_section1 = `<div class="footer section-1-footer">
+                            <div class="footer-padd bt">
+                                <div class="container ">
+                                    <div class="row">
+                                        <div class="col-4"> </div>
+                                        <div class="col-4 text-center"> </div>
+                                        <div class="col-4 text-right"> <button type="button" class="btn btn-primary btn-sm pull-right" id="start"> Start</button></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+
+var question_section = `<div class="card-box card-blank"><label><strong class="question-title">1. ksklaskdl</strong></label>
+                            <div class="indent-20">
+                                
+                            </div>
+                        </div>`;
+
+var pagination_footer_section = `<div class="footer section-1-footer">
+            <div class="footer-padd bt">
+                <div class="container ">
+                    <div class="row">
+                        <div class="col-4"> <button type="button" class="btn btn-primary-outline btn-sm " id="previous" disabled> Back</button></div>
+                        <div class="col-4 text-center" id="xofy"> 1 of 4</div>
+                        <div class="col-4 text-right"> <button type="button" class="btn btn-primary btn-sm pull-right" id="next"> Next</button></div>
+                    </div>
+                </div>
+            </div>
+        </div>`;
