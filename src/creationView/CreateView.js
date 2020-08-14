@@ -14,11 +14,11 @@ let opt = '';
 getTheme(request); */
 
 /* Add Questions */
-$(document).on("click", "#add-questions", function() {
+$(document).on("click", "#add-questions", function () {
     var question_counter;
     $(this).parents("div.container").before(question_section.clone());
 
-    $("div.question-container:visible").each(function(index, elem) {
+    $("div.question-container:visible").each(function (index, elem) {
         question_counter = index + 1;
         $(elem)
             .find("span.question-number")
@@ -29,7 +29,7 @@ $(document).on("click", "#add-questions", function() {
 });
 
 /* Remove Questions */
-$(document).on("click", ".remove-question", function() {
+$(document).on("click", ".remove-question", function () {
     var element = $(this);
     if ($("div.question-container:visible").length > 1) {
         $("#exampleModalCenter")
@@ -45,12 +45,12 @@ $(document).on("click", ".remove-question", function() {
             );
         $("#exampleModalCenter").modal("show");
 
-        $(document).on("click", "#delete-question", function() {
+        $(document).on("click", "#delete-question", function () {
             $("#exampleModalCenter").modal("hide");
 
             element.parents("div.question-container").remove();
             var question_counter;
-            $("div.question-container:visible").each(function(index, elem) {
+            $("div.question-container:visible").each(function (index, elem) {
                 question_counter = index + 1;
                 $(elem).find("span.question-number").text(question_counter);
                 $(elem).attr({ id: "question" + question_counter });
@@ -73,11 +73,11 @@ $(document).on("click", ".remove-question", function() {
 });
 
 /* Add Options */
-$(document).on("click", ".add-options", function() {
+$(document).on("click", ".add-options", function () {
     if (
         $(this)
-        .parents("div.container")
-        .find("div.option-div > div.input-group > input[type='text']").length >=
+            .parents("div.container")
+            .find("div.option-div > div.input-group > input[type='text']").length >=
         10
     ) {
         $("#exampleModalCenter")
@@ -115,7 +115,7 @@ $(document).on("click", ".add-options", function() {
     var selector = $(this).parents("div.container");
     $(selector)
         .find('div.option-div > div.input-group > input[type="text"]')
-        .each(function(index, elem) {
+        .each(function (index, elem) {
             var counter = index + 1;
             $(elem).attr({
                 placeholder: "Option " + counter,
@@ -129,7 +129,7 @@ $(document).on("click", ".add-options", function() {
 });
 
 /* Remove Options */
-$(document).on("click", ".remove-option", function(eve) {
+$(document).on("click", ".remove-option", function (eve) {
     if (
         $(this).parents("div.question-container").find("div.option-div").length > 2
     ) {
@@ -137,7 +137,7 @@ $(document).on("click", ".remove-option", function(eve) {
         $(this).parents("div.option-div").remove();
         $(selector)
             .find('div.option-div > div.input-group > input[type="text"]')
-            .each(function(index, elem) {
+            .each(function (index, elem) {
                 var counter = index + 1;
                 $(elem).attr({
                     placeholder: "Option " + counter,
@@ -178,20 +178,20 @@ $(document).on("click", ".remove-option", function(eve) {
     }
 });
 
-$(document).on("click", ".show-setting", function() {
+$(document).on("click", ".show-setting", function () {
     $(".section-1").hide();
     $(".section-1-footer").hide();
     $("form #setting").show();
 });
 
-$(document).on("click", "#next", function() {
+$(document).on("click", "#next", function () {
     /* Validate */
     var error_text = "";
     var question_number = 0;
 
     $("form")
         .find("input[type='text']")
-        .each(function() {
+        .each(function () {
             var element = $(this);
             if (element.val() == "") {
                 validate = false;
@@ -202,9 +202,9 @@ $(document).on("click", "#next", function() {
                     if (
                         question_number !=
                         element
-                        .parents("div.form-group")
-                        .find("span.question-number")
-                        .text()
+                            .parents("div.form-group")
+                            .find("span.question-number")
+                            .text()
                     ) {
                         question_number = element
                             .parents("div.form-group")
@@ -255,7 +255,7 @@ $(document).on("click", "#next", function() {
     }
 });
 
-$(document).on("click", "#submit", function() {
+$(document).on("click", "#submit", function () {
     $("#submit").prop('disabled', true);
     submitForm();
 });
@@ -271,7 +271,7 @@ function submitForm() {
 
     $("form")
         .find("input[type='text']")
-        .each(function() {
+        .each(function () {
             var element = $(this);
             if (element.val() == "") {
                 validate = false;
@@ -316,11 +316,11 @@ function submitForm() {
     if ($.trim(error_text).length <= 0) {
         actionSDK
             .executeApi(new actionSDK.GetContext.Request())
-            .then(function(response) {
+            .then(function (response) {
                 console.info("GetContext - Response: " + JSON.stringify(response));
                 createAction(response.context.actionPackageId);
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 console.error("GetContext - Error: " + JSON.stringify(error));
             });
     } else {
@@ -346,7 +346,7 @@ function getQuestionSet() {
         /* Looping for options */
         $("#question" + i)
             .find("div.option-div")
-            .each(function(index, elem) {
+            .each(function (index, elem) {
                 var count = index + 1;
                 var opt_id = "question" + i + "option" + count;
                 var opt_title = $("#question" + i)
@@ -355,8 +355,8 @@ function getQuestionSet() {
 
                 if (
                     $("#question" + i)
-                    .find("#check" + count)
-                    .is(":checked")
+                        .find("#check" + count)
+                        .is(":checked")
                 ) {
                     // if it is checked
                     is_selected++;
@@ -430,13 +430,13 @@ function getCorrectAnswer() {
         /* Looping for options */
         $("#question" + i)
             .find("div.option-div")
-            .each(function(index, elem) {
+            .each(function (index, elem) {
                 var count = index + 1;
 
                 if (
                     $("#question" + i)
-                    .find("#check" + count)
-                    .is(":checked")
+                        .find("#check" + count)
+                        .is(":checked")
                 ) {
                     var opt_id = "question" + i + "option" + count;
 
@@ -511,7 +511,7 @@ function createAction(actionPackageId) {
             itemsEditable: false,
             canUserAddMultipleItems: false,
             dataColumns: questionsSet,
-        }, ],
+        },],
     };
     console.log("action: ");
     console.log(JSON.stringify(action));
@@ -519,23 +519,23 @@ function createAction(actionPackageId) {
     var request = new actionSDK.CreateAction.Request(action);
     actionSDK
         .executeApi(request)
-        .then(function(response) {
+        .then(function (response) {
             console.info("CreateAction - Response: " + JSON.stringify(response));
         })
-        .catch(function(error) {
+        .catch(function (error) {
             console.error("CreateAction - Error: " + JSON.stringify(error));
         });
 }
 
 function generateGUID() {
-    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
         var r = (Math.random() * 16) | 0,
             v = c == "x" ? r : (r & 0x3) | 0x8;
         return v.toString(16);
     });
 }
 
-$(document).ready(function() {
+$(document).ready(function () {
     let request = new actionSDK.GetContext.Request();
     getTheme(request);
 });
@@ -561,10 +561,17 @@ async function getTheme(request) {
         .toISOString()
         .split("T")[0];
 
+    var week_month = new Date(week_date).toLocaleString('default', { month: 'short' });
+    var week_d = new Date(week_date).getDate();
+    var week_year = new Date(week_date).getFullYear();
+    var week_date_format = week_month + " " + week_d + ", " + week_year;
+
+    var current_time = (("0" + new Date().getHours()).substr(-2)) + ":" + (("0" + new Date().getMinutes()).substr(-2));
+
     var today = new Date()
         .toISOString()
         .split("T")[0];
-    $("#expiry-date").val(week_date).attr({ min: today });
+    // $(".form_date").attr({ "data-date": week_date_format });
     $("form").append($("#setting").clone());
     $("#add-questions").click();
 
@@ -572,10 +579,51 @@ async function getTheme(request) {
         $("form.sec1").show();
     }, 1000);
 
+
+    $('.form_date input').val(week_date_format);
+    $(".form_date").attr({ "data-date": week_date_format });
+
+    /* $('.form_date').datetimepicker({
+        language: 'en',
+        weekStart: 1,
+        todayBtn: 1,
+        autoclose: 1,
+        todayHighlight: 1,
+        startView: 2,
+        minView: 2,
+        forceParse: 0,
+    }); */
+
+    $('.form_time').datetimepicker({
+        language: 'en',
+        weekStart: 1,
+        todayBtn: 1,
+        autoclose: 1,
+        todayHighlight: 1,
+        startView: 1,
+        minView: 0,
+        maxView: 1,
+        forceParse: 0
+    });
+
+    $('.form_time input').val(current_time);
+
+
+    var date_input = $('input[name="expiry_date"]'); //our date input has the name "date"
+    var container = $('.bootstrap-iso form').length > 0 ? $('.bootstrap-iso form').parent() : "body";
+    var options = {
+        format: 'M dd, yyyy',
+        container: container,
+        todayHighlight: true,
+        autoclose: true,
+        orientation: 'top'
+    };
+    date_input.datepicker(options);
+
     await actionSDK.executeApi(new actionSDK.HideLoadingIndicator.Request());
 }
 
-$(document).on("click", "#back", function() {
+$(document).on("click", "#back", function () {
     $(".section-1").show();
     $(".section-1-footer").show();
 
@@ -585,7 +633,7 @@ $(document).on("click", "#back", function() {
 
 });
 
-$(document).on("change", "#expiry-date, #expiry-time, .visible-to", function() {
+$(document).on("change", ".form_time input, .form_date input, .visible-to", function () {
     var end = new Date($('input[name="expiry_date"]').val() + ' ' + $('input[name="expiry_time"]').val());
     var start = new Date();
     var days = calc_date_diff(start, end);
@@ -846,15 +894,26 @@ var setting_section = `<div style="display:none" id="setting">
                 <div class="clearfix"></div>
                 <div class="col-1"></div>
                 <div class="col-5">
-                    <div class="input-group input-group-tpt mb-2">
-                        <input type="date" name="expiry_date" class="form-control in-t" placeholder="Date"
+                    <!-- <div class="input-group input-group-tpt mb-2">
+                        <input type="text" name="expiry_date" class="form-control in-t" placeholder="Date"
                             aria-label="Expiry Date" aria-describedby="basic-addon2" id="expiry-date">
+                    </div> -->
+
+                    <div class="input-group date form_date col-md-5" data-date="1979-09-16T05:25:07Z" data-date-format="M dd, yyyy" data-link-field="dtp_input1">
+                        <input class="form-control in-t" size="16" name="expiry_date" type="text" value="" readonly>
+                        
                     </div>
                 </div>
                 <div class="col-5">
-                    <div class="input-group input-group-tpt mb-2">
+                    <!-- <div class="input-group input-group-tpt mb-2">
                         <input type="time" name="expiry_time" class="form-control in-t" placeholder="Time"
                             aria-label="Time" aria-describedby="basic-addon2" id="expiry-time" value="23:59">
+                    </div> -->
+
+                    <div class="input-group date form_time col-md-5" data-date="" data-date-format="hh:ii" data-link-field="dtp_input3" data-link-format="hh:ii">
+                        <input class="form-control in-t" name="expiry_time" size="16" type="text" value="" readonly>
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
                     </div>
                 </div>
                 <div class="clearfix"></div>

@@ -7,6 +7,9 @@ var $root = "";
 let row = {};
 let actionInstance = null;
 let max_question_count = 0;
+let current_page = 0;
+let summary_answer_resp = [];
+
 
 async function getTheme(request) {
     let response = await actionSDK.executeApi(request);
@@ -20,7 +23,7 @@ async function getTheme(request) {
 
     $('div.section-1').append(`<div class="row"><div class="col-12"><div id="root"></div></div></div>`);
     $('div.section-1').after(modal_section);
-    // $('div.section-1').after(footer_section);
+    $('div.section-1').after(modal_section1);
     $root = $("#root")
 
     setTimeout(() => {
@@ -108,30 +111,30 @@ function createBody() {
 $(document).on('click', '#start', function () {
     $root.html('');
     max_question_count = actionInstance.dataTables[0].dataColumns.length;
-    createQuestionView(0);
+    createQuestionView();
 })
 
 $(document).on('click', '.submit-form', function () {
     submitForm();
 });
 
-function createQuestionView(pagenumber) {
+function createQuestionView() {
     $('.footer.section-1-footer').remove();
     $root.after(pagination_footer_section);
 
-    if (pagenumber > 0) {
+    if (current_page > 0) {
         $('#previous').prop('disabled', false);
     } else {
         $('#previous').prop('disabled', true);
     }
-    $('#previous').attr('data-prev-id', (parseInt(pagenumber) - 1));
-    $('#next').attr('data-next-id', (parseInt(pagenumber) + 1));
+    $('#previous').attr('data-prev-id', (parseInt(current_page) - 1));
+    $('#next').attr('data-next-id', (parseInt(current_page) + 1));
 
-    $('#xofy').text(`${parseInt(pagenumber) + 1} of ${max_question_count}`);
+    $('#xofy').text(`${parseInt(current_page) + 1} of ${max_question_count}`);
 
     actionInstance.dataTables.forEach((dataTable) => {
-        var question = dataTable.dataColumns[pagenumber];
-        var count = parseInt(pagenumber) + 1;
+        var question = dataTable.dataColumns[current_page];
+        var count = parseInt(current_page) + 1;
         $root.append(question_section);
         $('#root div.card-box:visible .question-title').text(`${count}. ${question.displayName}`);
 
@@ -193,40 +196,163 @@ $(document).on('click', 'div.radio-section', function () {
 })
 
 $(document).on("click", '#next', function () {
-    $root.find('.card-box').hide();
+    var answerKeys = JSON.parse(actionInstance.customProperties[4].value);
+    var correct_ans_arr = [];
+    var selected_answer = [];
+    var check_counter = 0;
+    var correct_answer = false;
+    var attr_name = '';
     var pagenumber = $(this).attr('data-next-id');
+    current_page = pagenumber;
 
-    console.log(` Prev: ${parseInt(pagenumber) - 1} Current: ${parseInt(pagenumber)} Next: ${parseInt(pagenumber) + 1}`)
+    /* Check if radio or checkbox is checked */
+    var is_checked = false;
 
-    if (pagenumber <= $root.find('div.card-box').length && pagenumber < max_question_count) {
-        createQuestionView(pagenumber);
-    } else if (pagenumber == max_question_count) {
-        /*  Submit your question  */
-        submitForm();
+    $('div.card-box:visible').find("input[type='checkbox']:checked").each(function (ind, ele) {
+        if ($(ele).is(':checked')) {
+            check_counter++;
+            selected_answer.push($.trim($(ele).attr('id')));
+            attr_name = $(ele).attr('name');
+            data.push($(this).attr("id"));
+
+            is_checked = true;
+        }
+    });
+
+    $('div.card-box:visible').find("input[type='radio']:checked").each(function (ind, ele) {
+        if ($(ele).is(':checked')) {
+            check_counter++;
+            selected_answer.push($.trim($(ele).attr('id')));
+            attr_name = $(ele).attr('name');
+
+            is_checked = true;
+        }
+    });
+
+    if (is_checked == true) {
+
+        var is_checked = false;
+
+        $.each(selected_answer, function (i, selected_subarray) {
+            console.log(answerKeys.toString());
+            if ($.inArray(selected_subarray, answerKeys[(attr_name - 1)]) !== -1) {
+                correct_answer = true;
+            }
+        });
+
+        summary_answer_resp.push(correct_answer)
+
+        /* console.log(attr_name - 1);
+        console.log(answerKeys[(attr_name - 1)].toString()); */
+        $.each(answerKeys[(attr_name - 1)], function (ii, subarr) {
+            correct_ans_arr.push($.trim($('#' + subarr).text()));
+        });
+
+
+        var correct_value = correct_ans_arr.join();
+        // console.log('correct_value: ' + correct_value);
+        if (actionInstance.customProperties[3].value == 'Yes' && $('div.card-box:visible').find("input").attr('disabled') !== "disabled") {
+            if (correct_answer == true) {
+                $('#exampleModalCenter').find('#exampleModalLongTitle').html('Answer response');
+                $('#exampleModalCenter').find('.modal-body').html(`<label class="text-success"><i class="fa fa-check" aria-hidden="true"></i> <strong>Correct</strong></label><p><label>Your Answer</label><br>${correct_value}</p>`);
+                $('#exampleModalCenter').find('.modal-footer').html('<button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Continue</button>');
+                $('#exampleModalCenter').find('#save-changes').hide();
+                $('#exampleModalCenter').modal('show');
+            } else {
+                $('#exampleModalCenter').find('#exampleModalLongTitle').html('Answer response');
+                $('#exampleModalCenter').find('.modal-body').html(`<label class="text-danger"><i class="fa fa-remove" aria-hidden="true"></i> <strong>Incorrect</strong></label><p><label>Correct Answer</label><br>${correct_value}</p>`);
+                $('#exampleModalCenter').find('.modal-footer').html('<button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Continue</button>');
+                $('#exampleModalCenter').find('#save-changes').hide();
+                $('#exampleModalCenter').modal('show');
+            }
+
+            if ($('#modal-close').length <= 0) {
+
+                $("#exampleModalCenter").on("hidden.bs.modal", function () {
+
+                    $root.after('<span id="modal-close"></span>');
+
+                    $root.find('div.card-box:visible').find("input").each(function (ind, ele) {
+                        $(ele).prop('disabled', true);
+                    });
+
+                    $root.find('.card-box').hide();
+
+                    if ((parseInt(current_page) <= $root.find('div.card-box').length) && (parseInt(current_page)) < max_question_count) {
+                        createQuestionView();
+                    } else if (parseInt(current_page) == max_question_count) {
+                        /*  Submit your question  */
+                        submitForm();
+                    } else {
+                        $root.find('root < div.card-box.card-blank:nth-child(' + current_page + ')').show();
+                        $root.find('.card-box:nth-child(' + (parseInt(current_page) + 1) + ')').show();
+                        $('#previous').attr('data-prev-id', (parseInt(current_page) - 1));
+                        $('#xofy').text(`${parseInt(current_page)} of ${max_question_count}`);
+                    }
+
+                    if (current_page >= max_question_count) {
+                        $('#next').attr('disabled', false)
+                    }
+                });
+            }
+
+
+        } else {
+            $root.find('div.card-box:visible').find("input").each(function (ind, ele) {
+                $(ele).prop('disabled', true);
+            });
+
+            $root.find('.card-box').hide();
+
+            if ((parseInt(current_page) <= $root.find('div.card-box').length) && (parseInt(current_page)) < max_question_count) {
+                createQuestionView();
+            } else if (parseInt(current_page) == max_question_count) {
+                /*  Submit your question  */
+                submitForm();
+            } else {
+                $root.find('root < div.card-box.card-blank:nth-child(' + current_page + ')').show();
+                $root.find('.card-box:nth-child(' + (parseInt(current_page) + 1) + ')').show();
+                $('#previous').attr('data-prev-id', (parseInt(current_page) - 1));
+                $('#xofy').text(`${parseInt(current_page)} of ${max_question_count}`);
+            }
+
+            if (current_page >= max_question_count) {
+                $('#next').attr('disabled', false)
+            }
+        }
+
+        console.log(` Prev: ${parseInt(pagenumber) - 1} Current: ${parseInt(pagenumber)} Next: ${parseInt(pagenumber) + 1}`);
+        console.log(` current_page: ${parseInt(current_page)} max_question_count: ${parseInt(max_question_count)} `);
+
+
     } else {
-        $root.find('root < div.card-box.card-blank:nth-child(' + pagenumber + ')').show();
-        $root.find('.card-box:nth-child(' + (parseInt(pagenumber) + 1) + ')').show();
-        $('#previous').attr('data-prev-id', (parseInt(pagenumber) - 1));
-        $('#xofy').text(`${parseInt(pagenumber)} of ${max_question_count}`);
+        $('#exampleModalCenter').find('#exampleModalLongTitle').html('<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve" class="gt gs mt--4"><g><g><g><path d="M507.113,428.415L287.215,47.541c-6.515-11.285-18.184-18.022-31.215-18.022c-13.031,0-24.7,6.737-31.215,18.022L4.887,428.415c-6.516,11.285-6.516,24.76,0,36.044c6.515,11.285,18.184,18.022,31.215,18.022h439.796c13.031,0,24.7-6.737,31.215-18.022C513.629,453.175,513.629,439.7,507.113,428.415z M481.101,449.441c-0.647,1.122-2.186,3.004-5.202,3.004H36.102c-3.018,0-4.556-1.881-5.202-3.004c-0.647-1.121-1.509-3.394,0-6.007L250.797,62.559c1.509-2.613,3.907-3.004,5.202-3.004c1.296,0,3.694,0.39,5.202,3.004L481.1,443.434C482.61,446.047,481.748,448.32,481.101,449.441z"/><rect x="240.987" y="166.095" width="30.037" height="160.197" /><circle cx="256.005" cy="376.354" r="20.025" /></g></g></g > <g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g></svg > Note!');
+        $('#exampleModalCenter').find('.modal-body').html(`<label>Please choose any choice<label>`);
+        $('#exampleModalCenter').find('.modal-footer').html('<button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Continue</button>');
+        $('#exampleModalCenter').find('#save-changes').hide();
+        $('#exampleModalCenter').modal('show');
+
+        $("#exampleModalCenter").on("hidden.bs.modal", function () {
+            $('#next').attr('disabled', false);
+        });
     }
 
-    if (pagenumber >= max_question_count) {
-        $('#next').attr('disabled', false)
-    }
 });
 
 $(document).on("click", '#previous', function () {
     var pagenumber = $(this).attr('data-prev-id');
-    console.log(` Prev: ${parseInt(pagenumber)} Current: ${parseInt(pagenumber) + 1} Next: ${parseInt(pagenumber) + 2}`)
+    current_page = pagenumber;
+    console.log(` Prev: ${parseInt(current_page)} Current: ${parseInt(current_page) + 1} Next: ${parseInt(current_page) + 2}`)
+    console.log(` current_page: ${parseInt(current_page)} max_question_count: ${parseInt(max_question_count)} `);
 
     $root.find('.card-box').hide();
-    $root.find('.card-box:nth-child(' + (parseInt(pagenumber) + 1) + ')').show();
-    $('#previous').attr('data-prev-id', (parseInt(pagenumber)));
-    $('#next').attr('data-next-id', (parseInt(pagenumber) + 1));
-    $('#xofy').text(`${(parseInt(pagenumber + 1))} of ${max_question_count}`);
+    $root.find('.card-box:nth-child(' + (parseInt(current_page) + 1) + ')').show();
+    $('#previous').attr('data-prev-id', (parseInt(current_page)));
+    $('#next').attr('data-next-id', (parseInt(current_page) + 1));
+    $('#xofy').text(`${(parseInt(current_page + 1))} of ${max_question_count}`);
 
-    if (pagenumber <= 0) {
-        $('#previous').attr('disabled', true)
+    if (current_page <= 0) {
+        $('#previous').attr('disabled', true);
     }
 
 });
@@ -294,13 +420,13 @@ function submitForm() {
                         count++;
                     });
 
-                    $('#exampleModalCenter').find('#exampleModalLongTitle').html('<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve" class="gt gs mt--4"><g><g><g><path d="M507.113,428.415L287.215,47.541c-6.515-11.285-18.184-18.022-31.215-18.022c-13.031,0-24.7,6.737-31.215,18.022L4.887,428.415c-6.516,11.285-6.516,24.76,0,36.044c6.515,11.285,18.184,18.022,31.215,18.022h439.796c13.031,0,24.7-6.737,31.215-18.022C513.629,453.175,513.629,439.7,507.113,428.415z M481.101,449.441c-0.647,1.122-2.186,3.004-5.202,3.004H36.102c-3.018,0-4.556-1.881-5.202-3.004c-0.647-1.121-1.509-3.394,0-6.007L250.797,62.559c1.509-2.613,3.907-3.004,5.202-3.004c1.296,0,3.694,0.39,5.202,3.004L481.1,443.434C482.61,446.047,481.748,448.32,481.101,449.441z"/><rect x="240.987" y="166.095" width="30.037" height="160.197" /><circle cx="256.005" cy="376.354" r="20.025" /></g></g></g > <g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g></svg > Answer response!');
-                    $('#exampleModalCenter').find('.modal-body').html(ans_rsp);
-                    $('#exampleModalCenter').find('.modal-footer').html('<button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Next</button>');
-                    $('#exampleModalCenter').find('#save-changes').hide();
-                    $('#exampleModalCenter').modal('show');
+                    $('#exampleModalCenter1').find('#exampleModalLongTitle').html('Quiz Summary');
+                    $('#exampleModalCenter1').find('.modal-body').html(ans_rsp);
+                    $('#exampleModalCenter1').find('.modal-footer').html('<button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Submit</button>');
+                    $('#exampleModalCenter1').find('#save-changes').hide();
+                    $('#exampleModalCenter1').modal('show');
 
-                    $("#exampleModalCenter").on("hidden.bs.modal", function () {
+                    $("#exampleModalCenter1").on("hidden.bs.modal", function () {
                         // put your default event here
                         addDataRows(response.context.actionId);
                     });
@@ -409,6 +535,28 @@ var modal_section = `<div class="modal fade" id="exampleModalCenter" tabindex="-
             </div>
         </div>
     </div>`;
+
+var modal_section1 = `<div class="modal fade" id="exampleModalCenter1" tabindex="-1" role="dialog"
+        aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title app-black-color" id="exampleModalLongTitle">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body app-black-color">
+                    ...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-dismiss="modal">Back</button>
+                    <button type="button" class="btn btn-primary btn-sm" id="save-changes">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>`;
+
 
 
 var text_section1 = `<div class="card-box card-blank">

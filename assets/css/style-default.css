@@ -850,3 +850,266 @@ button:focus {
 .indent-20 {
     padding-left: 16px;
 }
+
+
+/* date */
+
+.datepicker {
+    padding: 0.875rem;
+    border-radius: 0px;
+    direction: ltr;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 0.8rem 1rem -0.2rem;
+}
+
+.datepicker .thead {
+    height: 40px;
+}
+
+.datepicker table tr td,
+.datepicker table tr th {
+    text-align: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 4px;
+    border: none;
+    font-size: 0.75rem;
+    font-weight: 400;
+}
+
+.datepicker-days .prev {
+    position: absolute;
+    right: 40px;
+    font-size: 30px;
+    top: 6px;
+}
+
+.datepicker-days .next {
+    position: absolute;
+    right: 4px;
+    font-size: 30px;
+    top: 6px;
+}
+
+.datepicker-days .datepicker-switch {
+    position: absolute;
+    left: 22px;
+    width: auto;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.datepicker table thead tr {
+    height: 30px;
+}
+
+.datepicker table thead tr+tr {
+    border-top: 1px solid #E1DFDD;
+}
+
+.datepicker thead tr:first-child th:hover,
+.datepicker tfoot tr th:hover {
+    background: transparent;
+    color: rgba(98, 100, 167, 1);
+}
+
+.datepicker table tr td.today,
+.datepicker table tr td.today:hover,
+.datepicker table tr td.today.disabled,
+.datepicker table tr td.today.disabled:hover {
+    color: #f3f2f1;
+    background-color: rgba(98, 100, 167, 0.8);
+    border-color: transparent;
+}
+
+.datepicker table tr td.today:hover:hover {
+    color: #000;
+}
+
+.datepicker table tr td.today:hover,
+.datepicker table tr td.today:hover:hover,
+.datepicker table tr td.today.disabled:hover,
+.datepicker table tr td.today.disabled:hover:hover,
+.datepicker table tr td.today:focus,
+.datepicker table tr td.today:hover:focus,
+.datepicker table tr td.today.disabled:focus,
+.datepicker table tr td.today.disabled:hover:focus,
+.datepicker table tr td.today:active,
+.datepicker table tr td.today:hover:active,
+.datepicker table tr td.today.disabled:active,
+.datepicker table tr td.today.disabled:hover:active,
+.datepicker table tr td.today.active,
+.datepicker table tr td.today:hover.active,
+.datepicker table tr td.today.disabled.active,
+.datepicker table tr td.today.disabled:hover.active,
+.open .dropdown-toggle.datepicker table tr td.today,
+.open .dropdown-toggle.datepicker table tr td.today:hover,
+.open .dropdown-toggle.datepicker table tr td.today.disabled,
+.open .dropdown-toggle.datepicker table tr td.today.disabled:hover {
+    color: #f3f2f1;
+    background-color: rgba(98, 100, 167, 1);
+    border-color: #6264A7;
+}
+
+.datepicker table tr td,
+.datepicker table tr th {
+    text-align: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 3px;
+    border: none;
+    border-top-color: currentcolor;
+    border-right-color: currentcolor;
+    border-bottom-color: currentcolor;
+    border-left-color: currentcolor;
+    font-size: 0.75rem;
+    font-weight: 400;
+}
+
+.datepicker table tr td.active:hover,
+.datepicker table tr td.active:hover:hover,
+.datepicker table tr td.active.disabled:hover,
+.datepicker table tr td.active.disabled:hover:hover,
+.datepicker table tr td.active:focus,
+.datepicker table tr td.active:hover:focus,
+.datepicker table tr td.active.disabled:focus,
+.datepicker table tr td.active.disabled:hover:focus,
+.datepicker table tr td.active:active,
+.datepicker table tr td.active:hover:active,
+.datepicker table tr td.active.disabled:active,
+.datepicker table tr td.active.disabled:hover:active,
+.datepicker table tr td.active.active,
+.datepicker table tr td.active:hover.active,
+.datepicker table tr td.active.disabled.active,
+.datepicker table tr td.active.disabled:hover.active,
+.open .dropdown-toggle.datepicker table tr td.active,
+.open .dropdown-toggle.datepicker table tr td.active:hover,
+.open .dropdown-toggle.datepicker table tr td.active.disabled,
+.open .dropdown-toggle.datepicker table tr td.active.disabled:hover {
+    color: #11100F;
+    background-color: rgba(98, 100, 167, 0.3);
+    border-color: transparent;
+}
+
+.datepicker table tr td.day:hover,
+.datepicker table tr td.day.focused {
+    background: #E1DFDD;
+    cursor: pointer;
+}
+
+.datepicker table tr td span.active:hover,
+.datepicker table tr td span.active:hover:hover,
+.datepicker table tr td span.active.disabled:hover,
+.datepicker table tr td span.active.disabled:hover:hover,
+.datepicker table tr td span.active:focus,
+.datepicker table tr td span.active:hover:focus,
+.datepicker table tr td span.active.disabled:focus,
+.datepicker table tr td span.active.disabled:hover:focus,
+.datepicker table tr td span.active:active,
+.datepicker table tr td span.active:hover:active,
+.datepicker table tr td span.active.disabled:active,
+.datepicker table tr td span.active.disabled:hover:active,
+.datepicker table tr td span.active.active,
+.datepicker table tr td span.active:hover.active,
+.datepicker table tr td span.active.disabled.active,
+.datepicker table tr td span.active.disabled:hover.active,
+.open .dropdown-toggle.datepicker table tr td span.active,
+.open .dropdown-toggle.datepicker table tr td span.active:hover,
+.open .dropdown-toggle.datepicker table tr td span.active.disabled,
+.open .dropdown-toggle.datepicker table tr td span.active.disabled:hover {
+    color: #11100F;
+    background-color: rgba(98, 100, 167, 0.3);
+    border-color: transparent;
+}
+
+.dropdown-menu {
+    color: #11100F;
+}
+
+.datepicker .fa {
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: #fff;
+}
+
+.date.form_date input {
+    background-image: url(https://www.webcraft.co.in/teams-ic/cal.png);
+    background-repeat: no-repeat;
+    background-position: right 10px top 5px;
+}
+
+.datetimepicker-hours thead tr th {
+    opacity: 0;
+}
+
+.datetimepicker .datetimepicker-hours span {
+    height: 30px;
+    line-height: 30px;
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: #11100F;
+}
+
+.datetimepicker-dropdown-bottom-right {
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 0.8rem 1rem -0.2rem;
+}
+
+.datetimepicker-hours .prev {
+    display: none;
+}
+
+.datetimepicker th.switch {
+    height: 1px;
+    display: none;
+}
+
+.datetimepicker-hours .next {
+    display: none;
+}
+
+.datetimepicker-dropdown-bottom-right.dropdown-menu {
+    min-width: 12rem;
+}
+
+.datetimepicker-dropdown-bottom-right .table-condensed {
+    width: 100%;
+}
+
+.datetimepicker-dropdown-bottom-right .today {
+    font-size: 0.75rem;
+}
+
+.datetimepicker thead tr:first-child th:hover,
+.datetimepicker tfoot th:hover {
+    background: #E1DFDD;
+}
+
+.datetimepicker table tr td span.active:active,
+.datetimepicker table tr td span.active:hover:active,
+.datetimepicker table tr td span.active.disabled:active,
+.datetimepicker table tr td span.active.disabled:hover:active,
+.datetimepicker table tr td span.active.active,
+.datetimepicker table tr td span.active:hover.active,
+.datetimepicker table tr td span.active.disabled.active,
+.datetimepicker table tr td span.active.disabled:hover.active {
+    color: #f3f2f1;
+    background-color: rgba(98, 100, 167, 1);
+    text-shadow: none;
+    background-image: none;
+}
+
+.datetimepicker table tr td span:hover {
+    background: #E1DFDD;
+}
+
+.datetimepicker .datetimepicker-minutes span {
+    height: 30px;
+    line-height: 30px;
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: #11100F;
+}
+
+.date.form_time input {
+    background-image: url(https://www.webcraft.co.in/teams-ic/time.png);
+    background-repeat: no-repeat;
+    background-position: right 10px top 5px;
+}
