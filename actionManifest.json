@@ -2,7 +2,7 @@
     "id": "com.microsoft.sample.quiz.mike06072001",
     "name": "Quiz(Mike)",
     "$schema": "https://int.actions.office365.com/ActionCommon/jsons/ActionManifest.schema.json",
-    "description": "Quiz",
+    "description": "Create Quiz",
     "provider": {
         "name": "Microsoft",
         "websiteUrl": "https://www.microsoft.com/",
@@ -11,22 +11,22 @@
     },
     "icon": "images/appIcon.png",
     "actionModel": "actionModel.json",
-    "version": "1.2.30",
+    "version": "1.2.32",
     "views": {
         "CardView": {
             "sourceLocation": "cardView.json"
         },
         "LaunchView": {
-            "sourceLocation": "createView.html",
-            "header": "Quiz"
+            "sourceLocation": "html/createView.html",
+            "header": "Create Quiz"
         },
         "UpdateView": {
-            "sourceLocation": "updateView.html",
-            "header": "Fill out Check-In"
+            "sourceLocation": "html/updateView.html",
+            "header": "Fill out Quiz"
         },
         "DetailView": {
-            "sourceLocation": "detailView.html",
-            "header": "Results view"
+            "sourceLocation": "html/detailView.html",
+            "header": "Quiz Results view"
         }
     },
     "localizationInfo": {

@@ -1,7 +1,7 @@
 {
     "id": "com.microsoft.sample.quiz.mike06072005",
     "name": "Quiz",
-    "description": "Quiz",
+    "description": "Create Quiz",
     "provider": {
         "name": "Microsoft",
         "websiteUrl": "https://www.microsoft.com/",
@@ -10,22 +10,22 @@
     },
     "icon": "images/appIcon.png",
     "actionModel": "actionModel.json",
-    "version": "1.0.4",
+    "version": "1.0.14",
     "views": {
         "CardView": {
             "sourceLocation": "json/cardView.json"
         },
         "LaunchView": {
             "sourceLocation": "html/createView.html",
-            "header": "Quiz"
+            "header": "Create Quiz"
         },
         "UpdateView": {
             "sourceLocation": "html/updateView.html",
-            "header": "Fill out Check-In"
+            "header": "Fill out Quiz"
         },
         "DetailView": {
             "sourceLocation": "html/detailView.html",
-            "header": "Results view"
+            "header": "Quiz Results view"
         }
     },
     "localizationInfo": {
