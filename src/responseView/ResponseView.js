@@ -31,11 +31,13 @@ async function getTheme(request) {
         $('div.footer').show();
     }, 1000);
 
+    await actionSDK.executeApi(new actionSDK.HideLoadingIndicator.Request());
+
     OnPageLoad();
 }
 
 // *********************************************** HTML ELEMENT***********************************************
-$(document).ready(function () {
+$(document).ready(function() {
     let request = new actionSDK.GetContext.Request();
     getTheme(request);
 });
@@ -43,11 +45,11 @@ $(document).ready(function () {
 function OnPageLoad() {
     actionSDK
         .executeApi(new actionSDK.GetContext.Request())
-        .then(function (response) {
+        .then(function(response) {
             console.info("GetContext - Response: " + JSON.stringify(response));
             getActionInstance(response.context.actionId);
         })
-        .catch(function (error) {
+        .catch(function(error) {
             console.error("GetContext - Error: " + JSON.stringify(error));
         });
 }
@@ -55,12 +57,12 @@ function OnPageLoad() {
 function getActionInstance(actionId) {
     actionSDK
         .executeApi(new actionSDK.GetAction.Request(actionId))
-        .then(function (response) {
+        .then(function(response) {
             console.info("Response: " + JSON.stringify(response));
             actionInstance = response.action;
             createBody();
         })
-        .catch(function (error) {
+        .catch(function(error) {
             console.log("Error: " + JSON.stringify(error));
         });
 }
@@ -108,13 +110,13 @@ function createBody() {
     }
 }
 
-$(document).on('click', '#start', function () {
+$(document).on('click', '#start', function() {
     $root.html('');
     max_question_count = actionInstance.dataTables[0].dataColumns.length;
     createQuestionView();
 })
 
-$(document).on('click', '.submit-form', function () {
+$(document).on('click', '.submit-form', function() {
     submitForm();
 });
 
@@ -191,11 +193,11 @@ function getCheckboxButton(text, name, id) {
     return div_data;
 }
 
-$(document).on('click', 'div.radio-section', function () {
+$(document).on('click', 'div.radio-section', function() {
     radiobuttonclick($(this).id, $(this).attr('columnId'));
 })
 
-$(document).on("click", '#next', function () {
+$(document).on("click", '#next', function() {
     var answerKeys = JSON.parse(actionInstance.customProperties[4].value);
     var correct_ans_arr = [];
     var selected_answer = [];
@@ -208,7 +210,7 @@ $(document).on("click", '#next', function () {
     /* Check if radio or checkbox is checked */
     var is_checked = false;
 
-    $('div.card-box:visible').find("input[type='checkbox']:checked").each(function (ind, ele) {
+    $('div.card-box:visible').find("input[type='checkbox']:checked").each(function(ind, ele) {
         if ($(ele).is(':checked')) {
             check_counter++;
             selected_answer.push($.trim($(ele).attr('id')));
@@ -219,7 +221,7 @@ $(document).on("click", '#next', function () {
         }
     });
 
-    $('div.card-box:visible').find("input[type='radio']:checked").each(function (ind, ele) {
+    $('div.card-box:visible').find("input[type='radio']:checked").each(function(ind, ele) {
         if ($(ele).is(':checked')) {
             check_counter++;
             selected_answer.push($.trim($(ele).attr('id')));
@@ -233,7 +235,7 @@ $(document).on("click", '#next', function () {
 
         var is_checked = false;
 
-        $.each(selected_answer, function (i, selected_subarray) {
+        $.each(selected_answer, function(i, selected_subarray) {
             console.log(answerKeys.toString());
             if ($.inArray(selected_subarray, answerKeys[(attr_name - 1)]) !== -1) {
                 correct_answer = true;
@@ -244,7 +246,7 @@ $(document).on("click", '#next', function () {
 
         /* console.log(attr_name - 1);
         console.log(answerKeys[(attr_name - 1)].toString()); */
-        $.each(answerKeys[(attr_name - 1)], function (ii, subarr) {
+        $.each(answerKeys[(attr_name - 1)], function(ii, subarr) {
             correct_ans_arr.push($.trim($('#' + subarr).text()));
         });
 
@@ -268,11 +270,11 @@ $(document).on("click", '#next', function () {
 
             if ($('#modal-close').length <= 0) {
 
-                $("#exampleModalCenter").on("hidden.bs.modal", function () {
+                $("#exampleModalCenter").on("hidden.bs.modal", function() {
 
                     $root.after('<span id="modal-close"></span>');
 
-                    $root.find('div.card-box:visible').find("input").each(function (ind, ele) {
+                    $root.find('div.card-box:visible').find("input").each(function(ind, ele) {
                         $(ele).prop('disabled', true);
                     });
 
@@ -298,7 +300,7 @@ $(document).on("click", '#next', function () {
 
 
         } else {
-            $root.find('div.card-box:visible').find("input").each(function (ind, ele) {
+            $root.find('div.card-box:visible').find("input").each(function(ind, ele) {
                 $(ele).prop('disabled', true);
             });
 
@@ -332,14 +334,14 @@ $(document).on("click", '#next', function () {
         $('#exampleModalCenter').find('#save-changes').hide();
         $('#exampleModalCenter').modal('show');
 
-        $("#exampleModalCenter").on("hidden.bs.modal", function () {
+        $("#exampleModalCenter").on("hidden.bs.modal", function() {
             $('#next').attr('disabled', false);
         });
     }
 
 });
 
-$(document).on("click", '#previous', function () {
+$(document).on("click", '#previous', function() {
     var pagenumber = $(this).attr('data-prev-id');
     current_page = pagenumber;
     console.log(` Prev: ${parseInt(current_page)} Current: ${parseInt(current_page) + 1} Next: ${parseInt(current_page) + 2}`)
@@ -364,7 +366,7 @@ $(document).on("click", '#previous', function () {
 function submitForm() {
     actionSDK
         .executeApi(new actionSDK.GetContext.Request())
-        .then(function (response) {
+        .then(function(response) {
             console.info("GetContext - Response: " + JSON.stringify(response));
 
             /*  Check Show Correct Answer  */
@@ -376,9 +378,9 @@ function submitForm() {
                     var count = 0;
 
                     var ans_rsp = '';
-                    $('#root').find('div.card-box').each(function (i, val) {
+                    $('#root').find('div.card-box').each(function(i, val) {
 
-                        var searchIDs = $(val).find('input:checked').map(function () {
+                        var searchIDs = $(val).find('input:checked').map(function() {
                             return $(this).attr('id');
                         });
 
@@ -387,7 +389,7 @@ function submitForm() {
 
                         if (JSON.stringify(correct_answer[count]) == JSON.stringify(searchIDs.get())) {
                             /*  Answer is correct  */
-                            $.each(correct_answer[count], function (ind, ans_id) {
+                            $.each(correct_answer[count], function(ind, ans_id) {
                                 correct_ans += '<div class="alert alert-success"><p class="mb0">' + $.trim($(val).find('input#' + ans_id).parents('label').text()) + '<i class="fa fa-pull-right fa-check"></i></p></div>';
                             });
                             console.log('correct_ans' + correct_ans);
@@ -396,7 +398,7 @@ function submitForm() {
 
                         } else {
                             /*  Answer is incorrect  */
-                            $.each(searchIDs.get(), function (yind, yans_id) {
+                            $.each(searchIDs.get(), function(yind, yans_id) {
                                 console.log('your ans: ' + $(val).find('input#' + yans_id).attr('id'));
                                 console.log(JSON.stringify(correct_answer[count]));
                                 if ($.inArray($(val).find('input#' + yans_id).attr('id'), correct_answer[count]) != -1) {
@@ -407,7 +409,7 @@ function submitForm() {
                                 }
                             })
 
-                            $.each(correct_answer[count], function (ind, ans_id) {
+                            $.each(correct_answer[count], function(ind, ans_id) {
                                 correct_ans += '<div class="alert alert-success"><p class="mb0">' + $.trim($(val).find('input#' + ans_id).parents('label').text()) + '<i class="fa fa-pull-right fa-check"></i></p></div>';
                             })
 
@@ -426,7 +428,7 @@ function submitForm() {
                     $('#exampleModalCenter1').find('#save-changes').hide();
                     $('#exampleModalCenter1').modal('show');
 
-                    $("#exampleModalCenter1").on("hidden.bs.modal", function () {
+                    $("#exampleModalCenter1").on("hidden.bs.modal", function() {
                         // put your default event here
                         addDataRows(response.context.actionId);
                     });
@@ -435,7 +437,7 @@ function submitForm() {
                 }
             }
         })
-        .catch(function (error) {
+        .catch(function(error) {
             console.error("GetContext - Error: " + JSON.stringify(error));
         });
 }
@@ -443,7 +445,7 @@ function submitForm() {
 function radiobuttonclick(questionResponse, colomnId) {
     var data = [];
     row = {};
-    $.each($("input[type='checkbox']:checked"), function (ind, v) {
+    $.each($("input[type='checkbox']:checked"), function(ind, v) {
         var col = $(this).parents("div.form-group").attr("columnid");
         data.push($(this).attr("id"));
 
@@ -451,7 +453,7 @@ function radiobuttonclick(questionResponse, colomnId) {
         row[col] = JSON.stringify(data);
     });
 
-    $.each($("input[type='radio']:checked"), function () {
+    $.each($("input[type='radio']:checked"), function() {
         var col = $(this).parents("div.form-group").attr("columnid");
 
         if (!row[col]) row[col] = [];
@@ -462,7 +464,7 @@ function radiobuttonclick(questionResponse, colomnId) {
 }
 
 function generateGUID() {
-    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
         var r = (Math.random() * 16) | 0,
             v = c == "x" ? r : (r & 0x3) | 0x8;
         return v.toString(16);
@@ -492,10 +494,10 @@ function addDataRows(actionId) {
     ]);
     actionSDK
         .executeBatchApi(batchRequest)
-        .then(function (batchResponse) {
+        .then(function(batchResponse) {
             console.info("BatchResponse: " + JSON.stringify(batchResponse));
         })
-        .catch(function (error) {
+        .catch(function(error) {
             console.error("Error: " + JSON.stringify(error));
         });
 }
