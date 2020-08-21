@@ -1,0 +1,125 @@
+{
+    "view": {
+        "type": "AdaptiveCard",
+        "version": "1.0",
+        "body": [
+            {
+                "id": "Sender",
+                "type": "TextBlock",
+                "text": "${creator[0].displayName} sent a Quiz(WebcraftIT)",
+                "size": "small",
+                "wrap": true
+            },
+            {
+                "id": "Expiry",
+                "type": "TextBlock",
+                "text": "${if(equals(action.status, 'Active'), 'Quiz Active','Quiz Expired')}",
+                "color": "${if(equals(action.status, 'Active'), 'default','attention')}",
+                "size": "small",
+                "wrap": true
+            },
+            {
+                "id": "Title",
+                "type": "TextBlock",
+                "text": "Title: ${action.displayName}",
+                "size": "large",
+                "maxLines": 3,
+                "wrap": true,
+                "weight": "bolder",
+                "spacing": "small"
+            },
+            {
+                "id": "Expiry Date",
+                "type": "TextBlock",
+                "text": "{{DATE(${action.customProperties[1].value}, SHORT)}} {{TIME(${action.customProperties[1].value})}}",
+                "maxLines": 2,
+                "wrap": true,
+                "isSubtle": true,
+                "size": "small",
+                "spacing": "none"
+            },
+            {
+                "id": "ResultVisibility",
+                "type": "TextBlock",
+                "text": "${if(equals(action.dataTables[0].rowsVisibility, 'All'), 'Responses are visible to everyone', 'Responses are visible to sender only')}",
+                "maxLines": 2,
+                "wrap": true,
+                "isSubtle": true,
+                "size": "small",
+                "spacing": "none"
+            },
+            {
+                "id": "AnswerVisibility",
+                "type": "TextBlock",
+                "text": "${if(equals(action.customProperties[3].value, 'Yes'), 'Show correct answer', '')}",
+                "maxLines": 2,
+                "wrap": true,
+                "isSubtle": true,
+                "size": "small",
+                "spacing": "none"
+            },
+            {
+                "id": "Questions",
+                "type": "Container",
+                "style": "emphasis",
+                "items": [
+                    {
+                        "type": "TextBlock",
+                        "text": "Questions: ${count(action.dataTables[0].dataColumns)}",
+                        "size": "medium",
+                        "wrap": true,
+                        "spacing": "medium"
+                    }
+                ]
+            },
+            {
+                "id": "Summary",
+                "type": "TextBlock",
+                "text": "${if(summary.rowCreatorCount > 0, summary.rowCreatorCount + ' Responded', 'Be the first one to respond')}",
+                "size": "small",
+                "weight": "bolder",
+                "maxLines": 2,
+                "wrap": true,
+                "spacing": "small"
+            }
+        ],
+        "actions": [
+            {
+                "id": "RespondButton",
+                "$when": "${equals(action.status, 'Active')}",
+                "title": "Respond",
+                "command": "LaunchActionPackageView",
+                "parameters": {
+                    "viewName": "UpdateView"
+                }
+            },
+            {
+                "id": "ResultButton",
+                "title": "View Result",
+                "command": "LaunchActionPackageView",
+                "parameters": {
+                    "viewName": "DetailView"
+                }
+            }
+        ]
+    },
+    "data": {
+        "action": {
+            "command": "GetAction"
+        },
+        "summary": {
+            "command": "GetActionDataRowsSummary",
+            "parameters": {
+                "addDefaultAggregates": true
+            }
+        },
+        "creator": {
+            "command": "GetSubscriptionMembers",
+            "parameters": {
+                "memberIds": [
+                    "$ActionCreator"
+                ]
+            }
+        }
+    }
+}

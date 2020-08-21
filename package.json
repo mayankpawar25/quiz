@@ -1,5 +1,5 @@
 {
-    "name": "Quiz",
+    "name": "quiz",
     "description": "Quiz",
     "version": "1.0.0",
     "scripts": {
@@ -12,20 +12,20 @@
     },
     "license": "ISC",
     "devDependencies": {
-        "action-package-deploy": "^1.0.16",
-        "bestzip": "^2.1.6",
+        "action-package-deploy": "^1.0.17",
+        "bestzip": "^2.1.5",
         "clean-webpack-plugin": "^3.0.0",
         "copy-webpack-plugin": "^5.1.1",
         "file-loader": "^6.0.0",
         "html-loader": "^1.1.0",
         "ts-loader": "^7.0.0",
-        "typescript": "^3.9.7",
-        "webpack": "^4.44.1",
-        "webpack-cli": "^3.3.12"
+        "typescript": "^3.8.3",
+        "webpack": "^4.42.1",
+        "webpack-cli": "^3.3.11"
     },
     "dependencies": {
-        "action-sdk-sunny": "^1.0.32",
-        "lodash": "^4.17.19",
-        "uuid": "^8.3.0"
+        "action-sdk-sunny": "^1.0.28",
+        "lodash": "^4.17.20",
+        "uuid": "^8.0.0"
     }
 }
