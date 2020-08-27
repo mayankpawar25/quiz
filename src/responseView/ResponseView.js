@@ -1,4 +1,5 @@
 import * as actionSDK from "action-sdk-sunny";
+import { Localizer } from '../common/ActionSdkHelper';
 
 // ActionSDK.APIs.actionViewDidLoad(true /*success*/ );
 
@@ -9,7 +10,108 @@ let actionInstance = null;
 let max_question_count = 0;
 let current_page = 0;
 let summary_answer_resp = [];
+let questionKey = '';
+let questionsKey = '';
+let startKey = '';
+let noteKey = '';
+let choiceAnyChoiceKey = '';
+let continueKey = '';
+let answerResponseKey = '';
+let correctKey = '';
+let yourAnswerKey = '';
+let incorrectKey = '';
+let correctAnswerKey = '';
+let yourAnswerRightKey = '';
+let yourAnswerIsKey = ''
+let rightAnswerIsKey = '';
+let submitKey = '';
+let quizSummaryKey = '';
+let nextKey = '';
+let backKey = '';
+let quizExpiredKey = '';
 
+async function getStringKeys() {
+    Localizer.getString('question').then(function(result) {
+        questionKey = result;
+        $('.question-key').text(questionKey);
+    });
+
+    Localizer.getString('questions').then(function(result) {
+        questionsKey = result;
+        $('.question-key').text(questionsKey);
+    });
+
+    Localizer.getString('start').then(function(result) {
+        startKey = result;
+        $('#start').text(startKey);
+    });
+
+    Localizer.getString('note').then(function(result) {
+        noteKey = result;
+        $('.note-key').text(noteKey);
+    });
+
+    Localizer.getString('choose_any_choice').then(function(result) {
+        choiceAnyChoiceKey = result;
+    });
+
+    Localizer.getString('continue').then(function(result) {
+        continueKey = result;
+    });
+
+    Localizer.getString('answer_response').then(function(result) {
+        answerResponseKey = result;
+    });
+
+    Localizer.getString('correct').then(function(result) {
+        correctKey = result;
+    });
+
+    Localizer.getString('your_answer').then(function(result) {
+        yourAnswerKey = result;
+    });
+
+    Localizer.getString('incorrect').then(function(result) {
+        incorrectKey = result;
+    });
+
+    Localizer.getString('correct_answer').then(function(result) {
+        correctAnswerKey = result;
+    });
+
+    Localizer.getString('your_answer_is').then(function(result) {
+        yourAnswerIsKey = result;
+    });
+
+    Localizer.getString('right_answer_is').then(function(result) {
+        rightAnswerIsKey = result;
+    });
+
+    Localizer.getString('submit').then(function(result) {
+        submitKey = result;
+        $('.submit-key').text(submitKey);
+    });
+
+    Localizer.getString('quiz_summary').then(function(result) {
+        quizSummaryKey = result;
+    });
+
+    Localizer.getString('next').then(function(result) {
+        nextKey = result;
+        $('.next-key').text(nextKey);
+    });
+
+    Localizer.getString('back').then(function(result) {
+        backKey = result;
+        $('.back-key').text(backKey);
+    });
+
+    Localizer.getString('quiz_expired').then(function(result) {
+        quizExpiredKey = result;
+        $('#quiz-expired-key').text(backKey);
+    });
+
+}
 
 async function getTheme(request) {
     let response = await actionSDK.executeApi(request);
@@ -24,6 +126,8 @@ async function getTheme(request) {
     $('div.section-1').append(`<div class="row"><div class="col-12"><div id="root"></div></div></div>`);
     $('div.section-1').after(modal_section);
     $('div.section-1').after(modal_section1);
+    $('div.section-1').after(modal_section2);
+
     $root = $("#root")
 
     setTimeout(() => {
@@ -74,10 +178,12 @@ function createBody() {
     if (actionInstance.expiryTime <= current_time) {
         var $card = $('<div class="card"></div>');
         var $spDiv = $('<div class="col-sm-12"></div>');
-        var $sDiv = $('<div class="form-group">Quiz Expired...</div>');
+        var $sDiv = $(`<div class="form-group" id="quiz-expired-key">${quizExpiredKey}</div>`);
         $card.append($spDiv);
         $spDiv.append($sDiv);
         $root.append($card);
+        getStringKeys();
+
     } else {
 
         var $card = $('<div class=""></div>');
@@ -92,10 +198,16 @@ function createBody() {
 
         var counter = actionInstance.dataTables[0].dataColumns.length
         $root.append(text_section1);
-        $('div.card-box:last').find('span.training-type').text(counter > 1 ? "Questions" : "Question");
-        $('div.card-box:last').find('.text-description').text(`Total ${counter} ${counter > 1 ? "Questions" : "Question"} in the Quiz`);
+
+        var ques_text = ((counter > 1) ? questionsKey : questionKey);
+        $('div.card-box:last').find('span.training-type').text(ques_text);
+
+        Localizer.getString('totalQuestionQuiz', counter, ques_text).then(function(result) {
+            $('div.card-box:last').find('.text-description').text(result);
+        });
         $root.after(footer_section1);
 
+        getStringKeys();
 
         // createQuestionView();
         // $root.append($hr);
@@ -113,6 +225,8 @@ function createBody() {
 $(document).on('click', '#start', function() {
     $root.html('');
     max_question_count = actionInstance.dataTables[0].dataColumns.length;
+    getStringKeys();
+
     createQuestionView();
 })
 
@@ -132,7 +246,9 @@ function createQuestionView() {
     $('#previous').attr('data-prev-id', (parseInt(current_page) - 1));
     $('#next').attr('data-next-id', (parseInt(current_page) + 1));
 
-    $('#xofy').text(`${parseInt(current_page) + 1} of ${max_question_count}`);
+    Localizer.getString('xofy', parseInt(current_page) + 1, max_question_count).then(function(result) {
+        $('#xofy').text(result);
+    });
 
     actionInstance.dataTables.forEach((dataTable) => {
         var question = dataTable.dataColumns[current_page];
@@ -207,6 +323,8 @@ $(document).on("click", '#next', function() {
     var pagenumber = $(this).attr('data-next-id');
     current_page = pagenumber;
 
+    getStringKeys();
+
     /* Check if radio or checkbox is checked */
     var is_checked = false;
 
@@ -215,7 +333,6 @@ $(document).on("click", '#next', function() {
             check_counter++;
             selected_answer.push($.trim($(ele).attr('id')));
             attr_name = $(ele).attr('name');
-            data.push($(this).attr("id"));
 
             is_checked = true;
         }
@@ -235,14 +352,31 @@ $(document).on("click", '#next', function() {
 
         var is_checked = false;
 
+        var ans_res = [];
         $.each(selected_answer, function(i, selected_subarray) {
-            console.log(answerKeys.toString());
             if ($.inArray(selected_subarray, answerKeys[(attr_name - 1)]) !== -1) {
-                correct_answer = true;
+                ans_res.push("true");
+            } else {
+                ans_res.push("false");
             }
         });
 
-        summary_answer_resp.push(correct_answer)
+        console.log(ans_res);
+        console.log(answerKeys[(attr_name - 1)].length);
+        console.log(ans_res.length);
+        console.log($.inArray("false", ans_res));
+        if ((answerKeys[(attr_name - 1)].length == ans_res.length) && ($.inArray("false", ans_res) == -1)) {
+            correct_answer = true
+        } else {
+            correct_answer = false;
+        }
+
+        summary_answer_resp.push(correct_answer);
+
+        console.log('summary_answer_resp: ');
+        console.log(summary_answer_resp);
+        console.log(correct_answer);
+        // return false;
 
         /* console.log(attr_name - 1);
         console.log(answerKeys[(attr_name - 1)].toString()); */
@@ -255,15 +389,15 @@ $(document).on("click", '#next', function() {
         // console.log('correct_value: ' + correct_value);
         if (actionInstance.customProperties[3].value == 'Yes' && $('div.card-box:visible').find("input").attr('disabled') !== "disabled") {
             if (correct_answer == true) {
-                $('#exampleModalCenter').find('#exampleModalLongTitle').html('Answer response');
-                $('#exampleModalCenter').find('.modal-body').html(`<label class="text-success"><i class="fa fa-check" aria-hidden="true"></i> <strong>Correct</strong></label><p><label>Your Answer</label><br>${correct_value}</p>`);
-                $('#exampleModalCenter').find('.modal-footer').html('<button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Continue</button>');
+                $('#exampleModalCenter').find('#exampleModalLongTitle').html(answerResponseKey);
+                $('#exampleModalCenter').find('.modal-body').html(`<label class="text-success"><i class="fa fa-check" aria-hidden="true"></i> <strong>${correctKey}</strong></label><p><label>${yourAnswerKey}</label><br>${correct_value}</p>`);
+                $('#exampleModalCenter').find('.modal-footer').html(`<button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">${continueKey}</button>`);
                 $('#exampleModalCenter').find('#save-changes').hide();
                 $('#exampleModalCenter').modal('show');
             } else {
                 $('#exampleModalCenter').find('#exampleModalLongTitle').html('Answer response');
-                $('#exampleModalCenter').find('.modal-body').html(`<label class="text-danger"><i class="fa fa-remove" aria-hidden="true"></i> <strong>Incorrect</strong></label><p><label>Correct Answer</label><br>${correct_value}</p>`);
-                $('#exampleModalCenter').find('.modal-footer').html('<button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Continue</button>');
+                $('#exampleModalCenter').find('.modal-body').html(`<label class="text-danger"><i class="fa fa-remove" aria-hidden="true"></i> <strong>${incorrectKey}</strong></label><p><label>${correctAnswerKey}</label><br>${correct_value}</p>`);
+                $('#exampleModalCenter').find('.modal-footer').html(`<button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">${continueKey}</button>`);
                 $('#exampleModalCenter').find('#save-changes').hide();
                 $('#exampleModalCenter').modal('show');
             }
@@ -271,6 +405,7 @@ $(document).on("click", '#next', function() {
             if ($('#modal-close').length <= 0) {
 
                 $("#exampleModalCenter").on("hidden.bs.modal", function() {
+                    getStringKeys();
 
                     $root.after('<span id="modal-close"></span>');
 
@@ -289,7 +424,9 @@ $(document).on("click", '#next', function() {
                         $root.find('root < div.card-box.card-blank:nth-child(' + current_page + ')').show();
                         $root.find('.card-box:nth-child(' + (parseInt(current_page) + 1) + ')').show();
                         $('#previous').attr('data-prev-id', (parseInt(current_page) - 1));
-                        $('#xofy').text(`${parseInt(current_page)} of ${max_question_count}`);
+                        Localizer.getString('xofy', parseInt(current_page), max_question_count).then(function(result) {
+                            $('#xofy').text(result);
+                        });
                     }
 
                     if (current_page >= max_question_count) {
@@ -328,13 +465,13 @@ $(document).on("click", '#next', function() {
 
 
     } else {
-        $('#exampleModalCenter').find('#exampleModalLongTitle').html('<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve" class="gt gs mt--4"><g><g><g><path d="M507.113,428.415L287.215,47.541c-6.515-11.285-18.184-18.022-31.215-18.022c-13.031,0-24.7,6.737-31.215,18.022L4.887,428.415c-6.516,11.285-6.516,24.76,0,36.044c6.515,11.285,18.184,18.022,31.215,18.022h439.796c13.031,0,24.7-6.737,31.215-18.022C513.629,453.175,513.629,439.7,507.113,428.415z M481.101,449.441c-0.647,1.122-2.186,3.004-5.202,3.004H36.102c-3.018,0-4.556-1.881-5.202-3.004c-0.647-1.121-1.509-3.394,0-6.007L250.797,62.559c1.509-2.613,3.907-3.004,5.202-3.004c1.296,0,3.694,0.39,5.202,3.004L481.1,443.434C482.61,446.047,481.748,448.32,481.101,449.441z"/><rect x="240.987" y="166.095" width="30.037" height="160.197" /><circle cx="256.005" cy="376.354" r="20.025" /></g></g></g > <g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g></svg > Note!');
-        $('#exampleModalCenter').find('.modal-body').html(`<label>Please choose any choice<label>`);
-        $('#exampleModalCenter').find('.modal-footer').html('<button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Continue</button>');
-        $('#exampleModalCenter').find('#save-changes').hide();
-        $('#exampleModalCenter').modal('show');
+        $('#exampleModalCenter2').find('#exampleModalLongTitle').html(`<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve" class="gt gs mt--4"><g><g><g><path d="M507.113,428.415L287.215,47.541c-6.515-11.285-18.184-18.022-31.215-18.022c-13.031,0-24.7,6.737-31.215,18.022L4.887,428.415c-6.516,11.285-6.516,24.76,0,36.044c6.515,11.285,18.184,18.022,31.215,18.022h439.796c13.031,0,24.7-6.737,31.215-18.022C513.629,453.175,513.629,439.7,507.113,428.415z M481.101,449.441c-0.647,1.122-2.186,3.004-5.202,3.004H36.102c-3.018,0-4.556-1.881-5.202-3.004c-0.647-1.121-1.509-3.394,0-6.007L250.797,62.559c1.509-2.613,3.907-3.004,5.202-3.004c1.296,0,3.694,0.39,5.202,3.004L481.1,443.434C482.61,446.047,481.748,448.32,481.101,449.441z"/><rect x="240.987" y="166.095" width="30.037" height="160.197" /><circle cx="256.005" cy="376.354" r="20.025" /></g></g></g > <g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g></svg > <span class="note-key">${noteKey}</span>`);
+        $('#exampleModalCenter2').find('.modal-body').html(`<label>${choiceAnyChoiceKey}<label>`);
+        $('#exampleModalCenter2').find('.modal-footer').html(`<button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">${continueKey}</button>`);
+        $('#exampleModalCenter2').find('#save-changes').hide();
+        $('#exampleModalCenter2').modal('show');
 
-        $("#exampleModalCenter").on("hidden.bs.modal", function() {
+        $("#exampleModalCenter2").on("hidden.bs.modal", function() {
             $('#next').attr('disabled', false);
         });
     }
@@ -346,6 +483,7 @@ $(document).on("click", '#previous', function() {
     current_page = pagenumber;
     console.log(` Prev: ${parseInt(current_page)} Current: ${parseInt(current_page) + 1} Next: ${parseInt(current_page) + 2}`)
     console.log(` current_page: ${parseInt(current_page)} max_question_count: ${parseInt(max_question_count)} `);
+    getStringKeys();
 
     $root.find('.card-box').hide();
     $root.find('.card-box:nth-child(' + (parseInt(current_page) + 1) + ')').show();
@@ -364,6 +502,8 @@ $(document).on("click", '#previous', function() {
 // *********************************************** SUBMIT ACTION***********************************************
 
 function submitForm() {
+    getStringKeys();
+
     actionSDK
         .executeApi(new actionSDK.GetContext.Request())
         .then(function(response) {
@@ -394,7 +534,12 @@ function submitForm() {
                             });
                             console.log('correct_ans' + correct_ans);
 
-                            ans_rsp += '<p class="mb0"><strong>' + (i + 1) + '. Your Answer is right. </strong ></p> <p> Your answer is </p>' + correct_ans;
+                            var counter_str = (parseInt(i) + 1) + '. ';
+                            Localizer.getString('your_answer_right', counter_str).then(function(result) {
+                                yourAnswerRightKey = result;
+                                ans_rsp += `<p class="mb0"><strong> ${yourAnswerRightKey} </strong ></p> <p> ${yourAnswerIsKey} </p> ${correct_ans}`;
+                                $('#exampleModalCenter1').find('.modal-body').html(ans_rsp);
+                            });
 
                         } else {
                             /*  Answer is incorrect  */
@@ -413,18 +558,22 @@ function submitForm() {
                                 correct_ans += '<div class="alert alert-success"><p class="mb0">' + $.trim($(val).find('input#' + ans_id).parents('label').text()) + '<i class="fa fa-pull-right fa-check"></i></p></div>';
                             })
 
-                            ans_rsp += '<p class="mb0"><strong>' + (i + 1) + '. Your Answer is wrong. </strong></p> <p>Your Answer is </p> ' + your_ans + ' <p> Right Answer is </p>' + correct_ans;
-                            console.log(`hr: ${count} : ${$('#root').find('div.card-box').length}`)
-                            if (count != 1 || count + 1 != $('#root').find('div.card-box').length) {
-                                ans_rsp += '<hr>';
-                            }
+                            var counter_str = (parseInt(i) + 1) + '. ';
+                            Localizer.getString('your_answer_wrong', counter_str).then(function(result) {
+                                ans_rsp += `<p class="mb0"><strong> ${result} </strong></p> <p>${yourAnswerIsKey} </p> ${your_ans} <p> ${rightAnswerIsKey} </p>${correct_ans}`;
+                                console.log(`hr: ${count} : ${$('#root').find('div.card-box').length}`)
+                                if (count != 1 || count + 1 != $('#root').find('div.card-box').length) {
+                                    ans_rsp += '<hr>';
+                                }
+                                $('#exampleModalCenter1').find('.modal-body').html(ans_rsp);
+                            });
                         }
                         count++;
                     });
 
-                    $('#exampleModalCenter1').find('#exampleModalLongTitle').html('Quiz Summary');
+                    $('#exampleModalCenter1').find('#exampleModalLongTitle').html(quizSummaryKey);
                     $('#exampleModalCenter1').find('.modal-body').html(ans_rsp);
-                    $('#exampleModalCenter1').find('.modal-footer').html('<button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Submit</button>');
+                    $('#exampleModalCenter1').find('.modal-footer').html(`<button type="button" class="btn btn-primary btn-sm submit-key" data-dismiss="modal">${submitKey}</button>`);
                     $('#exampleModalCenter1').find('#save-changes').hide();
                     $('#exampleModalCenter1').modal('show');
 
@@ -559,12 +708,33 @@ var modal_section1 = `<div class="modal fade" id="exampleModalCenter1" tabindex=
         </div>
     </div>`;
 
+var modal_section2 = `<div class="modal fade" id="exampleModalCenter2" tabindex="-1" role="dialog"
+    aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title app-black-color" id="exampleModalLongTitle">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body app-black-color">
+                ...
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary btn-sm" data-dismiss="modal">Back</button>
+                <button type="button" class="btn btn-primary btn-sm" id="save-changes">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>`;
+
 
 
 var text_section1 = `<div class="card-box card-blank">
                         <div class="form-group">
                             <div class="hover-btn ">
-                                <label><strong><span class="training-type">Questions</span></strong> </label><span class="float-right result"></span>
+                                <label><strong><span class="training-type question-key">${questionKey}</span></strong> </label><span class="float-right result"></span>
                             </div>
                             <div class="clearfix"></div>
                             <hr>
@@ -579,7 +749,7 @@ var footer_section1 = `<div class="footer section-1-footer">
                                     <div class="row">
                                         <div class="col-4"> </div>
                                         <div class="col-4 text-center"> </div>
-                                        <div class="col-4 text-right"> <button type="button" class="btn btn-primary btn-sm pull-right" id="start"> Start</button></div>
+                                        <div class="col-4 text-right"> <button type="button" class="btn btn-primary btn-sm pull-right" id="start"> ${startKey}</button></div>
                                     </div>
                                 </div>
                             </div>
@@ -595,9 +765,9 @@ var pagination_footer_section = `<div class="footer section-1-footer">
             <div class="footer-padd bt">
                 <div class="container ">
                     <div class="row">
-                        <div class="col-4"> <button type="button" class="btn btn-primary-outline btn-sm " id="previous" disabled> Back</button></div>
+                        <div class="col-4"> <button type="button" class="btn btn-primary-outline btn-sm back-key" id="previous" disabled> ${backKey}</button></div>
                         <div class="col-4 text-center" id="xofy"> 1 of 4</div>
-                        <div class="col-4 text-right"> <button type="button" class="btn btn-primary btn-sm pull-right" id="next"> Next</button></div>
+                        <div class="col-4 text-right"> <button type="button" class="btn btn-primary btn-sm pull-right next-key" id="next"> ${nextKey}</button></div>
                     </div>
                 </div>
             </div>

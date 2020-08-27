@@ -1,4 +1,6 @@
 import * as actionSDK from "action-sdk-sunny";
+import { Localizer } from '../common/ActionSdkHelper';
+import { result } from "lodash";
 
 $(document).ready(function() {
     OnPageLoad();
@@ -15,9 +17,49 @@ let myUserId = "";
 let score = 0;
 let total = 0;
 let answer_is = "";
+let dueByKey = '';
+let expiredOnKey = '';
+let correctKey = '';
+let incorrectKey = '';
+let backKey = '';
+let youKey = '';
 
 let request = new actionSDK.GetContext.Request();
 getTheme(request);
+
+async function getStringKeys() {
+    Localizer.getString('dueBy').then(function(result) {
+        dueByKey = result;
+    });
+
+    Localizer.getString('expired_on').then(function(result) {
+        expiredOnKey = result;
+    });
+
+    Localizer.getString('correct').then(function(result) {
+        correctKey = result;
+    });
+    Localizer.getString('incorrect').then(function(result) {
+        incorrectKey = result;
+    });
+
+    Localizer.getString('responders').then(function(result) {
+        $('.responder-key').text(result);
+    });
+
+    Localizer.getString('non_responders').then(function(result) {
+        $('.non-responder-key').text(result);
+    });
+    Localizer.getString('back').then(function(result) {
+        backKey = result;
+        $('.back-key').text(backKey);
+    });
+
+    Localizer.getString('you').then(function(result) {
+        youKey = result;
+    });
+}
+
 
 async function getTheme(request) {
     let response = await actionSDK.executeApi(request);
@@ -28,6 +70,7 @@ async function getTheme(request) {
     var theme = context.theme;
     console.log(`theme: ${context.theme}`);
     $("link#theme").attr("href", "css/style-" + theme + ".css");
+    getStringKeys();
 
     await actionSDK.executeApi(new actionSDK.HideLoadingIndicator.Request());
 
@@ -98,19 +141,17 @@ async function createBody() {
         (actionSummary.rowCreatorCount / memberCount) * 100
     );
 
-    var xofy =
-        actionSummary.rowCount + " of " + memberCount + " people responded";
 
-    $pcard.append(
-        "<label><strong>Participation " +
-        participationPercentage +
-        '% </strong></label><div class="progress mb-2"><div class="progress-bar bg-primary" role="progressbar" style="width: ' +
-        participationPercentage +
-        '%" aria-valuenow="' +
-        participationPercentage +
-        '" aria-valuemin="0" aria-valuemax="100"></div></div>'
-    );
-    $pcard.append(`<p class="date-color cursur-pointer under-line md-0" id="show-responders">${xofy}</p>`);
+    Localizer.getString('participation', participationPercentage).then(function(result) {
+        $pcard.append(
+            `<label><strong>${result}</strong></label><div class="progress mb-2"><div class="progress-bar bg-primary" role="progressbar" style="width: ${participationPercentage}%" aria-valuenow="${participationPercentage}" aria-valuemin="0" aria-valuemax="100"></div></div>`
+        );
+    });
+    Localizer.getString('xofy_people_responded', actionSummary.rowCount, memberCount).then(function(result) {
+        var xofy = result;
+        $pcard.append(`<p class="date-color cursur-pointer under-line md-0" id="show-responders">${xofy}</p>`);
+    });
+
 
     $("#root").append($pcard);
 
@@ -134,13 +175,15 @@ async function createBody() {
                 var name = nonresponders.label;
                 var matches = name.match(/\b(\w)/g); // [D,P,R]
                 var initials = matches.join('').substring(0, 2); // DPR
-                $('div.progress-section').after(`<hr class="small">`);
-                $('div.progress-section').after(`<div class="d-flex cursur-pointer mt-4 mb-4">
+                Localizer.getString('you_yet_respond').then(function(result) {
+                    $('div.progress-section').after(`<hr class="small">`);
+                    $('div.progress-section').after(`<div class="d-flex cursur-pointer mt-4 mb-4">
                     <div class="avtar">
                         ${initials}
                     </div>
-                    <div class="avtar-txt">You are yet to respond</div>
-                </div>`);
+                        <div class="avtar-txt">${result}</div>
+                    </div>`);
+                });
                 $('div.progress-section').after(`<hr class="small">`);
             }
         })
@@ -160,7 +203,7 @@ function head() {
 
     var current_timestamp = new Date().getTime();
 
-    var $date_sec = $(`<p><small>${actionInstance.expiryTime > current_timestamp ? 'Due by ' : 'Expired on '} ${dueby}</small></p>`);
+    var $date_sec = $(`<p><small>${actionInstance.expiryTime > current_timestamp ? dueByKey+' ' : expiredOnKey+' '} ${dueby}</small></p>`);
 
     $card.append($title_sec);
     $card.append($description_sec);
@@ -229,7 +272,7 @@ function getResponders() {
         var id = ResponderDate[itr].value2;
         var name = "";
         if (ResponderDate[itr].value2 == myUserId) {
-            name = "You";
+            name = youKey;
         } else {
             name = ResponderDate[itr].label;
         }
@@ -322,13 +365,16 @@ function createReponderQuestionView(userId, responder = '') {
         var matches = name.match(/\b(\w)/g); // [D,P,R]
         var initials = matches.join('').substring(0, 2); // DPR
         $('div.progress-section').after(`<hr class="small">`);
-        $('div.progress-section').after(`<div class="d-flex cursur-pointer mt-4 mb-4">
+
+        Localizer.getString('you_responded').then(function(result) {
+            $('div.progress-section').after(`<div class="d-flex cursur-pointer mt-4 mb-4">
             <div class="avtar">
                 ${initials}
             </div>
-            <div class="avtar-txt">You responded</div>
-        </div>`);
-        $('div.progress-section').after(`<hr class="small">`);
+            <div class="avtar-txt">${result}</div>
+            </div>`);
+            $('div.progress-section').after(`<hr class="small">`);
+        });
     }
 
     actionInstance.dataTables.forEach((dataTable) => {
@@ -437,7 +483,7 @@ function createReponderQuestionView(userId, responder = '') {
 
                 // console.log("name: " + "#status-" + question.name);
                 console.log("answer_is: " + JSON.stringify(answer_is));
-                $cardDiv.find("#status-" + question.name).html(`<span class="${answer_is == 'Correct' ? 'text-success' : 'text-danger'}">${answer_is}</span>`);
+                $cardDiv.find("#status-" + question.name).html(`<span class="${answer_is == 'Correct' ? 'text-success' : 'text-danger'}">${answer_is == 'Correct' ? correctKey : incorrectKey}</span>`);
             });
 
             if (answer_is == "Correct") {
@@ -453,7 +499,9 @@ function createReponderQuestionView(userId, responder = '') {
     console.log(`${score} / ${total}`)
     var scorePercentage = Math.round((score / total) * 100);
 
-    $("#root > hr.small:last").after(`<div class=""><label><strong>Score: </strong>${scorePercentage}%</label></div>`);
+    Localizer.getString("score", ":").then(function(result) {
+        $("#root > hr.small:last").after(`<div class=""><label><strong>${result} </strong>${scorePercentage}%</label></div>`);
+    });
 }
 
 function createQuestionView(userId) {
@@ -564,6 +612,7 @@ function createQuestionView(userId) {
                 console.log($radioOption);
                 $cardDiv.append($radioOption);
                 $cardDiv.find("#status-" + question.name).html(`<span class="${answer_is == 'Correct' ? 'text-success' : 'text-danger'}">${answer_is}</span>`);
+
             });
 
             if (answer_is == "Correct") {
@@ -579,7 +628,9 @@ function createQuestionView(userId) {
     console.log(`${score} / ${total}`);
     var scorePercentage = Math.round((score / total) * 100);
 
-    $("#root > div:first").after(`<div class=""><label><strong>Score: </strong>${scorePercentage}%</label></div>`);
+    Localizer.getString("score", ":").then(function(result) {
+        $("#root > div:first").after(`<div class=""><label><strong>${result} </strong>${scorePercentage}%</label></div>`);
+    });
 }
 
 function getOptions(text, name, id, userResponse, correctAnswer) {
@@ -645,7 +696,7 @@ function footer(userId) {
                                     </path>
                                     <path class="ui-icon__filled" d="M16.74 21.21l7-7c.19-.19.29-.43.29-.71 0-.14-.03-.26-.08-.38-.06-.12-.13-.23-.22-.32s-.2-.17-.32-.22a.995.995 0 0 0-.38-.08c-.13 0-.26.02-.39.07a.85.85 0 0 0-.32.21l-6.29 6.3-6.29-6.3a.988.988 0 0 0-.32-.21 1.036 1.036 0 0 0-.77.01c-.12.06-.23.13-.32.22s-.17.2-.22.32c-.05.12-.08.24-.08.38 0 .28.1.52.29.71l7 7c.19.19.43.29.71.29.28 0 .52-.1.71-.29z">
                                     </path>
-                                </svg> Back
+                                </svg> <span class="back-key">${backKey}</span>
                             </a>
                         </div>
                         <div class="col-3"><button class="btn btn-tpt">&nbsp;</button></div>
@@ -668,7 +719,7 @@ function footer1() {
                                     </path>
                                     <path class="ui-icon__filled" d="M16.74 21.21l7-7c.19-.19.29-.43.29-.71 0-.14-.03-.26-.08-.38-.06-.12-.13-.23-.22-.32s-.2-.17-.32-.22a.995.995 0 0 0-.38-.08c-.13 0-.26.02-.39.07a.85.85 0 0 0-.32.21l-6.29 6.3-6.29-6.3a.988.988 0 0 0-.32-.21 1.036 1.036 0 0 0-.77.01c-.12.06-.23.13-.32.22s-.17.2-.22.32c-.05.12-.08.24-.08.38 0 .28.1.52.29.71l7 7c.19.19.43.29.71.29.28 0 .52-.1.71-.29z">
                                     </path>
-                                </svg> Back
+                                </svg> <span class="back-key">${backKey}</span>
                             </a>
                         </div>
                         <div class="col-3"><button class="btn btn-tpt">&nbsp;</button></div>

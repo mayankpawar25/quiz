@@ -1,22 +1,58 @@
 import * as actionSDK from "action-sdk-sunny";
+import { Localizer } from '../common/ActionSdkHelper';
 // import { GetContext } from "action-sdk-sunny";
 
 // var question_counter = 1
 var questionCount = 0;
 let questions = new Array();
 let validate = true;
-let setting_text = ' Due in 1 week, Results visible to everyone, Correct answer shown after every question';
-
+// let setting_text = ' Due in 1 week, Results visible to everyone, Correct answer shown after every question';
+let setting_text = '';
 let question_section = '';
 let opt = '';
-
-/* let request = new actionSDK.GetContext.Request();
-getTheme(request); */
+let optionKey = '';
+let addMoreOptionsKey = '';
+let choicesKey = '';
+let questionTitleKey = '';
+let checkMeKey = '';
+let nextKey = '';
+let backKey = '';
+let requiredKey = '';
+let dueByKey = '';
+let resultVisibleToKey = '';
+let resultEveryoneKey = '';
+let resultMeKey = '';
+let correctAnswerKey = '';
+let everyoneKey = '';
+let onlyMeKey = '';
+let showCorrectAnswerKey = '';
+let answerCannotChangeKey = '';
 
 /* Add Questions */
 $(document).on("click", "#add-questions", function() {
     var question_counter;
     $(this).parents("div.container").before(question_section.clone());
+
+    $("div.container").each(function(ind, el) {
+        $(el).find('div.option-div > div.input-group > input[type="text"]')
+            .each(function(index, elem) {
+                var counter = index + 1;
+                Localizer.getString('option', counter).then(function(result) {
+                    $(elem).attr({
+                        placeholder: result,
+                    });
+                    $(elem).attr({ id: "option" + counter });
+                    $(elem)
+                        .parents(".option-div")
+                        .find("input.form-check-input")
+                        .attr({ id: "check" + counter });
+                });
+            });
+    });
+
+    Localizer.getString('enterTheQuestion').then(function(result) {
+        $("div.container").find('#question-title').attr({ 'placeholder': result });
+    });
 
     $("div.question-container:visible").each(function(index, elem) {
         question_counter = index + 1;
@@ -26,6 +62,10 @@ $(document).on("click", "#add-questions", function() {
         $(elem).attr({ id: "question" + question_counter });
     });
     questionCount++;
+    $('.choice-label').text(choicesKey);
+    $('.check-me').text(checkMeKey);
+    $('.add-options').text(addMoreOptionsKey);
+
 });
 
 /* Remove Questions */
@@ -74,6 +114,7 @@ $(document).on("click", ".remove-question", function() {
 
 /* Add Options */
 $(document).on("click", ".add-options", function() {
+    console.log('optionKey: ' + optionKey);
     if (
         $(this)
         .parents("div.container")
@@ -117,15 +158,20 @@ $(document).on("click", ".add-options", function() {
         .find('div.option-div > div.input-group > input[type="text"]')
         .each(function(index, elem) {
             var counter = index + 1;
-            $(elem).attr({
-                placeholder: "Option " + counter,
+            Localizer.getString('option', counter).then(function(result) {
+
+                $(elem).attr({
+                    placeholder: result,
+                });
+                $(elem).attr({ id: "option" + counter });
+                $(elem)
+                    .parents(".option-div")
+                    .find("input.form-check-input")
+                    .attr({ id: "check" + counter });
             });
-            $(elem).attr({ id: "option" + counter });
-            $(elem)
-                .parents(".option-div")
-                .find("input.form-check-input")
-                .attr({ id: "check" + counter });
         });
+    $('.check-me').text(checkMeKey);
+
 });
 
 /* Remove Options */
@@ -135,19 +181,23 @@ $(document).on("click", ".remove-option", function(eve) {
     ) {
         var selector = $(this).closest("div.container");
         $(this).parents("div.option-div").remove();
+
         $(selector)
             .find('div.option-div > div.input-group > input[type="text"]')
             .each(function(index, elem) {
                 var counter = index + 1;
-                $(elem).attr({
-                    placeholder: "Option " + counter,
+                Localizer.getString('option', counter).then(function(result) {
+                    $(elem).attr({
+                        placeholder: result,
+                    });
+                    $(elem).attr({ id: "option" + counter });
+                    $(elem)
+                        .parents(".option-div")
+                        .find("input.form-check-input")
+                        .attr({ id: "check" + counter });
                 });
-                $(elem).attr({ id: "option" + counter });
-                $(elem)
-                    .parents(".option-div")
-                    .find("input.form-check-input")
-                    .attr({ id: "check" + counter });
             });
+
     } else {
         $("#exampleModalCenter")
             .find("#exampleModalLongTitle")
@@ -268,7 +318,6 @@ function submitForm() {
     $("label.label-alert").remove();
     $("div.card-box-alert").removeClass("card-box-alert").addClass("card-box");
 
-
     $("form")
         .find("input[type='text']")
         .each(function() {
@@ -285,7 +334,7 @@ function submitForm() {
                     error_text += "<p>Quiz title is required.</p>";
                     $("#quiz-title").addClass("danger");
                     $("#quiz-title").before(
-                        '<label class="label-alert d-block"><small>Required</small></label>'
+                        '<label class="label-alert d-block"><small class="required-key">${requiredKey}</small></label>'
                     );
                 } else if (element.attr("id").startsWith("question-title")) {
                     // console.log("question_number.length" + question_number.length);
@@ -293,7 +342,7 @@ function submitForm() {
                     $(this)
                         .parents("div.input-group")
                         .before(
-                            '<label class="label-alert d-block"><small>Required</small></label>'
+                            '<label class="label-alert d-block"><small class="required-key">${requiredKey}</small></label>'
                         );
 
                     error_text += "<p>Question is required. </p>";
@@ -302,7 +351,7 @@ function submitForm() {
                     $(this)
                         .parents("div.input-group")
                         .before(
-                            '<label class="label-alert d-block"><small>Required</small></label>'
+                            '<label class="label-alert d-block"><small class="required-key">${requiredKey}</small></label>'
                         );
 
                     error_text +=
@@ -324,6 +373,7 @@ function submitForm() {
                 console.error("GetContext - Error: " + JSON.stringify(error));
             });
     } else {
+        $('.required-key').text(requiredKey);
         $("#submit").prop('disabled', false);
         return;
     }
@@ -349,9 +399,7 @@ function getQuestionSet() {
             .each(function(index, elem) {
                 var count = index + 1;
                 var opt_id = "question" + i + "option" + count;
-                var opt_title = $("#question" + i)
-                    .find("#option" + count)
-                    .val();
+                var opt_title = $("#question" + i).find("#option" + count).val();
 
                 if (
                     $("#question" + i)
@@ -538,25 +586,131 @@ function generateGUID() {
 
 $(document).ready(function() {
     let request = new actionSDK.GetContext.Request();
+    getStringKeys();
     getTheme(request);
 });
 
+async function getStringKeys() {
+    Localizer.getString('quizTitle').then(function(result) {
+        $('#quiz-title').attr({ 'placeholder': result });
+    });
+
+    Localizer.getString('quizDescription').then(function(result) {
+        $('#quiz-description').attr({ 'placeholder': result });
+    });
+
+    Localizer.getString('enterTheQuestion').then(function(result) {
+        $('#question-title').attr({ 'placeholder': result });
+        questionTitleKey = result;
+    });
+
+    Localizer.getString('option', '').then(function(result) {
+        optionKey = result;
+    });
+    Localizer.getString('dueIn', ' 1 week', ', Results visible to everyone', ', Correct answer shown after every question').then(function(result) {
+        setting_text = result;
+        $('#due').text(setting_text);
+    });
+
+    Localizer.getString('addMoreOptions').then(function(result) {
+        $('.add-options').text(result);
+    });
+
+    Localizer.getString('addMoreOptions').then(function(result) {
+        addMoreOptionsKey = result;
+        $('.add-options').text(addMoreOptionsKey);
+    });
+
+    Localizer.getString('choices').then(function(result) {
+        choicesKey = result;
+        $('.choice-label').text(choicesKey);
+    });
+
+    Localizer.getString('checkMe').then(function(result) {
+        checkMeKey = result;
+        $('.check-me').text(checkMeKey);
+    });
+
+    Localizer.getString('next').then(function(result) {
+        nextKey = result;
+        $('.next-key').text(nextKey);
+    });
+
+    Localizer.getString('back').then(function(result) {
+        backKey = result;
+        $('.back-key').text(backKey);
+    });
+
+    Localizer.getString('required').then(function(result) {
+        requiredKey = result;
+        $('.required-key').text(requiredKey);
+    });
+
+    Localizer.getString('dueBy').then(function(result) {
+        dueByKey = result;
+        $('.due-by-key').text(dueByKey);
+    });
+
+    Localizer.getString('resultVisibleTo').then(function(result) {
+        resultVisibleToKey = result;
+        $('.result-visible-key').text(resultVisibleToKey);
+    });
+
+    Localizer.getString('resultEveryone').then(function(result) {
+        resultEveryoneKey = result;
+    });
+
+    Localizer.getString('resultMe').then(function(result) {
+        resultMeKey = result;
+    });
+
+    Localizer.getString('correctAnswer', ', ').then(function(result) {
+        correctAnswerKey = result;
+    });
+
+    Localizer.getString('everyone', ', ').then(function(result) {
+        everyoneKey = result;
+        $('.everyone-key').text(everyoneKey);
+    });
+
+    Localizer.getString('onlyMe', ', ').then(function(result) {
+        onlyMeKey = result;
+        $('.onlyme-key').text(onlyMeKey);
+    });
+
+    Localizer.getString('showCorrectAnswer').then(function(result) {
+        showCorrectAnswerKey = result;
+        $('.show-correct-key').text(showCorrectAnswerKey);
+    });
+
+    Localizer.getString('answerCannotChange').then(function(result) {
+        answerCannotChangeKey = result;
+        $('.answer-cannot-change-key').text(answerCannotChangeKey);
+    });
+
+}
+
 async function getTheme(request) {
+
     let response = await actionSDK.executeApi(request);
+
     let context = response.context;
 
     var theme = context.theme;
     $("link#theme").attr("href", "css/style-" + theme + ".css");
-
-
     $('form.sec1').append(form_section);
     $('form.sec1').after(modal_section);
     $('form.sec1').after(setting_section);
     $('form.sec1').after(option_section);
     $('form.sec1').after(questions_section);
 
+    getStringKeys();
+    console.log('questionTitleKey: ');
+    console.log(questionTitleKey);
+
     question_section = $("#question-section div.container").clone();
     opt = $("div#option-section .option-div").clone();
+
 
     var week_date = new Date(new Date().setDate(new Date().getDate() + 7))
         .toISOString()
@@ -620,7 +774,6 @@ async function getTheme(request) {
         orientation: 'top'
     };
     date_input.datepicker(options);
-
     await actionSDK.executeApi(new actionSDK.HideLoadingIndicator.Request());
 }
 
@@ -654,10 +807,16 @@ $(document).on("change", ".form_time input, .form_date input, .visible-to, #show
             );
         $("#exampleModalCenter").modal("show");
     } else {
-        var result_visible = $('.visible-to:checked').val() == 'Everyone' ? 'Results visible to everyone' : 'Results visible to only me';
-        var correct_answer = $('#show-correct-answer:eq(0)').is(":checked") == true ? ', Correct answer shown after every question' : '';
+
+        var result_visible = $('.visible-to:checked').val() == 'Everyone' ? resultEveryoneKey : resultMeKey;
+        var correct_answer = $('#show-correct-answer:eq(0)').is(":checked") == true ? correctAnswerKey : '';
+
         console.log('due: ' + days + ', ' + result_visible + correct_answer);
-        setting_text = ' Due in ' + days + ', ' + result_visible + correct_answer;
+
+        Localizer.getString('dueIn', days, ', ' + result_visible, correct_answer).then(function(result) {
+            setting_text = result;
+        });
+        // setting_text = ' Due in ' + days + ', ' + result_visible + correct_answer;
     }
 });
 
@@ -706,12 +865,12 @@ var form_section = `<div class="section-1">
             <div class="container pt-4">
                 <div id="root" class="">
                     <div class="form-group">
-                        <input type="Text" placeholder="Quiz Title" class="in-t input-lg form-control"
+                        <input type="Text" placeholder="" class="in-t input-lg form-control"
                             id="quiz-title" />
                     </div>
 
                     <div class="form-group">
-                        <input type="Text" placeholder="Quiz Description" class="in-t form-control"
+                        <input type="Text" placeholder="" class="in-t form-control"
                             id="quiz-description" />
                     </div>
                 </div>
@@ -739,12 +898,12 @@ var form_section = `<div class="section-1">
                         <div class="col-9">
                             <a class="theme-color cursur-pointer show-setting" id="hide1">
                                 <svg role="presentation" focusable="false" viewBox="8 8 16 16" class="cc gs gt ha gv"><path class="ui-icon__outline cc" d="M13.82,8.07a.735.735,0,0,1,.5.188l1.438,1.3c.2-.008.4,0,.594.007l1.21-1.25a.724.724,0,0,1,.532-.226,3.117,3.117,0,0,1,.867.226c.469.172,1.3.438,1.328,1.032l.094,1.929a5.5,5.5,0,0,1,.414.422c.594-.007,1.187-.023,1.781-.023a.658.658,0,0,1,.352.117,4.122,4.122,0,0,1,1,2.031.735.735,0,0,1-.188.5l-1.3,1.438c.008.2,0,.4-.007.594l1.25,1.21a.724.724,0,0,1,.226.532,3.117,3.117,0,0,1-.226.867c-.172.461-.438,1.3-1.024,1.328l-1.937.094a5.5,5.5,0,0,1-.422.414c.007.594.023,1.187.023,1.781a.611.611,0,0,1-.117.344A4.1,4.1,0,0,1,18.18,23.93a.735.735,0,0,1-.5-.188l-1.438-1.3c-.2.008-.4,0-.594-.007l-1.21,1.25a.724.724,0,0,1-.532.226,3.117,3.117,0,0,1-.867-.226c-.469-.172-1.3-.438-1.328-1.032l-.094-1.929a5.5,5.5,0,0,1-.414-.422c-.594.007-1.187.023-1.781.023a.611.611,0,0,1-.344-.117A4.1,4.1,0,0,1,8.07,18.18a.735.735,0,0,1,.188-.5l1.3-1.438c-.008-.2,0-.4.007-.594l-1.25-1.21a.724.724,0,0,1-.226-.532,3.117,3.117,0,0,1,.226-.867c.172-.461.446-1.3,1.024-1.328l1.937-.094A5.5,5.5,0,0,1,11.7,11.2c-.007-.594-.023-1.187-.023-1.781a.658.658,0,0,1,.117-.352A4.122,4.122,0,0,1,13.82,8.07ZM12.672,9.617l.023,1.8c.008.312-.859,1.164-1.164,1.18l-1.976.1-.422,1.133,1.289,1.258c.2.2.164.562.164.82a1.781,1.781,0,0,1-.148.844L9.117,18.227l.5,1.1c.6-.008,1.211-.023,1.813-.023.312,0,1.156.859,1.172,1.164l.1,1.976,1.133.422,1.258-1.289c.2-.2.562-.164.82-.164a1.7,1.7,0,0,1,.844.148l1.469,1.321,1.1-.5-.023-1.8c-.008-.312.859-1.164,1.164-1.18l1.976-.1.422-1.133-1.289-1.258c-.2-.2-.164-.562-.164-.82a1.781,1.781,0,0,1,.148-.844l1.321-1.469-.5-1.1c-.6.008-1.211.023-1.813.023-.312,0-1.156-.859-1.172-1.164l-.1-1.976-1.133-.422-1.258,1.289c-.2.2-.562.164-.82.164a1.781,1.781,0,0,1-.844-.148L13.773,9.117ZM16.008,13.5A2.5,2.5,0,1,1,13.5,16,2.531,2.531,0,0,1,16.008,13.5ZM16,14.5a1.5,1.5,0,1,0,1.5,1.461A1.513,1.513,0,0,0,16,14.5Z"></path></svg>    
-                                <span id="due"> Due in 1 week, Results visible to everyone, Correct answer shown after every question</span>
+                                <span id="due"> ${setting_text}</span>
                             </a>
 
                         </div>
                         <div class="col-3 text-right"> <button type="button" class="btn btn-primary btn-sm pull-right"
-                                id="submit"> Next</button></div>
+                                id="submit"> <span class="next-key">${nextKey}</span></button></div>
                     </div>
                 </div>
             </div>
@@ -778,14 +937,14 @@ var questions_section = `<div style="display: none;" id="question-section">
                             <span class="question-number input-group-text input-tpt pl-0 strong"
                                 style="cursor: pointer;">1.</span>
                         </div>
-                        <input type="text" class="form-control in-t" placeholder="Enter the question"
-                            aria-label="Enter the question" aria-describedby="basic-addon2" id="question-title">
+                        <input type="text" class="form-control in-t" placeholder="${questionTitleKey}"
+                            aria-label="${questionTitleKey}" aria-describedby="basic-addon2" id="question-title">
                     </div>
                 </div>
                 <div class="d-flex">
                     <div class="ext-flex"></div>
                     <div class="form-group" id="options">
-                        <label><strong>Choices</strong></label>
+                        <label><strong class="choice-label">${choicesKey}</strong></label>
                         <div class="option-div">
                             <div class="input-group input-group-tpt mb-2 ">
                                 <input type="text" class="form-control in-t" placeholder="Option 1"
@@ -809,7 +968,7 @@ var questions_section = `<div style="display: none;" id="question-section">
                             <div class="input-group mb-2  form-check custom-check-outer">
                                 <label class="form-check-label custom-check"><input type="checkbox"
                                         class="form-check-input" id="check1" value="yes"> <span
-                                        class="checkmark"></span> Check me if correct</label>
+                                        class="checkmark"></span> <span class="check-me"> ${checkMeKey}</span></label>
                             </div>
 
                         </div>
@@ -835,7 +994,7 @@ var questions_section = `<div style="display: none;" id="question-section">
                             <div class="input-group mb-2 form-check custom-check-outer">
                                 <label class="form-check-label custom-check"><input type="checkbox"
                                         class="form-check-input" value="yes" id="check2"> <span
-                                        class="checkmark"></span> Check me if correct</label>
+                                        class="checkmark"></span> <span class="check-me"> ${checkMeKey}</span></label>
                             </div>
 
                         </div>
@@ -848,7 +1007,7 @@ var questions_section = `<div style="display: none;" id="question-section">
                                     <path class="ui-icon__filled gr"
                                         d="M23.5 15.969a1.01 1.01 0 0 1-.613.922.971.971 0 0 1-.387.078H17v5.5a1.01 1.01 0 0 1-.613.922.971.971 0 0 1-.387.078.965.965 0 0 1-.387-.079.983.983 0 0 1-.535-.535.97.97 0 0 1-.078-.386v-5.5H9.5a.965.965 0 0 1-.387-.078.983.983 0 0 1-.535-.535.972.972 0 0 1-.078-.387 1.002 1.002 0 0 1 1-1H15v-5.5a1.002 1.002 0 0 1 1.387-.922c.122.052.228.124.32.215a.986.986 0 0 1 .293.707v5.5h5.5a.989.989 0 0 1 .707.293c.09.091.162.198.215.32a.984.984 0 0 1 .078.387z">
                                     </path>
-                                </svg> Add more options</button>
+                                </svg> ${addMoreOptionsKey}</button>
                         </div>
                     </div>
                 </div>
@@ -880,7 +1039,7 @@ var option_section = `<div style="display: none;" id="option-section">
             <div class="input-group mb-2  form-check custom-check-outer">
                 <label class="custom-check form-check-label">
                     <input type="checkbox" class="form-check-input" value="yes">
-                    <span class="checkmark"></span> Check me if correct
+                    <span class="checkmark"></span> <span class="check-me"> ${checkMeKey}</span>
                 </label>
             </div>
         </div>
@@ -891,7 +1050,7 @@ var setting_section = `<div style="display:none" id="setting">
         <div class="container pt-4 setting-section">
             <div class="row">
                 <div class="col-sm-12">
-                    <label><strong>Due by</strong></label>
+                    <label><strong class="due-by-key">${dueByKey}</strong></label>
                 </div>
                 <div class="clearfix"></div>
                 <div class="col-1"></div>
@@ -900,10 +1059,8 @@ var setting_section = `<div style="display:none" id="setting">
                         <input type="text" name="expiry_date" class="form-control in-t" placeholder="Date"
                             aria-label="Expiry Date" aria-describedby="basic-addon2" id="expiry-date">
                     </div> -->
-
-                    <div class="input-group date form_date col-md-5" data-date="1979-09-16T05:25:07Z" data-date-format="M dd, yyyy" data-link-field="dtp_input1">
+                    <div class="input-group date form_date" data-date="1979-09-16T05:25:07Z" data-date-format="M dd, yyyy" data-link-field="dtp_input1">
                         <input class="form-control in-t" size="16" name="expiry_date" type="text" value="" readonly>
-                        
                     </div>
                 </div>
                 <div class="col-5">
@@ -912,7 +1069,7 @@ var setting_section = `<div style="display:none" id="setting">
                             aria-label="Time" aria-describedby="basic-addon2" id="expiry-time" value="23:59">
                     </div> -->
 
-                    <div class="input-group date form_time col-md-5" data-date="" data-date-format="hh:ii" data-link-field="dtp_input3" data-link-format="hh:ii">
+                    <div class="input-group date form_time" data-date="" data-date-format="hh:ii" data-link-field="dtp_input3" data-link-format="hh:ii">
                         <input class="form-control in-t" name="expiry_time" size="16" type="text" value="" readonly>
                         <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
                         <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
@@ -920,7 +1077,7 @@ var setting_section = `<div style="display:none" id="setting">
                 </div>
                 <div class="clearfix"></div>
                 <div class="col-12">
-                    <label><strong>Results visible to</strong></label>
+                    <label><strong class="result-visible-key">${resultVisibleToKey}</strong></label>
                 </div>
                 <div class="clearfix"></div>
                 <div class="col-1"></div>
@@ -928,19 +1085,19 @@ var setting_section = `<div style="display:none" id="setting">
                     <div class="custom-radio-outer">
                         <label class="custom-radio">
                             <input type="radio" name="visible_to" class="visible-to" value="Everyone" checked>
-                            <span class="radio-block"></span> Everyone
+                            <span class="radio-block"></span> <span class="everyone-key">${everyoneKey}</span>
                         </label>
                     </div>
                     <div class="custom-radio-outer">
                         <label class="custom-radio">
                             <input type="radio" name="visible_to" class="visible-to" value="Only me"><span
-                                class="radio-block"></span> Only Me
+                                class="radio-block"></span> <span class="onlyme-key">${onlyMeKey}</span>
                         </label>
                     </div>
                 </div>
                 <div class="clearfix"></div>
                 <div class="col-12">
-                    <label><strong>Show correct answer after each question</strong></label>
+                    <label><strong class="show-correct-key">${showCorrectAnswerKey}</strong></label>
                 </div>
                 <div class="clearfix"></div>
                 <div class="col-1"></div>
@@ -951,7 +1108,7 @@ var setting_section = `<div style="display:none" id="setting">
                                 <label class="custom-check form-check-label">
                                     <input type="checkbox" name="show_correct_answer" id="show-correct-answer" value="Yes" checked/>
                                     <span class="checkmark"></span>
-                                    Answer cannot be changed if this option is selected
+                                    <span class="answer-cannot-change-key">${answerCannotChangeKey}</span>
                                 </label>
                             </div>
                         </div>
@@ -969,7 +1126,7 @@ var setting_section = `<div style="display:none" id="setting">
                                         </path>
                                         <path class="ui-icon__filled" d="M16.74 21.21l7-7c.19-.19.29-.43.29-.71 0-.14-.03-.26-.08-.38-.06-.12-.13-.23-.22-.32s-.2-.17-.32-.22a.995.995 0 0 0-.38-.08c-.13 0-.26.02-.39.07a.85.85 0 0 0-.32.21l-6.29 6.3-6.29-6.3a.988.988 0 0 0-.32-.21 1.036 1.036 0 0 0-.77.01c-.12.06-.23.13-.32.22s-.17.2-.22.32c-.05.12-.08.24-.08.38 0 .28.1.52.29.71l7 7c.19.19.43.29.71.29.28 0 .52-.1.71-.29z">
                                         </path>
-                                    </svg> Back
+                                    </svg> <span class="back-key">${backKey}</span>
                                 </a>
                             </div>
                             <div class="col-3">
@@ -997,7 +1154,7 @@ var modal_section = `<div class="modal fade" id="exampleModalCenter" tabindex="-
                     ...
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary btn-sm" data-dismiss="modal">Back</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-dismiss="modal"><span class="back-key">${backKey}</span></button>
                     <button type="button" class="btn btn-primary btn-sm" id="save-changes">Save changes</button>
                 </div>
             </div>

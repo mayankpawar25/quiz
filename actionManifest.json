@@ -1,6 +1,7 @@
 {
-    "id": "com.microsoft.sample.quiz.mike06072005",
-    "name": "Quiz",
+    "id": "com.microsoft.sample.quiz.mike06072001",
+    "name": "Quiz(Mike)",
+    "$schema": "https://int.actions.office365.com/ActionCommon/jsons/ActionManifest.schema.json",
     "description": "Create Quiz",
     "provider": {
         "name": "Microsoft",
@@ -10,10 +11,10 @@
     },
     "icon": "images/appIcon.png",
     "actionModel": "actionModel.json",
-    "version": "1.0.16",
+    "version": "1.2.36",
     "views": {
         "CardView": {
-            "sourceLocation": "json/cardView.json"
+            "sourceLocation": "cardView.json"
         },
         "LaunchView": {
             "sourceLocation": "html/createView.html",
@@ -35,6 +36,21 @@
         }
     },
     "showLoadingIndicator": true,
+    "msTeamsProps": {
+        "name": {
+            "short": "Quiz",
+            "full": "Quiz"
+        },
+        "description": {
+            "short": "Create Quiz",
+            "full": "Create Quiz"
+        },
+        "icons": {
+            "outline": "images/appIcon-32x32.png",
+            "color": "images/appIcon.png"
+        },
+        "accentColor": "#4464ee"
+    },
     "whitelistedUrlDomains": [
         "ajax.googleapis.com",
         "cdnjs.cloudflare.com",

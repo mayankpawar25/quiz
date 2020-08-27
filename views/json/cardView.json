@@ -2,8 +2,7 @@
     "view": {
         "type": "AdaptiveCard",
         "version": "1.0",
-        "body": [
-            {
+        "body": [{
                 "id": "Sender",
                 "type": "TextBlock",
                 "text": "Quiz",
@@ -13,10 +12,20 @@
             {
                 "id": "Expiry",
                 "type": "TextBlock",
-                "text": "${if(equals(action.status, 'Active'), '','Quiz Expired')}",
+                "text": "${if(equals(action.status, 'Active'), formatString(strings.due_by_date, ('' + dateString(action.expiryTime, 'SHORT') + ' ' + timeString(action.expiryTime))),strings.quiz_expired)}",
                 "color": "${if(equals(action.status, 'Active'), 'default','attention')}",
                 "size": "small",
                 "wrap": true
+            },
+            {
+                "id": "ResultVisibility",
+                "type": "TextBlock",
+                "text": "${if(equals(action.dataTables[0].rowsVisibility, 'All'), strings.result_everyone, strings.result_creator)}",
+                "maxLines": 2,
+                "wrap": true,
+                "isSubtle": true,
+                "size": "small",
+                "spacing": "none"
             },
             {
                 "id": "Title",
@@ -29,43 +38,77 @@
                 "spacing": "small"
             },
             {
-                "id": "Expiry Date",
-                "type": "TextBlock",
-                "text": "{{DATE(${action.customProperties[1].value}, SHORT)}} {{TIME(${action.customProperties[1].value})}}",
-                "maxLines": 2,
-                "wrap": true,
-                "isSubtle": true,
-                "size": "small",
-                "spacing": "none"
-            },
-            {
-                "id": "ResultVisibility",
-                "type": "TextBlock",
-                "text": "${if(equals(action.dataTables[0].rowsVisibility, 'All'), 'Responses are visible to everyone', 'Responses are visible to sender only')}",
-                "maxLines": 2,
-                "wrap": true,
-                "isSubtle": true,
-                "size": "small",
-                "spacing": "none"
-            },
-            {
                 "id": "Questions",
                 "type": "Container",
                 "style": "emphasis",
-                "items": [
-                    {
-                        "type": "TextBlock",
-                        "text": "Questions: ${count(action.dataTables[0].dataColumns)}",
-                        "size": "medium",
-                        "wrap": true,
-                        "spacing": "medium"
-                    }
-                ]
+                "items": [{
+                    "type": "TextBlock",
+                    "text": "${formatString(strings.questions, count(action.dataTables[0].dataColumns))}",
+                    "size": "medium",
+                    "wrap": true,
+                    "spacing": "medium"
+                }]
             },
             {
-                "id": "Summary",
+                "id": "NoResponder",
                 "type": "TextBlock",
-                "text": "${if(summary.rowCreatorCount > 0, summary.rowCreatorCount + ' Responded', 'Be the first one to respond')}",
+                "$when": "${equals(summary.rowCreatorCount, 0)}",
+                "text": "${strings.be_the_first_one_to_respond}",
+                "size": "small",
+                "weight": "bolder",
+                "maxLines": 2,
+                "wrap": true,
+                "spacing": "small"
+            },
+            {
+                "id": "OneResponded",
+                "type": "TextBlock",
+                "$when": "${equals(summary.rowCreatorCount, 1)}",
+                "text": "${formatString(strings.one_responded, responders[0].displayName)}",
+                "size": "small",
+                "weight": "bolder",
+                "maxLines": 2,
+                "wrap": true,
+                "spacing": "small"
+            },
+            {
+                "id": "TwoResponded",
+                "type": "TextBlock",
+                "$when": "${equals(summary.rowCreatorCount, 2)}",
+                "text": "${formatString(strings.two_responded, responders[0].displayName, responders[1].displayName)}",
+                "size": "small",
+                "weight": "bolder",
+                "maxLines": 2,
+                "wrap": true,
+                "spacing": "small"
+            },
+            {
+                "id": "ThreeResponded",
+                "type": "TextBlock",
+                "$when": "${equals(summary.rowCreatorCount, 3)}",
+                "text": "${formatString(strings.three_responded, responders[0].displayName, responders[1].displayName, responders[2].displayName)}",
+                "size": "small",
+                "weight": "bolder",
+                "maxLines": 2,
+                "wrap": true,
+                "spacing": "small"
+            },
+            {
+                "id": "FourResponded",
+                "type": "TextBlock",
+                "$when": "${equals(summary.rowCreatorCount, 4)}",
+                "text": "${formatString(strings.three_and_one_other_responded, responders[0].displayName, responders[1].displayName, responders[2].displayName)}",
+                "size": "small",
+                "weight": "bolder",
+                "maxLines": 2,
+                "wrap": true,
+                "spacing": "small"
+            },
+            {
+                "id": "MoreResponded",
+                "type": "TextBlock",
+                "$when": "${greater(summary.rowCreatorCount, 4)}",
+                "text": "${formatString(strings.three_and_others_responded, responders[0].displayName, responders[1].displayName, responders[2].displayName, sub(summary.rowCreatorCount - 3))}",
                 "size": "small",
                 "weight": "bolder",
                 "maxLines": 2,
@@ -73,11 +116,10 @@
                 "spacing": "small"
             }
         ],
-        "actions": [
-            {
+        "actions": [{
                 "id": "RespondButton",
                 "$when": "${equals(action.status, 'Active')}",
-                "title": "Respond",
+                "title": "${strings.respond}",
                 "command": "LaunchActionPackageView",
                 "parameters": {
                     "viewName": "UpdateView"
@@ -85,7 +127,7 @@
             },
             {
                 "id": "ResultButton",
-                "title": "View Result",
+                "title": "${strings.view_result}",
                 "command": "LaunchActionPackageView",
                 "parameters": {
                     "viewName": "DetailView"
@@ -94,6 +136,9 @@
         ]
     },
     "data": {
+        "strings": {
+            "command": "GetLocalizedStrings"
+        },
         "action": {
             "command": "GetAction"
         },
@@ -108,6 +153,20 @@
             "parameters": {
                 "memberIds": [
                     "$ActionCreator"
+                ]
+            }
+        },
+        "datarow": {
+            "command": "GetActionDataRows",
+            "parameters": {
+                "pageSize": 3
+            }
+        },
+        "responders": {
+            "command": "GetSubscriptionMembers",
+            "parameters": {
+                "memberIds": [
+                    "$ActionDataRowCreators"
                 ]
             }
         }
