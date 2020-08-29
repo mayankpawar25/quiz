@@ -387,9 +387,11 @@ function createReponderQuestionView(userId, responder = '') {
             answer_is = "";
             var $cardDiv = $('<div class="card-box card-blank bt"></div>');
             var $rowdDiv = $('<div class="row"></div>');
+            var $dflexDiv = $('<div class="d-table"></div>');
             var $qDiv = $('<div class="col-sm-12"></div>');
             $cardDiv.append($rowdDiv);
             $rowdDiv.append($qDiv);
+            $cardDiv.append($dflexDiv);
 
             var count = ind + 1;
             var $questionHeading = $("<label></label>");
@@ -399,9 +401,9 @@ function createReponderQuestionView(userId, responder = '') {
                 "<strong>" + count + ". " + question.displayName + "</strong>"
             );
 
-            $cardDiv.append($questionHeading);
+            $dflexDiv.append($questionHeading);
 
-            $cardDiv.append(
+            $dflexDiv.append(
                 '<label class="float-right" id="status-' + question.name + '"></label>'
             );
 

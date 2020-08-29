@@ -387,7 +387,7 @@ $(document).on("click", '#next', function() {
 
         var correct_value = correct_ans_arr.join();
         // console.log('correct_value: ' + correct_value);
-        if (actionInstance.customProperties[3].value == 'Yes' && $('div.card-box:visible').find("input").attr('disabled') !== "disabled") {
+        if (actionInstance.customProperties[3].value == 'Yes' && $('div.card-box:visible').find("label.custom-radio").hasClass('disabled') !== "disabled") {
             if (correct_answer == true) {
                 $('#exampleModalCenter').find('#exampleModalLongTitle').html(answerResponseKey);
                 $('#exampleModalCenter').find('.modal-body').html(`<label class="text-success"><i class="fa fa-check" aria-hidden="true"></i> <strong>${correctKey}</strong></label><p><label>${yourAnswerKey}</label><br>${correct_value}</p>`);
@@ -411,22 +411,29 @@ $(document).on("click", '#next', function() {
 
                     $root.find('div.card-box:visible').find("input").each(function(ind, ele) {
                         $(ele).prop('disabled', true);
+                        $(ele).parents('div.custom-radio-outer').addClass('disabled');
                     });
 
                     $root.find('.card-box').hide();
 
-                    if ((parseInt(current_page) <= $root.find('div.card-box').length) && (parseInt(current_page)) < max_question_count) {
+                    console.log(`${parseInt(current_page)} == ${$root.find('div.card-box').length} && (${parseInt(current_page)}) < ${max_question_count}`);
+                    if ((parseInt(current_page) == $root.find('div.card-box').length) && (parseInt(current_page)) < max_question_count) {
                         createQuestionView();
                     } else if (parseInt(current_page) == max_question_count) {
                         /*  Submit your question  */
                         submitForm();
                     } else {
-                        $root.find('root < div.card-box.card-blank:nth-child(' + current_page + ')').show();
-                        $root.find('.card-box:nth-child(' + (parseInt(current_page) + 1) + ')').show();
+                        // $root.find('div.card-box.card-blank:nth-child(' + current_page + ')').show();
                         $('#previous').attr('data-prev-id', (parseInt(current_page) - 1));
-                        Localizer.getString('xofy', parseInt(current_page), max_question_count).then(function(result) {
+                        Localizer.getString('xofy', parseInt(current_page) + 1, max_question_count).then(function(result) {
                             $('#xofy').text(result);
                         });
+                        $('#next').attr('data-next-id', (parseInt(current_page) + 1));
+                        $root.find('div.card-box.card-blank:nth-child(' + (parseInt(current_page) + 1) + ')').show();
+
+                        if (parseInt(current_page) - 1 > 0) {
+                            $('#previous').attr('disabled', false);
+                        }
                     }
 
                     if (current_page >= max_question_count) {
@@ -439,20 +446,28 @@ $(document).on("click", '#next', function() {
         } else {
             $root.find('div.card-box:visible').find("input").each(function(ind, ele) {
                 $(ele).prop('disabled', true);
+                $(ele).parents('div.custom-radio-outer').addClass('disabled');
             });
 
             $root.find('.card-box').hide();
 
-            if ((parseInt(current_page) <= $root.find('div.card-box').length) && (parseInt(current_page)) < max_question_count) {
+            if ((parseInt(current_page) == $root.find('div.card-box').length) && (parseInt(current_page)) < max_question_count) {
                 createQuestionView();
             } else if (parseInt(current_page) == max_question_count) {
                 /*  Submit your question  */
                 submitForm();
             } else {
-                $root.find('root < div.card-box.card-blank:nth-child(' + current_page + ')').show();
+                // $root.find('root < div.card-box.card-blank:nth-child(' + current_page + ')').show();
                 $root.find('.card-box:nth-child(' + (parseInt(current_page) + 1) + ')').show();
                 $('#previous').attr('data-prev-id', (parseInt(current_page) - 1));
-                $('#xofy').text(`${parseInt(current_page)} of ${max_question_count}`);
+                Localizer.getString('xofy', parseInt(current_page) + 1, max_question_count).then(function(result) {
+                    $('#xofy').text(result);
+                });
+                // $('#xofy').text(`${parseInt(current_page)} of ${max_question_count}`);
+                $('#next').attr('data-next-id', (parseInt(current_page) + 1));
+                if (parseInt(current_page) - 1 > 0) {
+                    $('#previous').attr('disabled', false);
+                }
             }
 
             if (current_page >= max_question_count) {
@@ -487,9 +502,9 @@ $(document).on("click", '#previous', function() {
 
     $root.find('.card-box').hide();
     $root.find('.card-box:nth-child(' + (parseInt(current_page) + 1) + ')').show();
-    $('#previous').attr('data-prev-id', (parseInt(current_page)));
+    $('#previous').attr('data-prev-id', (parseInt(current_page) - 1));
     $('#next').attr('data-next-id', (parseInt(current_page) + 1));
-    $('#xofy').text(`${(parseInt(current_page + 1))} of ${max_question_count}`);
+    $('#xofy').text(`${(parseInt(current_page) + 1)} of ${max_question_count}`);
 
     if (current_page <= 0) {
         $('#previous').attr('disabled', true);

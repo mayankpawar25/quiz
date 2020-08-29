@@ -23,6 +23,7 @@
     "answerCannotChange": "Answer cannot be changed if this option is selected",
     "question": "Question",
     "questions": "Questions",
+    "question_numbers": "Questions: {0}",
     "totalQuestionQuiz": "Total {0} {1} in the Quiz",
     "start": "Start",
     "xofy": "{0} of {1}",

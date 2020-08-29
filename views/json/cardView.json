@@ -43,7 +43,7 @@
                 "style": "emphasis",
                 "items": [{
                     "type": "TextBlock",
-                    "text": "${formatString(strings.questions, count(action.dataTables[0].dataColumns))}",
+                    "text": "${formatString(strings.question_numbers, count(action.dataTables[0].dataColumns))}",
                     "size": "medium",
                     "wrap": true,
                     "spacing": "medium"
