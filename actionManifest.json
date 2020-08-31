@@ -3,7 +3,7 @@
     "name": "Quiz(Mike)",
     "$schema": "https://int.actions.office365.com/ActionCommon/jsons/ActionManifest.schema.json",
     "description": "Create Quiz",
-    "provider": {
+    "developer": {
         "name": "Microsoft",
         "websiteUrl": "https://www.microsoft.com/",
         "privacyUrl": "https://www.microsoft.com/privacy",
