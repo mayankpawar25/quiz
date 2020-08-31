@@ -32,7 +32,7 @@
     "localizationInfo": {
         "defaultLocale": "en-us",
         "localeFiles": {
-            "en-us": "strings/strings.json"
+            "en-us": "strings/en-us/strings.json"
         }
     },
     "showLoadingIndicator": true,
