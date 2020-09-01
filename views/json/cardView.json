@@ -3,13 +3,6 @@
         "type": "AdaptiveCard",
         "version": "1.0",
         "body": [{
-                "id": "Sender",
-                "type": "TextBlock",
-                "text": "Quiz",
-                "size": "small",
-                "wrap": true
-            },
-            {
                 "id": "Expiry",
                 "type": "TextBlock",
                 "text": "${if(equals(action.status, 'Active'), formatString(strings.due_by_date, ('' + dateString(action.expiryTime, 'SHORT') + ' ' + timeString(action.expiryTime))),strings.quiz_expired)}",

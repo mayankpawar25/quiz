@@ -8,7 +8,8 @@
         "zip": "cd ./output && bestzip ./ActionPackage.zip *",
         "create": "npm run build && npm run zip && upload-action-package -z ./output/ActionPackage.zip -t ./output/ -e https://int.actions.office365.com",
         "update": "npm run build && npm run zip && upload-action-package -z ./output/ActionPackage.zip -e https://int.actions.office365.com",
-        "inner-loop": "create-inner-loop -p com.microsoft.sample.quiz.mike06072005 -d ./output -e https://int.actions.office365.com"
+        "inner-loop": "create-inner-loop -p com.microsoft.sample.quiz.mike06072005 -d ./output -e https://int.actions.office365.com",
+        "delete-loop": "delete-inner-loop -p com.microsoft.sample.quiz.mike06072005 -e https://int.actions.office365.com"
     },
     "license": "ISC",
     "devDependencies": {

@@ -125,7 +125,7 @@ async function getTheme(request) {
 
     $('div.section-1').append(`<div class="row"><div class="col-12"><div id="root"></div></div></div>`);
     $('div.section-1').after(modal_section);
-    $('div.section-1').after(modal_section1);
+    // $('div.section-1').after(modal_section1);
     $('div.section-1').after(modal_section2);
 
     $root = $("#root")
@@ -410,7 +410,7 @@ $(document).on("click", '#next', function() {
                     $root.after('<span id="modal-close"></span>');
 
                     $root.find('div.card-box:visible').find("input").each(function(ind, ele) {
-                        $(ele).prop('disabled', true);
+                        $(ele).parents('label').prop('disabled', true);
                         $(ele).parents('div.custom-radio-outer').addClass('disabled');
                     });
 
@@ -445,7 +445,7 @@ $(document).on("click", '#next', function() {
 
         } else {
             $root.find('div.card-box:visible').find("input").each(function(ind, ele) {
-                $(ele).prop('disabled', true);
+                $(ele).parents('label').prop('disabled', true);
                 $(ele).parents('div.custom-radio-outer').addClass('disabled');
             });
 
@@ -519,92 +519,168 @@ $(document).on("click", '#previous', function() {
 function submitForm() {
     getStringKeys();
 
+
+    $root.find('.card-box').hide();
+
+    $('#root').append(summary_section);
+    $('div.section-1').after(summary_footer);
+
+    /*  Check Show Correct Answer  */
+    if (Object.keys(row).length > 0) {
+        if (actionInstance.customProperties[3].value == 'Yes') {
+            var correct_answer = $.parseJSON(actionInstance.customProperties[4].value);
+            console.log('correct_answer: ');
+            console.log(correct_answer);
+            var count = 0;
+
+            var ans_rsp = '';
+            var score = 0;
+
+            $('#root').find('div.card-box').each(function(i, val) {
+
+                var searchIDs = $(val).find('input:checked').map(function() {
+                    return $(this).attr('id');
+                });
+
+                var correct_ans = '';
+                var your_ans = '';
+
+                if (JSON.stringify(correct_answer[count]) == JSON.stringify(searchIDs.get())) {
+                    /*  Answer is correct  */
+                    score = score + 1;
+                    var $summary_card = $('<div class="card-box card-blank bt"></div>');
+                    var $summary_dtable = $('<div class="d-table"></div>');
+                    var question = $(val).find('.question-title').text();
+                    $summary_card.append($summary_dtable);
+                    Localizer.getString('correct').then(function(result) {
+                        $summary_dtable.append(`<label>
+                                <strong>${question}</strong>
+                            </label>
+                            <label class="float-right" id="status-${i}">
+                                <span class="text-success">${result}</span>
+                            </label>
+                        `);
+                    });
+
+                    $(val).find('label.custom-radio').each(function(opt_ind, opt_val) {
+                        var opt_id = $(opt_val).find('input').attr('id');
+                        if ($.inArray(opt_id, correct_answer[count]) !== -1) {
+                            $summary_card.append(`<div class="form-group">
+                                        <div class="form-group alert alert-success">
+                                            <p class="mb0">
+                                                ${$(opt_val).text()}
+                                                <i class="fa  pull-right fa-check"></i>
+                                            </p>
+                                        </div>
+                                    </div>`);
+                        } else {
+                            $summary_card.append(`<div class="form-group">
+                                        <div class="form-group alert alert-normal">
+                                            <p class="mb0">
+                                                ${$(opt_val).text()}
+                                            </p>
+                                        </div>
+                                    </div>`);
+                        }
+                    });
+
+                } else {
+                    /*  Answer is incorrect  */
+                    var $summary_card = $('<div class="card-box card-blank bt"></div>');
+                    var $summary_dtable = $('<div class="d-table"></div>');
+                    var question = $(val).find('.question-title').text();
+                    $summary_card.append($summary_dtable);
+                    Localizer.getString('incorrect').then(function(result) {
+                        $summary_dtable.append(`<label>
+                                        <strong>${question}</strong>
+                                    </label>
+                                    <label class="float-right" id="status-${i}">
+                                        <span class="text-danger">${result}</span>
+                                    </label>
+                                `);
+                    });
+
+                    $(val).find('label.custom-radio').each(function(opt_ind, opt_val) {
+                        var opt_id = $(opt_val).find('input').attr('id');
+                        if ($.inArray(opt_id, correct_answer[count]) !== -1) {
+                            if ($(opt_val).find('input').prop('checked') == true) {
+                                $summary_card.append(`<div class="form-group">
+                                            <div class="form-group alert alert-danger">
+                                                <p class="mb0">
+                                                   ${$(opt_val).text()}
+                                                    <i class="fa fa-pull-right text-danger fa-check"></i>
+                                                </p>
+                                            </div>
+                                        </div>`);
+                            } else {
+                                $summary_card.append(`<div class="form-group">
+                                            <div class="form-group alert alert-normal">
+                                                <p class="mb0">
+                                                   ${$(opt_val).text()}
+                                                    <i class="fa fa-pull-right text-success fa-check"></i>
+                                                </p>
+                                            </div>
+                                        </div>`);
+                            }
+                        } else {
+                            if ($(opt_val).find('input').prop('checked') == true) {
+                                $summary_card.append(`<div class="form-group">
+                                            <div class="form-group alert alert-danger">
+                                                <p class="mb0">
+                                                    ${$(opt_val).text()}
+                                                    <i class="fa fa-pull-right fa-close"></i>
+                                                </p>
+                                            </div>
+                                        </div>`);
+                            } else {
+                                $summary_card.append(`<div class="form-group">
+                                            <div class="form-group alert alert-normal">
+                                                <p class="mb0">
+                                                    ${$(opt_val).text()}
+                                                </p>
+                                            </div>
+                                        </div>`);
+                            }
+                        }
+                    });
+
+                }
+                $('.summary-section').append($summary_card);
+                count++;
+            });
+            $('.summary-section').append('<div class="ht-100"></div>');
+
+            console.log('total score: ');
+            console.log(score);
+            var score_is = Math.round((score / correct_answer.length) * 100);
+            $('.summary-section').prepend(`<div class="">
+                        <label>
+                            <strong>Score: </strong>${score_is}%
+                        </label>
+                    </div>`);
+            Localizer.getString('quiz_summary').then(function(result) {
+                $('.summary-section').prepend(`<div><h4>${result}</h4></div><hr>`);
+            });
+
+        } else {
+            $('.submit-key').click();
+        }
+    }
+
+}
+
+$(document).on('click', '.submit-key', function() {
     actionSDK
         .executeApi(new actionSDK.GetContext.Request())
         .then(function(response) {
             console.info("GetContext - Response: " + JSON.stringify(response));
-
-            /*  Check Show Correct Answer  */
-            if (Object.keys(row).length > 0) {
-                if (actionInstance.customProperties[3].value == 'Yes') {
-                    var correct_answer = $.parseJSON(actionInstance.customProperties[4].value);
-                    console.log('correct_answer: ');
-                    console.log(correct_answer);
-                    var count = 0;
-
-                    var ans_rsp = '';
-                    $('#root').find('div.card-box').each(function(i, val) {
-
-                        var searchIDs = $(val).find('input:checked').map(function() {
-                            return $(this).attr('id');
-                        });
-
-                        var correct_ans = '';
-                        var your_ans = '';
-
-                        if (JSON.stringify(correct_answer[count]) == JSON.stringify(searchIDs.get())) {
-                            /*  Answer is correct  */
-                            $.each(correct_answer[count], function(ind, ans_id) {
-                                correct_ans += '<div class="alert alert-success"><p class="mb0">' + $.trim($(val).find('input#' + ans_id).parents('label').text()) + '<i class="fa fa-pull-right fa-check"></i></p></div>';
-                            });
-                            console.log('correct_ans' + correct_ans);
-
-                            var counter_str = (parseInt(i) + 1) + '. ';
-                            Localizer.getString('your_answer_right', counter_str).then(function(result) {
-                                yourAnswerRightKey = result;
-                                ans_rsp += `<p class="mb0"><strong> ${yourAnswerRightKey} </strong ></p> <p> ${yourAnswerIsKey} </p> ${correct_ans}`;
-                                $('#exampleModalCenter1').find('.modal-body').html(ans_rsp);
-                            });
-
-                        } else {
-                            /*  Answer is incorrect  */
-                            $.each(searchIDs.get(), function(yind, yans_id) {
-                                console.log('your ans: ' + $(val).find('input#' + yans_id).attr('id'));
-                                console.log(JSON.stringify(correct_answer[count]));
-                                if ($.inArray($(val).find('input#' + yans_id).attr('id'), correct_answer[count]) != -1) {
-                                    // found it
-                                    your_ans += '<div class="alert alert-success"><p class="mb0">' + $.trim($(val).find('input#' + yans_id).parents('label').text()) + '<i class="fa fa-pull-right fa-check"></i></p></div>';
-                                } else {
-                                    your_ans += '<div class="alert alert-danger"><p class="mb0">' + $.trim($(val).find('input#' + yans_id).parents('label').text()) + '<i class="fa fa-pull-right fa-close"></i></p></div>';
-                                }
-                            })
-
-                            $.each(correct_answer[count], function(ind, ans_id) {
-                                correct_ans += '<div class="alert alert-success"><p class="mb0">' + $.trim($(val).find('input#' + ans_id).parents('label').text()) + '<i class="fa fa-pull-right fa-check"></i></p></div>';
-                            })
-
-                            var counter_str = (parseInt(i) + 1) + '. ';
-                            Localizer.getString('your_answer_wrong', counter_str).then(function(result) {
-                                ans_rsp += `<p class="mb0"><strong> ${result} </strong></p> <p>${yourAnswerIsKey} </p> ${your_ans} <p> ${rightAnswerIsKey} </p>${correct_ans}`;
-                                console.log(`hr: ${count} : ${$('#root').find('div.card-box').length}`)
-                                if (count != 1 || count + 1 != $('#root').find('div.card-box').length) {
-                                    ans_rsp += '<hr>';
-                                }
-                                $('#exampleModalCenter1').find('.modal-body').html(ans_rsp);
-                            });
-                        }
-                        count++;
-                    });
-
-                    $('#exampleModalCenter1').find('#exampleModalLongTitle').html(quizSummaryKey);
-                    $('#exampleModalCenter1').find('.modal-body').html(ans_rsp);
-                    $('#exampleModalCenter1').find('.modal-footer').html(`<button type="button" class="btn btn-primary btn-sm submit-key" data-dismiss="modal">${submitKey}</button>`);
-                    $('#exampleModalCenter1').find('#save-changes').hide();
-                    $('#exampleModalCenter1').modal('show');
-
-                    $("#exampleModalCenter1").on("hidden.bs.modal", function() {
-                        // put your default event here
-                        addDataRows(response.context.actionId);
-                    });
-                } else {
-                    addDataRows(response.context.actionId);
-                }
-            }
+            addDataRows(response.context.actionId);
         })
         .catch(function(error) {
             console.error("GetContext - Error: " + JSON.stringify(error));
         });
-}
+
+});
 
 function radiobuttonclick(questionResponse, colomnId) {
     var data = [];
@@ -787,3 +863,16 @@ var pagination_footer_section = `<div class="footer section-1-footer">
                 </div>
             </div>
         </div>`;
+
+var summary_section = `<div class="summary-section"></div>`;
+var summary_footer = `<div class="footer section-1-footer">
+                            <div class="footer-padd bt">
+                                <div class="container ">
+                                    <div class="row">
+                                        <div class="col-4"> </div>
+                                        <div class="col-4 text-center"> </div>
+                                        <div class="col-4 text-right"> <button type="button" class="btn btn-primary btn-sm pull-right submit-key" id="submit"> ${submitKey}</button></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
