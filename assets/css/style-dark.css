@@ -128,15 +128,16 @@ form {
 }
 
 .btn-primary-outline {
-    color: #4e508a !important;
-    background-color: transparent !important;
-    border-color: #6264a7 !important;
+    color: #f3f2f1 !important;
+    background-color: rgb(98, 100, 167)!important;
+    ;
+    border-color: rgb(98, 100, 167) !important;
 }
 
 .btn-primary-outline:hover {
-    color: #4e508a !important;
-    background-color: transparent !important;
-    border-color: #4e508a !important;
+    color: #f3f2f1 !important;
+    background-color: rgb(139, 140, 199) !important;
+    border-color: rgb(139, 140, 199) !important;
 }
 
 .btn-primary-outline:focus {
@@ -1103,7 +1104,7 @@ body {
 .open .dropdown-toggle.datepicker table tr td.active.disabled,
 .open .dropdown-toggle.datepicker table tr td.active.disabled:hover {
     color: #f3f2f1;
-    background-color: #6264A7;
+    background-color: #464775;
     border-color: transparent;
 }
 
@@ -1213,7 +1214,7 @@ body {
 .datetimepicker table tr td span.active.disabled.active,
 .datetimepicker table tr td span.active.disabled:hover.active {
     color: #f3f2f1;
-    background-color: rgba(98, 100, 167, 1);
+    background-color: #464775;
     text-shadow: none;
     background-image: none;
 }
@@ -1348,4 +1349,8 @@ label strong {
 
 .progress {
     height: 0.5rem;
+}
+
+.form-control:focus {
+    color: #f3f2f1;
 }

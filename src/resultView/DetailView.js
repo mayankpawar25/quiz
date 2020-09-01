@@ -177,12 +177,12 @@ async function createBody() {
                 var initials = matches.join('').substring(0, 2); // DPR
                 Localizer.getString('you_yet_respond').then(function(result) {
                     $('div.progress-section').after(`<hr class="small">`);
-                    $('div.progress-section').after(`<div class="d-flex cursur-pointer mt-4 mb-4">
-                    <div class="avtar">
-                        ${initials}
-                    </div>
-                        <div class="avtar-txt">${result}</div>
-                    </div>`);
+                    $('div.progress-section').after(`<div class="d-flex cursur-pointer mt-4 mb-4 getresult" id="${nonresponders.value2}">
+                            <div class="avtar">
+                                ${initials}
+                            </div>
+                            <div class="avtar-txt">${result}</div>
+                        </div>`);
                 });
                 $('div.progress-section').after(`<hr class="small">`);
             }
@@ -352,7 +352,11 @@ $(document).on("click", ".getresult", function() {
     $("#root").append($(".question-content").clone());
     createQuestionView(userId);
 
-    footer(userId);
+    if ($(this).attr('data-attr') !== undefined) {
+        footer2();
+    } else {
+        footer(userId);
+    }
 });
 
 function createReponderQuestionView(userId, responder = '') {
@@ -367,12 +371,12 @@ function createReponderQuestionView(userId, responder = '') {
         $('div.progress-section').after(`<hr class="small">`);
 
         Localizer.getString('you_responded').then(function(result) {
-            $('div.progress-section').after(`<div class="d-flex cursur-pointer mt-4 mb-4">
-            <div class="avtar">
-                ${initials}
-            </div>
-            <div class="avtar-txt">${result}</div>
-            </div>`);
+            $('div.progress-section').after(`<div class="d-flex cursur-pointer mt-4 mb-4 getresult" data-attr="home" id="${myUserId}">
+                    <div class="avtar">
+                        ${initials}
+                    </div>
+                    <div class="avtar-txt">${result}</div>
+                </div>`);
             $('div.progress-section').after(`<hr class="small">`);
         });
     }
@@ -710,6 +714,30 @@ function footer(userId) {
 
 function footer1() {
     $("#root > div.card-box").append(
+        `<div class="footer">
+            <div class="footer-padd bt">
+                <div class="container ">
+                    <div class="row">
+                        <div class="col-9">
+                            <a class="cursur-pointer back" id="hide2">
+                                <svg role="presentation" focusable="false" viewBox="8 8 16 16" class="back-btn">
+                                    <path class="ui-icon__outline gr" d="M16.38 20.85l7-7a.485.485 0 0 0 0-.7.485.485 0 0 0-.7 0l-6.65 6.64-6.65-6.64a.485.485 0 0 0-.7 0 .485.485 0 0 0 0 .7l7 7c.1.1.21.15.35.15.14 0 .25-.05.35-.15z">
+                                    </path>
+                                    <path class="ui-icon__filled" d="M16.74 21.21l7-7c.19-.19.29-.43.29-.71 0-.14-.03-.26-.08-.38-.06-.12-.13-.23-.22-.32s-.2-.17-.32-.22a.995.995 0 0 0-.38-.08c-.13 0-.26.02-.39.07a.85.85 0 0 0-.32.21l-6.29 6.3-6.29-6.3a.988.988 0 0 0-.32-.21 1.036 1.036 0 0 0-.77.01c-.12.06-.23.13-.32.22s-.17.2-.22.32c-.05.12-.08.24-.08.38 0 .28.1.52.29.71l7 7c.19.19.43.29.71.29.28 0 .52-.1.71-.29z">
+                                    </path>
+                                </svg> <span class="back-key">${backKey}</span>
+                            </a>
+                        </div>
+                        <div class="col-3"><button class="btn btn-tpt">&nbsp;</button></div>
+                    </div>
+                </div>
+            </div>
+        </div>`
+    );
+}
+
+function footer2() {
+    $("div.question-content").append(
         `<div class="footer">
             <div class="footer-padd bt">
                 <div class="container ">

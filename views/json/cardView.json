@@ -3,6 +3,16 @@
         "type": "AdaptiveCard",
         "version": "1.0",
         "body": [{
+                "id": "Title",
+                "type": "TextBlock",
+                "text": "${action.displayName}",
+                "size": "large",
+                "maxLines": 3,
+                "wrap": true,
+                "weight": "bolder",
+                "spacing": "small"
+            },
+            {
                 "id": "Expiry",
                 "type": "TextBlock",
                 "text": "${if(equals(action.status, 'Active'), formatString(strings.due_by_date, ('' + dateString(action.expiryTime, 'SHORT') + ' ' + timeString(action.expiryTime))),strings.quiz_expired)}",
@@ -19,16 +29,6 @@
                 "isSubtle": true,
                 "size": "small",
                 "spacing": "none"
-            },
-            {
-                "id": "Title",
-                "type": "TextBlock",
-                "text": "${action.displayName}",
-                "size": "large",
-                "maxLines": 3,
-                "wrap": true,
-                "weight": "bolder",
-                "spacing": "small"
             },
             {
                 "id": "Questions",

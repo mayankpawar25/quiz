@@ -231,7 +231,7 @@ $(document).on('click', '#start', function() {
 })
 
 $(document).on('click', '.submit-form', function() {
-    submitForm();
+    summarySection();
 });
 
 function createQuestionView() {
@@ -421,7 +421,7 @@ $(document).on("click", '#next', function() {
                         createQuestionView();
                     } else if (parseInt(current_page) == max_question_count) {
                         /*  Submit your question  */
-                        submitForm();
+                        summarySection();
                     } else {
                         // $root.find('div.card-box.card-blank:nth-child(' + current_page + ')').show();
                         $('#previous').attr('data-prev-id', (parseInt(current_page) - 1));
@@ -455,7 +455,7 @@ $(document).on("click", '#next', function() {
                 createQuestionView();
             } else if (parseInt(current_page) == max_question_count) {
                 /*  Submit your question  */
-                submitForm();
+                summarySection();
             } else {
                 // $root.find('root < div.card-box.card-blank:nth-child(' + current_page + ')').show();
                 $root.find('.card-box:nth-child(' + (parseInt(current_page) + 1) + ')').show();
@@ -516,7 +516,7 @@ $(document).on("click", '#previous', function() {
 
 // *********************************************** SUBMIT ACTION***********************************************
 
-function submitForm() {
+function summarySection() {
     getStringKeys();
 
 
@@ -562,7 +562,7 @@ function submitForm() {
                         `);
                     });
 
-                    $(val).find('label.custom-radio').each(function(opt_ind, opt_val) {
+                    $(val).find('label.custom-radio, label.custom-check').each(function(opt_ind, opt_val) {
                         var opt_id = $(opt_val).find('input').attr('id');
                         if ($.inArray(opt_id, correct_answer[count]) !== -1) {
                             $summary_card.append(`<div class="form-group">
@@ -600,14 +600,14 @@ function submitForm() {
                                 `);
                     });
 
-                    $(val).find('label.custom-radio').each(function(opt_ind, opt_val) {
+                    $(val).find('label.custom-radio, label.custom-check').each(function(opt_ind, opt_val) {
                         var opt_id = $(opt_val).find('input').attr('id');
                         if ($.inArray(opt_id, correct_answer[count]) !== -1) {
                             if ($(opt_val).find('input').prop('checked') == true) {
                                 $summary_card.append(`<div class="form-group">
                                             <div class="form-group alert alert-danger">
                                                 <p class="mb0">
-                                                   ${$(opt_val).text()}
+                                                    ${$(opt_val).text()}
                                                     <i class="fa fa-pull-right text-danger fa-check"></i>
                                                 </p>
                                             </div>
@@ -616,7 +616,7 @@ function submitForm() {
                                 $summary_card.append(`<div class="form-group">
                                             <div class="form-group alert alert-normal">
                                                 <p class="mb0">
-                                                   ${$(opt_val).text()}
+                                                    ${$(opt_val).text()}
                                                     <i class="fa fa-pull-right text-success fa-check"></i>
                                                 </p>
                                             </div>
