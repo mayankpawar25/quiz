@@ -83,14 +83,14 @@ form {
 }
 
 .teams-link {
-    color: #6264a7;
+    color: rgb(139, 140, 199) !important;
     border: none;
     background-color: transparent;
     font-weight: 400;
 }
 
 .teams-link:hover {
-    color: #6264a7;
+    color: rgb(98, 100, 167)!important;
 }
 
 .font-sm {
@@ -98,39 +98,39 @@ form {
 }
 
 .btn-primary {
-    color: #6264A7;
-    background-color: transparent;
-    border-color: #6264A7 !important;
+    color: #f3f2f1;
+    background-color: rgb(98, 100, 167)!important;
+    ;
+    border-color: rgb(98, 100, 167)!important;
 }
 
 .btn-primary:hover {
-    color: #bdbde6;
-    background-color: #33344a !important;
-    border-color: #6264A7 !important;
+    color: #f3f2f1;
+    background-color: rgb(139, 140, 199) !important;
+    border-color: rgb(139, 140, 199) !important;
 }
 
 .btn-primary:focus {
-    color: #bdbde6;
-    background-color: #33344a !important;
-    border-color: #6264A7 !important;
+    color: #f3f2f1;
+    background-color: rgb(139, 140, 199) !important;
+    border-color: rgb(139, 140, 199) !important;
 }
 
 .btn-primary svg {
-    fill: #4e508a;
+    fill: #f3f2f1;
 }
 
 .btn-primary:focus svg {
-    fill: #bdbde6;
+    fill: #f3f2f1;
 }
 
 .btn-primary:hover svg {
-    fill: #bdbde6;
+    fill: #f3f2f1;
 }
 
 .btn-primary-outline {
-    color: #f3f2f1 !important;
-    background-color: rgb(98, 100, 167)!important;
-    ;
+    color: rgb(98, 100, 167)!important;
+    background-color: transparent !important;
     border-color: rgb(98, 100, 167) !important;
 }
 
@@ -386,13 +386,6 @@ strong {
     position: relative;
 }
 
-.card-box-alert {
-    border: 2px solid #D74654;
-    margin-bottom: 16px;
-    padding: 16px;
-    position: relative;
-}
-
 .card-box-alert .text-danger {
     color: #D74654;
 }
@@ -421,23 +414,10 @@ strong {
     color: #C8C6C4
 }
 
-.label-alert {
-    color: #c4314b;
-    text-align: right;
-}
-
 .input-group-tpt .in-t:focus {
     box-shadow: none !important;
     border-bottom: 2px solid rgb(98, 100, 167) !important;
     transition: all ease-in-out 0.3s;
-}
-
-.in-t.danger {
-    border-bottom: 2px solid #c4314b !important;
-}
-
-.in-t.danger:focus {
-    border-bottom: 2px solid #c4314b !important;
 }
 
 .input-group-tpt {
@@ -678,6 +658,7 @@ button:focus {
     border-radius: 100%;
     margin-right: 0.625rem;
     color: #11100f;
+    font-weight: 600;
 }
 
 .avtar-txt {
@@ -1316,7 +1297,7 @@ div#setting {
     margin-top: 0.875rem;
 }
 
-label strong {
+.setting-section label strong {
     color: #f3f2f1;
     margin-top: 15px;
     float: left;
@@ -1353,4 +1334,29 @@ label strong {
 
 .form-control:focus {
     color: #f3f2f1;
+}
+
+.label-alert {
+    color: #c4314b;
+    text-align: right;
+}
+
+.in-t.danger {
+    border-bottom: 2px solid #c4314b !important;
+}
+
+.in-t.danger:focus {
+    border-bottom: 2px solid #c4314b !important;
+}
+
+.card-box-alert {
+    border: 2px solid #D74654;
+    margin-bottom: 16px;
+    padding: 16px;
+    position: relative;
+}
+
+.section-1 {
+    border-top: 1px solid #f3f2f1;
+    margin-top: 0.875rem;
 }
