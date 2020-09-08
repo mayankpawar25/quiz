@@ -14,7 +14,7 @@
     "version": "1.2.36",
     "views": {
         "CardView": {
-            "sourceLocation": "cardView.json"
+            "sourceLocation": "json/cardView.json"
         },
         "LaunchView": {
             "sourceLocation": "html/createView.html",
