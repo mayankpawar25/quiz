@@ -82,6 +82,12 @@ form {
     width: 100%;
 }
 
+.custom-radio-outer.disabled,
+.custom-check-outer.disabled {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
 .teams-link {
     color: rgb(139, 140, 199) !important;
     border: none;

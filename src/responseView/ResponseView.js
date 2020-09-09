@@ -185,6 +185,7 @@ function createBody() {
         getStringKeys();
 
     } else {
+        getStringKeys();
 
         var $card = $('<div class=""></div>');
         var $title = $("<h4>" + actionInstance.displayName + "</h4>");
@@ -199,12 +200,22 @@ function createBody() {
         var counter = actionInstance.dataTables[0].dataColumns.length
         $root.append(text_section1);
 
-        var ques_text = ((counter > 1) ? questionsKey : questionKey);
-        $('div.card-box:last').find('span.training-type').text(ques_text);
+        if (counter > 1) {
+            Localizer.getString('questions').then(function(result) {
+                $('div.card-box:last').find('span.training-type').text(result);
+                Localizer.getString('totalQuestionQuiz', counter, result).then(function(res) {
+                    $('div.card-box:last').find('.text-description').text(res);
+                });
+            });
+        } else {
+            Localizer.getString('question').then(function(result) {
+                $('div.card-box:last').find('span.training-type').text(result);
+                Localizer.getString('totalQuestionQuiz', counter, result).then(function(res) {
+                    $('div.card-box:last').find('.text-description').text(res);
+                });
+            });
+        }
 
-        Localizer.getString('totalQuestionQuiz', counter, ques_text).then(function(result) {
-            $('div.card-box:last').find('.text-description').text(result);
-        });
         $root.after(footer_section1);
 
         getStringKeys();
@@ -238,6 +249,7 @@ function createQuestionView() {
     $('.footer.section-1-footer').remove();
     $root.after(pagination_footer_section);
 
+    console.log('create Question' + current_page);
     if (current_page > 0) {
         $('#previous').prop('disabled', false);
     } else {
@@ -411,7 +423,10 @@ $(document).on("click", '#next', function() {
 
                     $root.find('div.card-box:visible').find("input").each(function(ind, ele) {
                         $(ele).parents('label').prop('disabled', true);
-                        $(ele).parents('div.custom-radio-outer').addClass('disabled');
+                        if ($(ele).parents('div.custom-radio-outer').length > 0)
+                            $(ele).parents('div.custom-radio-outer').addClass('disabled');
+                        else
+                            $(ele).parents('div.custom-check-outer').addClass('disabled');
                     });
 
                     $root.find('.card-box').hide();
@@ -431,9 +446,7 @@ $(document).on("click", '#next', function() {
                         $('#next').attr('data-next-id', (parseInt(current_page) + 1));
                         $root.find('div.card-box.card-blank:nth-child(' + (parseInt(current_page) + 1) + ')').show();
 
-                        if (parseInt(current_page) - 1 > 0) {
-                            $('#previous').attr('disabled', false);
-                        }
+                        $('#previous').attr('disabled', false);
                     }
 
                     if (current_page >= max_question_count) {
@@ -444,10 +457,10 @@ $(document).on("click", '#next', function() {
 
 
         } else {
-            $root.find('div.card-box:visible').find("input").each(function(ind, ele) {
+            /* $root.find('div.card-box:visible').find("input").each(function(ind, ele) {
                 $(ele).parents('label').prop('disabled', true);
                 $(ele).parents('div.custom-radio-outer').addClass('disabled');
-            });
+            }); */
 
             $root.find('.card-box').hide();
 
@@ -465,9 +478,8 @@ $(document).on("click", '#next', function() {
                 });
                 // $('#xofy').text(`${parseInt(current_page)} of ${max_question_count}`);
                 $('#next').attr('data-next-id', (parseInt(current_page) + 1));
-                if (parseInt(current_page) - 1 > 0) {
-                    $('#previous').attr('disabled', false);
-                }
+                $('#previous').attr('disabled', false);
+
             }
 
             if (current_page >= max_question_count) {
