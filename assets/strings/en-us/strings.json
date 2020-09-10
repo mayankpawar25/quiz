@@ -25,6 +25,8 @@
     "questions": "Questions",
     "question_numbers": "Questions: {0}",
     "totalQuestionQuiz": "Total {0} {1} in the Quiz",
+    "alreadyTired": "Note - You have already taken this quiz!",
+    "notConsideredFinalScore": "You can reattempt this quiz for practice. Your score for this attempt wouldn't be considered against the final score.",
     "start": "Start",
     "xofy": "{0} of {1}",
     "note": "Note!",

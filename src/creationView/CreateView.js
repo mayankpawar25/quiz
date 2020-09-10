@@ -1097,22 +1097,20 @@ var setting_section = `<div style="display:none" id="setting">
                 </div>
                 <div class="clearfix"></div>
                 <div class="col-12">
-                    <label><strong class="show-correct-key">${showCorrectAnswerKey}</strong></label>
+                    <div class="input-group mb-2 form-check custom-check-outer">
+                        <label class="custom-check form-check-label">
+                            <input type="checkbox" name="show_correct_answer" id="show-correct-answer" value="Yes" checked/>
+                            <span class="checkmark"></span>
+                        </label>
+                        <label><strong class="show-correct-key">${showCorrectAnswerKey}</strong></label>
+                    </div>
                 </div>
                 <div class="clearfix"></div>
                 <div class="col-1"></div>
                 <div class="col-11">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="input-group mb-2 form-check custom-check-outer">
-                                <label class="custom-check form-check-label">
-                                    <input type="checkbox" name="show_correct_answer" id="show-correct-answer" value="Yes" checked/>
-                                    <span class="checkmark"></span>
-                                    <span class="answer-cannot-change-key">${answerCannotChangeKey}</span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
+                    <label>
+                        <span class="answer-cannot-change-key">${answerCannotChangeKey}</span>
+                    </label>
                 </div>
             </div>
             <div class="footer">

@@ -29,6 +29,10 @@ let quizSummaryKey = '';
 let nextKey = '';
 let backKey = '';
 let quizExpiredKey = '';
+let actionDataRows = null;
+let actionDataRowsLength = 0;
+let memberIds = [];
+let myUserId = [];
 
 async function getStringKeys() {
     Localizer.getString('question').then(function(result) {
@@ -140,6 +144,8 @@ async function getTheme(request) {
     OnPageLoad();
 }
 
+
+
 // *********************************************** HTML ELEMENT***********************************************
 $(document).ready(function() {
     let request = new actionSDK.GetContext.Request();
@@ -151,10 +157,33 @@ function OnPageLoad() {
         .executeApi(new actionSDK.GetContext.Request())
         .then(function(response) {
             console.info("GetContext - Response: " + JSON.stringify(response));
+            myUserId = response.context.userId;
+            getResponderIds(response.context.actionId);
             getActionInstance(response.context.actionId);
         })
         .catch(function(error) {
             console.error("GetContext - Error: " + JSON.stringify(error));
+        });
+}
+
+async function getResponderIds(actionId) {
+    console.log('getResponderIds');
+    actionSDK
+        .executeApi(new actionSDK.GetActionDataRows.Request(actionId))
+        .then(function(batchResponse) {
+            actionDataRows = batchResponse.dataRows;
+            actionDataRowsLength = actionDataRows == null ? 0 : actionDataRows.length;
+
+            if (actionDataRowsLength > 0) {
+                for (let i = 0; i < actionDataRowsLength; i++) {
+                    memberIds.push(actionDataRows[i].creatorId);
+                }
+                console.log("memberIds" + JSON.stringify(memberIds));
+                console.log("myUserId" + JSON.stringify(myUserId));
+            }
+        })
+        .catch(function(error) {
+            console.log("Console log: Error: " + JSON.stringify(error));
         });
 }
 
@@ -213,6 +242,19 @@ function createBody() {
                 Localizer.getString('totalQuestionQuiz', counter, result).then(function(res) {
                     $('div.card-box:last').find('.text-description').text(res);
                 });
+            });
+        }
+
+        console.log(myUserId);
+        console.log(memberIds);
+        if ($.inArray(myUserId, memberIds) > -1) {
+            $root.append('<hr>');
+
+            Localizer.getString('alreadyTired').then(function(result) {
+                $root.append(`<div><b> ${result} </b></div>`);
+            });
+            Localizer.getString('notConsideredFinalScore').then(function(result) {
+                $root.append(`<div><small>${result}</small></div>`);
             });
         }
 
