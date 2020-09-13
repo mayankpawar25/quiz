@@ -3,6 +3,7 @@ import { Localizer } from '../common/ActionSdkHelper';
 // import { GetContext } from "action-sdk-sunny";
 
 // var question_counter = 1
+let request;
 var questionCount = 0;
 let questions = new Array();
 let validate = true;
@@ -64,6 +65,7 @@ $(document).on("click", "#add-questions", function() {
     questionCount++;
     $('.choice-label').text(choicesKey);
     $('.check-me').text(checkMeKey);
+    $('.check-me-title').attr({ "title": checkMeKey });
     $('.add-options').text(addMoreOptionsKey);
 
 });
@@ -124,20 +126,20 @@ $(document).on("click", ".add-options", function() {
         $("#exampleModalCenter")
             .find("#exampleModalLongTitle")
             .html(`<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve" class="gt gs mt--4">
-<g>
-	<g>
-		<g>
-			<path d="M507.113,428.415L287.215,47.541c-6.515-11.285-18.184-18.022-31.215-18.022c-13.031,0-24.7,6.737-31.215,18.022
-				L4.887,428.415c-6.516,11.285-6.516,24.76,0,36.044c6.515,11.285,18.184,18.022,31.215,18.022h439.796
-				c13.031,0,24.7-6.737,31.215-18.022C513.629,453.175,513.629,439.7,507.113,428.415z M481.101,449.441
-				c-0.647,1.122-2.186,3.004-5.202,3.004H36.102c-3.018,0-4.556-1.881-5.202-3.004c-0.647-1.121-1.509-3.394,0-6.007
-				L250.797,62.559c1.509-2.613,3.907-3.004,5.202-3.004c1.296,0,3.694,0.39,5.202,3.004L481.1,443.434
-				C482.61,446.047,481.748,448.32,481.101,449.441z"/>
-			<rect x="240.987" y="166.095" width="30.037" height="160.197"/>
-			<circle cx="256.005" cy="376.354" r="20.025"/>
-		</g>
-	</g>
-</g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g></svg> Notice!`);
+                <g>
+                    <g>
+                        <g>
+                            <path d="M507.113,428.415L287.215,47.541c-6.515-11.285-18.184-18.022-31.215-18.022c-13.031,0-24.7,6.737-31.215,18.022
+                                L4.887,428.415c-6.516,11.285-6.516,24.76,0,36.044c6.515,11.285,18.184,18.022,31.215,18.022h439.796
+                                c13.031,0,24.7-6.737,31.215-18.022C513.629,453.175,513.629,439.7,507.113,428.415z M481.101,449.441
+                                c-0.647,1.122-2.186,3.004-5.202,3.004H36.102c-3.018,0-4.556-1.881-5.202-3.004c-0.647-1.121-1.509-3.394,0-6.007
+                                L250.797,62.559c1.509-2.613,3.907-3.004,5.202-3.004c1.296,0,3.694,0.39,5.202,3.004L481.1,443.434
+                                C482.61,446.047,481.748,448.32,481.101,449.441z"/>
+                            <rect x="240.987" y="166.095" width="30.037" height="160.197"/>
+                            <circle cx="256.005" cy="376.354" r="20.025"/>
+                        </g>
+                    </g>
+                </g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g></svg> Notice!`);
         $("#exampleModalCenter")
             .find(".modal-body")
             .html("Maximum 10 options allowed for a Question");
@@ -155,7 +157,7 @@ $(document).on("click", ".add-options", function() {
 
     var selector = $(this).parents("div.container");
     $(selector)
-        .find('div.option-div > div.input-group > input[type="text"]')
+        .find('div.option-div div.input-group input[type="text"]')
         .each(function(index, elem) {
             var counter = index + 1;
             Localizer.getString('option', counter).then(function(result) {
@@ -171,6 +173,7 @@ $(document).on("click", ".add-options", function() {
             });
         });
     $('.check-me').text(checkMeKey);
+    $('.check-me-title').attr({ "title": checkMeKey });
 
 });
 
@@ -183,7 +186,7 @@ $(document).on("click", ".remove-option", function(eve) {
         $(this).parents("div.option-div").remove();
 
         $(selector)
-            .find('div.option-div > div.input-group > input[type="text"]')
+            .find('div.option-div div.input-group input[type="text"]')
             .each(function(index, elem) {
                 var counter = index + 1;
                 Localizer.getString('option', counter).then(function(result) {
@@ -364,7 +367,7 @@ function submitForm() {
 
     if ($.trim(error_text).length <= 0) {
         actionSDK
-            .executeApi(new actionSDK.GetContext.Request())
+            .executeApi(request)
             .then(function(response) {
                 console.info("GetContext - Response: " + JSON.stringify(response));
                 createAction(response.context.actionPackageId);
@@ -585,7 +588,7 @@ function generateGUID() {
 }
 
 $(document).ready(function() {
-    let request = new actionSDK.GetContext.Request();
+    request = new actionSDK.GetContext.Request();
     getStringKeys();
     getTheme(request);
 });
@@ -629,6 +632,7 @@ async function getStringKeys() {
     Localizer.getString('checkMe').then(function(result) {
         checkMeKey = result;
         $('.check-me').text(checkMeKey);
+        $('.check-me-title').attr({ "title": checkMeKey });
     });
 
     Localizer.getString('next').then(function(result) {
@@ -820,6 +824,18 @@ $(document).on("change", ".form_time input, .form_date input, .visible-to, #show
     }
 });
 
+$(document).on('click', '.check-me-title', function() {
+    if ($(this).parents('div.col-12').find('input[type="checkbox"]').prop('checked') == false) {
+        $(this).parents('div.col-12').find('input[type="checkbox"]').prop("checked", true);
+        $(this).parents('div.col-12').find('p.checked-status').text("Correct Answer");
+        $(this).parents('span.input-group-text').addClass('text-success');
+    } else {
+        $(this).parents('div.col-12').find('input[type="checkbox"]').prop("checked", false);
+        $(this).parents('div.col-12').find('p.checked-status').text("");
+        $(this).parents('span.input-group-text').removeClass('text-success');
+    }
+})
+
 function calc_date_diff(start, end) {
     var days = (end - start) / (1000 * 60 * 60 * 24);
     console.log('days: ' + days);
@@ -914,9 +930,131 @@ var questions_section = `<div style="display: none;" id="question-section">
         <div class="container question-container" id="question1">
             <div class="card-box card-border card-bg">
                 <div class="form-group">
-                    <div class="hover-btn mb-2 h-32">
-                        <button type="button" class="close remove-question" data-dismiss="alert">
-                            <span aria-hidden="true">
+                    <div class="input-group mb-2">
+                        <div class="input-group-append">
+                            <span class="question-number input-group-text input-tpt pl-0 strong" style="cursor: pointer;">1.</span>
+                        </div>
+                        <input type="text" class="form-control in-t pr-35" placeholder="${questionTitleKey}" aria-label="${questionTitleKey}" aria-describedby="basic-addon2" id="question-title">
+                        <div class="input-group-append">
+                            <span class="input-group-text remove-question remove-option-q input-tpt" style="cursor: pointer;" aria-hidden="true">
+                                <svg viewBox="-40 0 427 427.00131" xmlns="http://www.w3.org/2000/svg" class="gt gs">
+                                    <path d="m232.398438 154.703125c-5.523438 0-10 4.476563-10 10v189c0 5.519531 4.476562 10 10 10 5.523437 0 10-4.480469 10-10v-189c0-5.523437-4.476563-10-10-10zm0 0" />
+                                    <path d="m114.398438 154.703125c-5.523438 0-10 4.476563-10 10v189c0 5.519531 4.476562 10 10 10 5.523437 0 10-4.480469 10-10v-189c0-5.523437-4.476563-10-10-10zm0 0" />
+                                    <path d="m28.398438 127.121094v246.378906c0 14.5625 5.339843 28.238281 14.667968 38.050781 9.285156 9.839844 22.207032 15.425781 35.730469 15.449219h189.203125c13.527344-.023438 26.449219-5.609375 35.730469-15.449219 9.328125-9.8125 14.667969-23.488281 14.667969-38.050781v-246.378906c18.542968-4.921875 30.558593-22.835938 28.078124-41.863282-2.484374-19.023437-18.691406-33.253906-37.878906-33.257812h-51.199218v-12.5c.058593-10.511719-4.097657-20.605469-11.539063-28.03125-7.441406-7.421875-17.550781-11.5546875-28.0625-11.46875h-88.796875c-10.511719-.0859375-20.621094 4.046875-28.0625 11.46875-7.441406 7.425781-11.597656 17.519531-11.539062 28.03125v12.5h-51.199219c-19.1875.003906-35.394531 14.234375-37.878907 33.257812-2.480468 19.027344 9.535157 36.941407 28.078126 41.863282zm239.601562 279.878906h-189.203125c-17.097656 0-30.398437-14.6875-30.398437-33.5v-245.5h250v245.5c0 18.8125-13.300782 33.5-30.398438 33.5zm-158.601562-367.5c-.066407-5.207031 1.980468-10.21875 5.675781-13.894531 3.691406-3.675781 8.714843-5.695313 13.925781-5.605469h88.796875c5.210937-.089844 10.234375 1.929688 13.925781 5.605469 3.695313 3.671875 5.742188 8.6875 5.675782 13.894531v12.5h-128zm-71.199219 32.5h270.398437c9.941406 0 18 8.058594 18 18s-8.058594 18-18 18h-270.398437c-9.941407 0-18-8.058594-18-18s8.058593-18 18-18zm0 0" />
+                                    <path d="m173.398438 154.703125c-5.523438 0-10 4.476563-10 10v189c0 5.519531 4.476562 10 10 10 5.523437 0 10-4.480469 10-10v-189c0-5.523437-4.476563-10-10-10zm0 0" />
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex">
+                    <div class="ext-flex"></div>
+                    <div class="form-group" id="options">
+                        <label><strong class="choice-label">${choicesKey}</strong></label>
+                        <div class="option-div">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="input-group input-group-tpt mb-2 ">
+                                        <div class="input-group-append">
+
+                                        </div>
+                                        <input type="text" class="form-control in-t" placeholder="Option 1" aria-label="Option 1" aria-describedby="basic-addon2" id="option1">        
+                                        <div class="input-group-append check-opt">
+                                            <span class="input-group-text input-tpt" style="cursor: pointer;">
+                                                <i class="fa fa-check check-me-title"  data-toggle="tooltip" data-placement="bottom" title="${checkMeKey}" aria-hidden="true"></i>
+                                            </span>
+                                        </div>
+                                        <div class="input-group-append">
+                                            <span class="input-group-text remove-option input-tpt" style="cursor: pointer;">
+                                                <svg viewBox="-40 0 427 427.00131" xmlns="http://www.w3.org/2000/svg" class="gt gs">
+                                                    <path
+                                                        d="m232.398438 154.703125c-5.523438 0-10 4.476563-10 10v189c0 5.519531 4.476562 10 10 10 5.523437 0 10-4.480469 10-10v-189c0-5.523437-4.476563-10-10-10zm0 0" />
+                                                    <path
+                                                        d="m114.398438 154.703125c-5.523438 0-10 4.476563-10 10v189c0 5.519531 4.476562 10 10 10 5.523437 0 10-4.480469 10-10v-189c0-5.523437-4.476563-10-10-10zm0 0" />
+                                                    <path
+                                                        d="m28.398438 127.121094v246.378906c0 14.5625 5.339843 28.238281 14.667968 38.050781 9.285156 9.839844 22.207032 15.425781 35.730469 15.449219h189.203125c13.527344-.023438 26.449219-5.609375 35.730469-15.449219 9.328125-9.8125 14.667969-23.488281 14.667969-38.050781v-246.378906c18.542968-4.921875 30.558593-22.835938 28.078124-41.863282-2.484374-19.023437-18.691406-33.253906-37.878906-33.257812h-51.199218v-12.5c.058593-10.511719-4.097657-20.605469-11.539063-28.03125-7.441406-7.421875-17.550781-11.5546875-28.0625-11.46875h-88.796875c-10.511719-.0859375-20.621094 4.046875-28.0625 11.46875-7.441406 7.425781-11.597656 17.519531-11.539062 28.03125v12.5h-51.199219c-19.1875.003906-35.394531 14.234375-37.878907 33.257812-2.480468 19.027344 9.535157 36.941407 28.078126 41.863282zm239.601562 279.878906h-189.203125c-17.097656 0-30.398437-14.6875-30.398437-33.5v-245.5h250v245.5c0 18.8125-13.300782 33.5-30.398438 33.5zm-158.601562-367.5c-.066407-5.207031 1.980468-10.21875 5.675781-13.894531 3.691406-3.675781 8.714843-5.695313 13.925781-5.605469h88.796875c5.210937-.089844 10.234375 1.929688 13.925781 5.605469 3.695313 3.671875 5.742188 8.6875 5.675782 13.894531v12.5h-128zm-71.199219 32.5h270.398437c9.941406 0 18 8.058594 18 18s-8.058594 18-18 18h-270.398437c-9.941407 0-18-8.058594-18-18s8.058593-18 18-18zm0 0" />
+                                                    <path
+                                                        d="m173.398438 154.703125c-5.523438 0-10 4.476563-10 10v189c0 5.519531 4.476562 10 10 10 5.523437 0 10-4.480469 10-10v-189c0-5.523437-4.476563-10-10-10zm0 0" />
+                                                </svg>
+                                            </span>
+                                        </div>
+                                        <div class="text-right text-success">
+                                            <p class="checked-status"> </p>
+                                            <input type="checkbox" class="form-check-input" id="check1" value="yes" style="display:none">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="option-div">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="input-group input-group-tpt mb-2">
+                                        <div class="input-group-append">
+
+                                        </div>
+                                        <input type="text" class="form-control in-t" placeholder="Option 2" aria-label="Option 2" aria-describedby="basic-addon2" id="option2">
+                                        <div class="input-group-append check-opt">
+                                            <span class="input-group-text input-tpt" style="cursor: pointer;">
+                                                <i class="fa fa-check check-me-title"  data-toggle="tooltip" data-placement="bottom" title="${checkMeKey}" aria-hidden="true"></i>
+                                            </span>
+                                        </div>
+                                        <div class="input-group-append">
+                                            <span class="input-group-text remove-option input-tpt" style="cursor: pointer;">
+                                                <svg viewBox="-40 0 427 427.00131"
+                                                    xmlns="http://www.w3.org/2000/svg" class="gt gs">
+                                                    <path
+                                                        d="m232.398438 154.703125c-5.523438 0-10 4.476563-10 10v189c0 5.519531 4.476562 10 10 10 5.523437 0 10-4.480469 10-10v-189c0-5.523437-4.476563-10-10-10zm0 0" />
+                                                    <path
+                                                        d="m114.398438 154.703125c-5.523438 0-10 4.476563-10 10v189c0 5.519531 4.476562 10 10 10 5.523437 0 10-4.480469 10-10v-189c0-5.523437-4.476563-10-10-10zm0 0" />
+                                                    <path
+                                                        d="m28.398438 127.121094v246.378906c0 14.5625 5.339843 28.238281 14.667968 38.050781 9.285156 9.839844 22.207032 15.425781 35.730469 15.449219h189.203125c13.527344-.023438 26.449219-5.609375 35.730469-15.449219 9.328125-9.8125 14.667969-23.488281 14.667969-38.050781v-246.378906c18.542968-4.921875 30.558593-22.835938 28.078124-41.863282-2.484374-19.023437-18.691406-33.253906-37.878906-33.257812h-51.199218v-12.5c.058593-10.511719-4.097657-20.605469-11.539063-28.03125-7.441406-7.421875-17.550781-11.5546875-28.0625-11.46875h-88.796875c-10.511719-.0859375-20.621094 4.046875-28.0625 11.46875-7.441406 7.425781-11.597656 17.519531-11.539062 28.03125v12.5h-51.199219c-19.1875.003906-35.394531 14.234375-37.878907 33.257812-2.480468 19.027344 9.535157 36.941407 28.078126 41.863282zm239.601562 279.878906h-189.203125c-17.097656 0-30.398437-14.6875-30.398437-33.5v-245.5h250v245.5c0 18.8125-13.300782 33.5-30.398438 33.5zm-158.601562-367.5c-.066407-5.207031 1.980468-10.21875 5.675781-13.894531 3.691406-3.675781 8.714843-5.695313 13.925781-5.605469h88.796875c5.210937-.089844 10.234375 1.929688 13.925781 5.605469 3.695313 3.671875 5.742188 8.6875 5.675782 13.894531v12.5h-128zm-71.199219 32.5h270.398437c9.941406 0 18 8.058594 18 18s-8.058594 18-18 18h-270.398437c-9.941407 0-18-8.058594-18-18s8.058593-18 18-18zm0 0" />
+                                                    <path
+                                                        d="m173.398438 154.703125c-5.523438 0-10 4.476563-10 10v189c0 5.519531 4.476562 10 10 10 5.523437 0 10-4.480469 10-10v-189c0-5.523437-4.476563-10-10-10zm0 0" />
+                                                </svg>
+                                            </span>
+                                        </div>
+                                        <div class="text-right text-success">
+                                            <p class="checked-status"> </p>
+                                            <input type="checkbox" class="form-check-input" value="yes" id="check2" style="display:none"> 
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="">
+                            <button type="button" class="teams-link add-options"> 
+                                <svg role="presentation" focusable="false" viewBox="8 8 16 16" class="cc gs gt tc gv">
+                                    <path class="ui-icon__outline cc" d="M23.352 16.117c.098.1.148.217.148.352 0 .136-.05.253-.148.351a.48.48 0 0 1-.352.149h-6v6c0 .136-.05.253-.148.351a.48.48 0 0 1-.352.149.477.477 0 0 1-.352-.149.477.477 0 0 1-.148-.351v-6h-6a.477.477 0 0 1-.352-.149.48.48 0 0 1-.148-.351c0-.135.05-.252.148-.352A.481.481 0 0 1 10 15.97h6v-6c0-.135.049-.253.148-.352a.48.48 0 0 1 .352-.148c.135 0 .252.05.352.148.098.1.148.216.148.352v6h6c.135 0 .252.05.352.148z">
+                                    </path>
+                                    <path class="ui-icon__filled gr" d="M23.5 15.969a1.01 1.01 0 0 1-.613.922.971.971 0 0 1-.387.078H17v5.5a1.01 1.01 0 0 1-.613.922.971.971 0 0 1-.387.078.965.965 0 0 1-.387-.079.983.983 0 0 1-.535-.535.97.97 0 0 1-.078-.386v-5.5H9.5a.965.965 0 0 1-.387-.078.983.983 0 0 1-.535-.535.972.972 0 0 1-.078-.387 1.002 1.002 0 0 1 1-1H15v-5.5a1.002 1.002 0 0 1 1.387-.922c.122.052.228.124.32.215a.986.986 0 0 1 .293.707v5.5h5.5a.989.989 0 0 1 .707.293c.09.091.162.198.215.32a.984.984 0 0 1 .078.387z">
+                                    </path>
+                                </svg>  
+                                ${addMoreOptionsKey}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>`;
+
+// Option
+var option_section = `<div style="display: none;" id="option-section">
+        <div class="option-div">
+            <div class="row">
+                <div class="col-12">
+                    <div class="input-group input-group-tpt mb-2">
+                        <div class="input-group-append">
+                        </div>
+                        <input type="text" class="form-control in-t" placeholder="Option" aria-label="Recipient's username" aria-describedby="basic-addon2" id="option-1">
+                        <div class="input-group-append check-opt">
+                            <span class="input-group-text input-tpt" style="cursor: pointer;">
+                                <i class="fa fa-check check-me-title"  data-toggle="tooltip" data-placement="bottom" title="${checkMeKey}" aria-hidden="true"></i>
+                            </span>
+                        </div>
+                        <div class="input-group-append">
+                            <span class="input-group-text remove-option input-tpt" style="cursor: pointer;">
                                 <svg viewBox="-40 0 427 427.00131" xmlns="http://www.w3.org/2000/svg" class="gt gs">
                                     <path
                                         d="m232.398438 154.703125c-5.523438 0-10 4.476563-10 10v189c0 5.519531 4.476562 10 10 10 5.523437 0 10-4.480469 10-10v-189c0-5.523437-4.476563-10-10-10zm0 0" />
@@ -928,119 +1066,13 @@ var questions_section = `<div style="display: none;" id="question-section">
                                         d="m173.398438 154.703125c-5.523438 0-10 4.476563-10 10v189c0 5.519531 4.476562 10 10 10 5.523437 0 10-4.480469 10-10v-189c0-5.523437-4.476563-10-10-10zm0 0" />
                                 </svg>
                             </span>
-                            <span class="sr-only">Close</span>
-                        </button>
-                    </div>
-                    <div class="clearfix"></div>
-                    <div class="input-group mb-2 ">
-                        <div class="input-group-append">
-                            <span class="question-number input-group-text input-tpt pl-0 strong"
-                                style="cursor: pointer;">1.</span>
                         </div>
-                        <input type="text" class="form-control in-t" placeholder="${questionTitleKey}"
-                            aria-label="${questionTitleKey}" aria-describedby="basic-addon2" id="question-title">
+                        <div class="text-right text-success">
+                            <p class="checked-status"> </p>
+                            <input type="checkbox" class="form-check-input" value="yes" id="check2" style="display:none"> 
+                        </div>        
                     </div>
                 </div>
-                <div class="d-flex">
-                    <div class="ext-flex"></div>
-                    <div class="form-group" id="options">
-                        <label><strong class="choice-label">${choicesKey}</strong></label>
-                        <div class="option-div">
-                            <div class="input-group input-group-tpt mb-2 ">
-                                <input type="text" class="form-control in-t" placeholder="Option 1"
-                                    aria-label="Option 1" aria-describedby="basic-addon2" id="option1">
-                                <div class="input-group-append">
-                                    <span class="input-group-text remove-option input-tpt" style="cursor: pointer;">
-                                        <svg viewBox="-40 0 427 427.00131" xmlns="http://www.w3.org/2000/svg" class="gt gs">
-                                            <path
-                                                d="m232.398438 154.703125c-5.523438 0-10 4.476563-10 10v189c0 5.519531 4.476562 10 10 10 5.523437 0 10-4.480469 10-10v-189c0-5.523437-4.476563-10-10-10zm0 0" />
-                                            <path
-                                                d="m114.398438 154.703125c-5.523438 0-10 4.476563-10 10v189c0 5.519531 4.476562 10 10 10 5.523437 0 10-4.480469 10-10v-189c0-5.523437-4.476563-10-10-10zm0 0" />
-                                            <path
-                                                d="m28.398438 127.121094v246.378906c0 14.5625 5.339843 28.238281 14.667968 38.050781 9.285156 9.839844 22.207032 15.425781 35.730469 15.449219h189.203125c13.527344-.023438 26.449219-5.609375 35.730469-15.449219 9.328125-9.8125 14.667969-23.488281 14.667969-38.050781v-246.378906c18.542968-4.921875 30.558593-22.835938 28.078124-41.863282-2.484374-19.023437-18.691406-33.253906-37.878906-33.257812h-51.199218v-12.5c.058593-10.511719-4.097657-20.605469-11.539063-28.03125-7.441406-7.421875-17.550781-11.5546875-28.0625-11.46875h-88.796875c-10.511719-.0859375-20.621094 4.046875-28.0625 11.46875-7.441406 7.425781-11.597656 17.519531-11.539062 28.03125v12.5h-51.199219c-19.1875.003906-35.394531 14.234375-37.878907 33.257812-2.480468 19.027344 9.535157 36.941407 28.078126 41.863282zm239.601562 279.878906h-189.203125c-17.097656 0-30.398437-14.6875-30.398437-33.5v-245.5h250v245.5c0 18.8125-13.300782 33.5-30.398438 33.5zm-158.601562-367.5c-.066407-5.207031 1.980468-10.21875 5.675781-13.894531 3.691406-3.675781 8.714843-5.695313 13.925781-5.605469h88.796875c5.210937-.089844 10.234375 1.929688 13.925781 5.605469 3.695313 3.671875 5.742188 8.6875 5.675782 13.894531v12.5h-128zm-71.199219 32.5h270.398437c9.941406 0 18 8.058594 18 18s-8.058594 18-18 18h-270.398437c-9.941407 0-18-8.058594-18-18s8.058593-18 18-18zm0 0" />
-                                            <path
-                                                d="m173.398438 154.703125c-5.523438 0-10 4.476563-10 10v189c0 5.519531 4.476562 10 10 10 5.523437 0 10-4.480469 10-10v-189c0-5.523437-4.476563-10-10-10zm0 0" />
-                                        </svg>
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div class="input-group mb-2  form-check custom-check-outer">
-                                <label class="form-check-label custom-check"><input type="checkbox"
-                                        class="form-check-input" id="check1" value="yes"> <span
-                                        class="checkmark"></span> <span class="check-me"> ${checkMeKey}</span></label>
-                            </div>
-
-                        </div>
-                        <div class="option-div">
-                            <div class="input-group input-group-tpt mb-2">
-                                <input type="text" class="form-control in-t" placeholder="Option 2"
-                                    aria-label="Option 2" aria-describedby="basic-addon2" id="option2">
-                                <div class="input-group-append">
-                                    <span class="input-group-text remove-option input-tpt" style="cursor: pointer;"><svg
-                                            viewBox="-40 0 427 427.00131"
-                                            xmlns="http://www.w3.org/2000/svg" class="gt gs">
-                                            <path
-                                                d="m232.398438 154.703125c-5.523438 0-10 4.476563-10 10v189c0 5.519531 4.476562 10 10 10 5.523437 0 10-4.480469 10-10v-189c0-5.523437-4.476563-10-10-10zm0 0" />
-                                            <path
-                                                d="m114.398438 154.703125c-5.523438 0-10 4.476563-10 10v189c0 5.519531 4.476562 10 10 10 5.523437 0 10-4.480469 10-10v-189c0-5.523437-4.476563-10-10-10zm0 0" />
-                                            <path
-                                                d="m28.398438 127.121094v246.378906c0 14.5625 5.339843 28.238281 14.667968 38.050781 9.285156 9.839844 22.207032 15.425781 35.730469 15.449219h189.203125c13.527344-.023438 26.449219-5.609375 35.730469-15.449219 9.328125-9.8125 14.667969-23.488281 14.667969-38.050781v-246.378906c18.542968-4.921875 30.558593-22.835938 28.078124-41.863282-2.484374-19.023437-18.691406-33.253906-37.878906-33.257812h-51.199218v-12.5c.058593-10.511719-4.097657-20.605469-11.539063-28.03125-7.441406-7.421875-17.550781-11.5546875-28.0625-11.46875h-88.796875c-10.511719-.0859375-20.621094 4.046875-28.0625 11.46875-7.441406 7.425781-11.597656 17.519531-11.539062 28.03125v12.5h-51.199219c-19.1875.003906-35.394531 14.234375-37.878907 33.257812-2.480468 19.027344 9.535157 36.941407 28.078126 41.863282zm239.601562 279.878906h-189.203125c-17.097656 0-30.398437-14.6875-30.398437-33.5v-245.5h250v245.5c0 18.8125-13.300782 33.5-30.398438 33.5zm-158.601562-367.5c-.066407-5.207031 1.980468-10.21875 5.675781-13.894531 3.691406-3.675781 8.714843-5.695313 13.925781-5.605469h88.796875c5.210937-.089844 10.234375 1.929688 13.925781 5.605469 3.695313 3.671875 5.742188 8.6875 5.675782 13.894531v12.5h-128zm-71.199219 32.5h270.398437c9.941406 0 18 8.058594 18 18s-8.058594 18-18 18h-270.398437c-9.941407 0-18-8.058594-18-18s8.058593-18 18-18zm0 0" />
-                                            <path
-                                                d="m173.398438 154.703125c-5.523438 0-10 4.476563-10 10v189c0 5.519531 4.476562 10 10 10 5.523437 0 10-4.480469 10-10v-189c0-5.523437-4.476563-10-10-10zm0 0" />
-                                        </svg></span>
-                                </div>
-                            </div>
-                            <div class="input-group mb-2 form-check custom-check-outer">
-                                <label class="form-check-label custom-check"><input type="checkbox"
-                                        class="form-check-input" value="yes" id="check2"> <span
-                                        class="checkmark"></span> <span class="check-me"> ${checkMeKey}</span></label>
-                            </div>
-
-                        </div>
-                        <div class="">
-                            <button type="button" class="teams-link add-options"> <svg role="presentation"
-                                    focusable="false" viewBox="8 8 16 16" class="cc gs gt ha gv">
-                                    <path class="ui-icon__outline cc"
-                                        d="M23.352 16.117c.098.1.148.217.148.352 0 .136-.05.253-.148.351a.48.48 0 0 1-.352.149h-6v6c0 .136-.05.253-.148.351a.48.48 0 0 1-.352.149.477.477 0 0 1-.352-.149.477.477 0 0 1-.148-.351v-6h-6a.477.477 0 0 1-.352-.149.48.48 0 0 1-.148-.351c0-.135.05-.252.148-.352A.481.481 0 0 1 10 15.97h6v-6c0-.135.049-.253.148-.352a.48.48 0 0 1 .352-.148c.135 0 .252.05.352.148.098.1.148.216.148.352v6h6c.135 0 .252.05.352.148z">
-                                    </path>
-                                    <path class="ui-icon__filled gr"
-                                        d="M23.5 15.969a1.01 1.01 0 0 1-.613.922.971.971 0 0 1-.387.078H17v5.5a1.01 1.01 0 0 1-.613.922.971.971 0 0 1-.387.078.965.965 0 0 1-.387-.079.983.983 0 0 1-.535-.535.97.97 0 0 1-.078-.386v-5.5H9.5a.965.965 0 0 1-.387-.078.983.983 0 0 1-.535-.535.972.972 0 0 1-.078-.387 1.002 1.002 0 0 1 1-1H15v-5.5a1.002 1.002 0 0 1 1.387-.922c.122.052.228.124.32.215a.986.986 0 0 1 .293.707v5.5h5.5a.989.989 0 0 1 .707.293c.09.091.162.198.215.32a.984.984 0 0 1 .078.387z">
-                                    </path>
-                                </svg> ${addMoreOptionsKey}</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>`;
-
-// Option
-var option_section = `<div style="display: none;" id="option-section">
-        <div class="option-div">
-            <div class="input-group input-group-tpt mb-2">
-                <input type="text" class="form-control in-t" placeholder="Option" aria-label="Recipient's username"
-                    aria-describedby="basic-addon2" id="option-1">
-                <div class="input-group-append">
-                    <span class="input-group-text remove-option input-tpt" style="cursor: pointer;">
-                        <svg viewBox="-40 0 427 427.00131" xmlns="http://www.w3.org/2000/svg" class="gt gs">
-                            <path
-                                d="m232.398438 154.703125c-5.523438 0-10 4.476563-10 10v189c0 5.519531 4.476562 10 10 10 5.523437 0 10-4.480469 10-10v-189c0-5.523437-4.476563-10-10-10zm0 0" />
-                            <path
-                                d="m114.398438 154.703125c-5.523438 0-10 4.476563-10 10v189c0 5.519531 4.476562 10 10 10 5.523437 0 10-4.480469 10-10v-189c0-5.523437-4.476563-10-10-10zm0 0" />
-                            <path
-                                d="m28.398438 127.121094v246.378906c0 14.5625 5.339843 28.238281 14.667968 38.050781 9.285156 9.839844 22.207032 15.425781 35.730469 15.449219h189.203125c13.527344-.023438 26.449219-5.609375 35.730469-15.449219 9.328125-9.8125 14.667969-23.488281 14.667969-38.050781v-246.378906c18.542968-4.921875 30.558593-22.835938 28.078124-41.863282-2.484374-19.023437-18.691406-33.253906-37.878906-33.257812h-51.199218v-12.5c.058593-10.511719-4.097657-20.605469-11.539063-28.03125-7.441406-7.421875-17.550781-11.5546875-28.0625-11.46875h-88.796875c-10.511719-.0859375-20.621094 4.046875-28.0625 11.46875-7.441406 7.425781-11.597656 17.519531-11.539062 28.03125v12.5h-51.199219c-19.1875.003906-35.394531 14.234375-37.878907 33.257812-2.480468 19.027344 9.535157 36.941407 28.078126 41.863282zm239.601562 279.878906h-189.203125c-17.097656 0-30.398437-14.6875-30.398437-33.5v-245.5h250v245.5c0 18.8125-13.300782 33.5-30.398438 33.5zm-158.601562-367.5c-.066407-5.207031 1.980468-10.21875 5.675781-13.894531 3.691406-3.675781 8.714843-5.695313 13.925781-5.605469h88.796875c5.210937-.089844 10.234375 1.929688 13.925781 5.605469 3.695313 3.671875 5.742188 8.6875 5.675782 13.894531v12.5h-128zm-71.199219 32.5h270.398437c9.941406 0 18 8.058594 18 18s-8.058594 18-18 18h-270.398437c-9.941407 0-18-8.058594-18-18s8.058593-18 18-18zm0 0" />
-                            <path
-                                d="m173.398438 154.703125c-5.523438 0-10 4.476563-10 10v189c0 5.519531 4.476562 10 10 10 5.523437 0 10-4.480469 10-10v-189c0-5.523437-4.476563-10-10-10zm0 0" />
-                        </svg>
-                    </span>
-                </div>
-            </div>
-            <div class="input-group mb-2  form-check custom-check-outer">
-                <label class="custom-check form-check-label">
-                    <input type="checkbox" class="form-check-input" value="yes">
-                    <span class="checkmark"></span> <span class="check-me"> ${checkMeKey}</span>
-                </label>
             </div>
         </div>
     </div>`;

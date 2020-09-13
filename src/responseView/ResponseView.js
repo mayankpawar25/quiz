@@ -4,6 +4,7 @@ import { Localizer } from '../common/ActionSdkHelper';
 // ActionSDK.APIs.actionViewDidLoad(true /*success*/ );
 
 // Fetching HTML Elements in Variables by ID.
+let request;
 var $root = "";
 let row = {};
 let actionInstance = null;
@@ -33,6 +34,7 @@ let actionDataRows = null;
 let actionDataRowsLength = 0;
 let memberIds = [];
 let myUserId = [];
+let contextActionId;
 
 async function getStringKeys() {
     Localizer.getString('question').then(function(result) {
@@ -148,18 +150,19 @@ async function getTheme(request) {
 
 // *********************************************** HTML ELEMENT***********************************************
 $(document).ready(function() {
-    let request = new actionSDK.GetContext.Request();
+    request = new actionSDK.GetContext.Request();
     getTheme(request);
 });
 
 function OnPageLoad() {
     actionSDK
-        .executeApi(new actionSDK.GetContext.Request())
+        .executeApi(request)
         .then(function(response) {
             console.info("GetContext - Response: " + JSON.stringify(response));
             myUserId = response.context.userId;
-            getResponderIds(response.context.actionId);
-            getActionInstance(response.context.actionId);
+            contextActionId = response.context.actionId
+            getResponderIds(contextActionId);
+            getActionInstance(contextActionId);
         })
         .catch(function(error) {
             console.error("GetContext - Error: " + JSON.stringify(error));
@@ -297,11 +300,13 @@ function createQuestionView() {
     } else {
         $('#previous').prop('disabled', true);
     }
+
     $('#previous').attr('data-prev-id', (parseInt(current_page) - 1));
     $('#next').attr('data-next-id', (parseInt(current_page) + 1));
 
     Localizer.getString('xofy', parseInt(current_page) + 1, max_question_count).then(function(result) {
         $('#xofy').text(result);
+        nextButtonName();
     });
 
     actionInstance.dataTables.forEach((dataTable) => {
@@ -344,6 +349,10 @@ function createQuestionView() {
         }
     });
 
+
+
+    /*  */
+
 }
 
 function getRadioButton(text, name, id) {
@@ -361,6 +370,24 @@ function getCheckboxButton(text, name, id) {
     return $oDiv; */
     var div_data = $(`<div class="form-group radio-section custom-check-outer" id="${id}" columnId="${name}" ><label class="custom-check form-check-label"><input type="checkbox" class="form-check-input" name="${name}" id="${id}"><span class="checkmark"></span> ${text}</label></div>`)
     return div_data;
+}
+
+function nextButtonName() {
+    /* var current_p = 0;
+    $('.card-box.card-blank').each(function() {
+        current_p++;
+        if ($(this).is('visible'))
+            return;
+    }); */
+    if (parseInt(current_page) + 1 >= max_question_count) {
+        setTimeout(function() {
+            $('.section-1-footer').find('#next').text('Done');
+        }, 100);
+    } else {
+        setTimeout(function() {
+            $('.section-1-footer').find('#next').text('Next');
+        }, 100);
+    }
 }
 
 $(document).on('click', 'div.radio-section', function() {
@@ -381,6 +408,7 @@ $(document).on("click", '#next', function() {
 
     /* Check if radio or checkbox is checked */
     var is_checked = false;
+
 
     $('div.card-box:visible').find("input[type='checkbox']:checked").each(function(ind, ele) {
         if ($(ele).is(':checked')) {
@@ -442,6 +470,7 @@ $(document).on("click", '#next', function() {
         var correct_value = correct_ans_arr.join();
         // console.log('correct_value: ' + correct_value);
         if (actionInstance.customProperties[3].value == 'Yes' && $('div.card-box:visible').find("label.custom-radio").hasClass('disabled') !== "disabled") {
+
             if (correct_answer == true) {
                 $('#exampleModalCenter').find('#exampleModalLongTitle').html(answerResponseKey);
                 $('#exampleModalCenter').find('.modal-body').html(`<label class="text-success"><i class="fa fa-check" aria-hidden="true"></i> <strong>${correctKey}</strong></label><p><label>${yourAnswerKey}</label><br>${correct_value}</p>`);
@@ -478,12 +507,25 @@ $(document).on("click", '#next', function() {
                         createQuestionView();
                     } else if (parseInt(current_page) == max_question_count) {
                         /*  Submit your question  */
-                        summarySection();
+                        var addDataRowRequest = new actionSDK.AddActionDataRow.Request(
+                            getDataRow(contextActionId)
+                        );
+                        actionSDK
+                            .executeApi(addDataRowRequest)
+                            .then(function(batchResponse) {
+                                console.info("BatchResponse: " + JSON.stringify(batchResponse));
+                                summarySection();
+                            })
+                            .catch(function(error) {
+                                console.error("Error: " + JSON.stringify(error));
+                            });
+
                     } else {
                         // $root.find('div.card-box.card-blank:nth-child(' + current_page + ')').show();
                         $('#previous').attr('data-prev-id', (parseInt(current_page) - 1));
                         Localizer.getString('xofy', parseInt(current_page) + 1, max_question_count).then(function(result) {
                             $('#xofy').text(result);
+                            nextButtonName();
                         });
                         $('#next').attr('data-next-id', (parseInt(current_page) + 1));
                         $root.find('div.card-box.card-blank:nth-child(' + (parseInt(current_page) + 1) + ')').show();
@@ -510,18 +552,29 @@ $(document).on("click", '#next', function() {
                 createQuestionView();
             } else if (parseInt(current_page) == max_question_count) {
                 /*  Submit your question  */
-                summarySection();
+                var addDataRowRequest = new actionSDK.AddActionDataRow.Request(
+                    getDataRow(contextActionId)
+                );
+                actionSDK
+                    .executeApi(addDataRowRequest)
+                    .then(function(batchResponse) {
+                        console.info("BatchResponse: " + JSON.stringify(batchResponse));
+                        summarySection();
+                    })
+                    .catch(function(error) {
+                        console.error("Error: " + JSON.stringify(error));
+                    });
             } else {
                 // $root.find('root < div.card-box.card-blank:nth-child(' + current_page + ')').show();
                 $root.find('.card-box:nth-child(' + (parseInt(current_page) + 1) + ')').show();
                 $('#previous').attr('data-prev-id', (parseInt(current_page) - 1));
                 Localizer.getString('xofy', parseInt(current_page) + 1, max_question_count).then(function(result) {
                     $('#xofy').text(result);
+                    nextButtonName();
                 });
                 // $('#xofy').text(`${parseInt(current_page)} of ${max_question_count}`);
                 $('#next').attr('data-next-id', (parseInt(current_page) + 1));
                 $('#previous').attr('disabled', false);
-
             }
 
             if (current_page >= max_question_count) {
@@ -531,7 +584,6 @@ $(document).on("click", '#next', function() {
 
         console.log(` Prev: ${parseInt(pagenumber) - 1} Current: ${parseInt(pagenumber)} Next: ${parseInt(pagenumber) + 1}`);
         console.log(` current_page: ${parseInt(current_page)} max_question_count: ${parseInt(max_question_count)} `);
-
 
     } else {
         $('#exampleModalCenter2').find('#exampleModalLongTitle').html(`<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve" class="gt gs mt--4"><g><g><g><path d="M507.113,428.415L287.215,47.541c-6.515-11.285-18.184-18.022-31.215-18.022c-13.031,0-24.7,6.737-31.215,18.022L4.887,428.415c-6.516,11.285-6.516,24.76,0,36.044c6.515,11.285,18.184,18.022,31.215,18.022h439.796c13.031,0,24.7-6.737,31.215-18.022C513.629,453.175,513.629,439.7,507.113,428.415z M481.101,449.441c-0.647,1.122-2.186,3.004-5.202,3.004H36.102c-3.018,0-4.556-1.881-5.202-3.004c-0.647-1.121-1.509-3.394,0-6.007L250.797,62.559c1.509-2.613,3.907-3.004,5.202-3.004c1.296,0,3.694,0.39,5.202,3.004L481.1,443.434C482.61,446.047,481.748,448.32,481.101,449.441z"/><rect x="240.987" y="166.095" width="30.037" height="160.197" /><circle cx="256.005" cy="376.354" r="20.025" /></g></g></g > <g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g></svg > <span class="note-key">${noteKey}</span>`);
@@ -545,6 +597,20 @@ $(document).on("click", '#next', function() {
         });
     }
 
+    /* var current_p = 0;
+    $('.card-box.card-blank').each(function() {
+        current_p++;
+        if ($(this).is('visible'))
+            return;
+    });
+
+    if (parseInt(current_page) >= (max_question_count - 1) && current_p >= max_question_count) {
+        setTimeout(function() {
+            $('.section-1-footer').find('#next').text('Done');
+        }, 1000);
+    } else {
+        $('.section-1-footer').find('#next').text('Next');
+    } */
 });
 
 $(document).on("click", '#previous', function() {
@@ -558,7 +624,11 @@ $(document).on("click", '#previous', function() {
     $root.find('.card-box:nth-child(' + (parseInt(current_page) + 1) + ')').show();
     $('#previous').attr('data-prev-id', (parseInt(current_page) - 1));
     $('#next').attr('data-next-id', (parseInt(current_page) + 1));
-    $('#xofy').text(`${(parseInt(current_page) + 1)} of ${max_question_count}`);
+    Localizer.getString('xofy', parseInt(current_page) + 1, max_question_count).then(function(result) {
+        $('#xofy').text(result);
+        nextButtonName();
+    });
+    // $('#xofy').text(`${(parseInt(current_page) + 1)} of ${max_question_count}`);
 
     if (current_page <= 0) {
         $('#previous').attr('disabled', true);
@@ -573,7 +643,6 @@ $(document).on("click", '#previous', function() {
 function summarySection() {
     getStringKeys();
 
-
     $root.find('.card-box').hide();
 
     $('#root').append(summary_section);
@@ -581,45 +650,45 @@ function summarySection() {
 
     /*  Check Show Correct Answer  */
     if (Object.keys(row).length > 0) {
-        if (actionInstance.customProperties[3].value == 'Yes') {
-            var correct_answer = $.parseJSON(actionInstance.customProperties[4].value);
-            console.log('correct_answer: ');
-            console.log(correct_answer);
-            var count = 0;
+        // if (actionInstance.customProperties[3].value == 'Yes') {
+        var correct_answer = $.parseJSON(actionInstance.customProperties[4].value);
+        console.log('correct_answer: ');
+        console.log(correct_answer);
+        var count = 0;
 
-            var ans_rsp = '';
-            var score = 0;
+        var ans_rsp = '';
+        var score = 0;
 
-            $('#root').find('div.card-box').each(function(i, val) {
+        $('#root').find('div.card-box').each(function(i, val) {
 
-                var searchIDs = $(val).find('input:checked').map(function() {
-                    return $(this).attr('id');
-                });
+            var searchIDs = $(val).find('input:checked').map(function() {
+                return $(this).attr('id');
+            });
 
-                var correct_ans = '';
-                var your_ans = '';
+            var correct_ans = '';
+            var your_ans = '';
 
-                if (JSON.stringify(correct_answer[count]) == JSON.stringify(searchIDs.get())) {
-                    /*  Answer is correct  */
-                    score = score + 1;
-                    var $summary_card = $('<div class="card-box card-blank bt"></div>');
-                    var $summary_dtable = $('<div class="d-table"></div>');
-                    var question = $(val).find('.question-title').text();
-                    $summary_card.append($summary_dtable);
-                    Localizer.getString('correct').then(function(result) {
-                        $summary_dtable.append(`<label>
+            if (JSON.stringify(correct_answer[count]) == JSON.stringify(searchIDs.get())) {
+                /*  Answer is correct  */
+                score = score + 1;
+                var $summary_card = $('<div class="card-box card-blank bt"></div>');
+                var $summary_dtable = $('<div class="d-table"></div>');
+                var question = $(val).find('.question-title').text();
+                $summary_card.append($summary_dtable);
+                Localizer.getString('correct').then(function(result) {
+                    $summary_dtable.append(`<label>
                                 <strong>${question}</strong>
                             </label>
                             <label class="float-right" id="status-${i}">
                                 <span class="text-success">${result}</span>
                             </label>
                         `);
-                    });
+                });
 
-                    $(val).find('label.custom-radio, label.custom-check').each(function(opt_ind, opt_val) {
-                        var opt_id = $(opt_val).find('input').attr('id');
-                        if ($.inArray(opt_id, correct_answer[count]) !== -1) {
-                            $summary_card.append(`<div class="form-group">
+                $(val).find('label.custom-radio, label.custom-check').each(function(opt_ind, opt_val) {
+                    var opt_id = $(opt_val).find('input').attr('id');
+                    if ($.inArray(opt_id, correct_answer[count]) !== -1) {
+                        $summary_card.append(`<div class="form-group">
                                         <div class="form-group alert alert-success">
                                             <p class="mb0">
                                                 ${$(opt_val).text()}
@@ -627,38 +696,38 @@ function summarySection() {
                                             </p>
                                         </div>
                                     </div>`);
-                        } else {
-                            $summary_card.append(`<div class="form-group">
+                    } else {
+                        $summary_card.append(`<div class="form-group">
                                         <div class="form-group alert alert-normal">
                                             <p class="mb0">
                                                 ${$(opt_val).text()}
                                             </p>
                                         </div>
                                     </div>`);
-                        }
-                    });
+                    }
+                });
 
-                } else {
-                    /*  Answer is incorrect  */
-                    var $summary_card = $('<div class="card-box card-blank bt"></div>');
-                    var $summary_dtable = $('<div class="d-table"></div>');
-                    var question = $(val).find('.question-title').text();
-                    $summary_card.append($summary_dtable);
-                    Localizer.getString('incorrect').then(function(result) {
-                        $summary_dtable.append(`<label>
+            } else {
+                /*  Answer is incorrect  */
+                var $summary_card = $('<div class="card-box card-blank bt"></div>');
+                var $summary_dtable = $('<div class="d-table"></div>');
+                var question = $(val).find('.question-title').text();
+                $summary_card.append($summary_dtable);
+                Localizer.getString('incorrect').then(function(result) {
+                    $summary_dtable.append(`<label>
                                         <strong>${question}</strong>
                                     </label>
                                     <label class="float-right" id="status-${i}">
                                         <span class="text-danger">${result}</span>
                                     </label>
                                 `);
-                    });
+                });
 
-                    $(val).find('label.custom-radio, label.custom-check').each(function(opt_ind, opt_val) {
-                        var opt_id = $(opt_val).find('input').attr('id');
-                        if ($.inArray(opt_id, correct_answer[count]) !== -1) {
-                            if ($(opt_val).find('input').prop('checked') == true) {
-                                $summary_card.append(`<div class="form-group">
+                $(val).find('label.custom-radio, label.custom-check').each(function(opt_ind, opt_val) {
+                    var opt_id = $(opt_val).find('input').attr('id');
+                    if ($.inArray(opt_id, correct_answer[count]) !== -1) {
+                        if ($(opt_val).find('input').prop('checked') == true) {
+                            $summary_card.append(`<div class="form-group">
                                             <div class="form-group alert alert-danger">
                                                 <p class="mb0">
                                                     ${$(opt_val).text()}
@@ -666,8 +735,8 @@ function summarySection() {
                                                 </p>
                                             </div>
                                         </div>`);
-                            } else {
-                                $summary_card.append(`<div class="form-group">
+                        } else {
+                            $summary_card.append(`<div class="form-group">
                                             <div class="form-group alert alert-normal">
                                                 <p class="mb0">
                                                     ${$(opt_val).text()}
@@ -675,10 +744,10 @@ function summarySection() {
                                                 </p>
                                             </div>
                                         </div>`);
-                            }
-                        } else {
-                            if ($(opt_val).find('input').prop('checked') == true) {
-                                $summary_card.append(`<div class="form-group">
+                        }
+                    } else {
+                        if ($(opt_val).find('input').prop('checked') == true) {
+                            $summary_card.append(`<div class="form-group">
                                             <div class="form-group alert alert-danger">
                                                 <p class="mb0">
                                                     ${$(opt_val).text()}
@@ -686,53 +755,68 @@ function summarySection() {
                                                 </p>
                                             </div>
                                         </div>`);
-                            } else {
-                                $summary_card.append(`<div class="form-group">
+                        } else {
+                            $summary_card.append(`<div class="form-group">
                                             <div class="form-group alert alert-normal">
                                                 <p class="mb0">
                                                     ${$(opt_val).text()}
                                                 </p>
                                             </div>
                                         </div>`);
-                            }
                         }
-                    });
+                    }
+                });
 
-                }
-                $('.summary-section').append($summary_card);
-                count++;
-            });
-            $('.summary-section').append('<div class="ht-100"></div>');
+            }
+            $('.summary-section').append($summary_card);
+            count++;
+        });
+        $('.summary-section').append('<div class="ht-100"></div>');
 
-            console.log('total score: ');
-            console.log(score);
-            var score_is = Math.round((score / correct_answer.length) * 100);
-            $('.summary-section').prepend(`<div class="">
+        console.log('total score: ');
+        console.log(score);
+        var score_is = Math.round((score / correct_answer.length) * 100);
+        $('.summary-section').prepend(`<div class="">
                         <label>
                             <strong>Score: </strong>${score_is}%
                         </label>
                     </div>`);
-            Localizer.getString('quiz_summary').then(function(result) {
-                $('.summary-section').prepend(`<div><h4>${result}</h4></div><hr>`);
-            });
+        Localizer.getString('quiz_summary').then(function(result) {
+            $('.summary-section').prepend(`<div><h4>${result}</h4></div><hr>`);
+        });
 
-        } else {
+        /* } else {
             $('.submit-key').click();
-        }
+        } */
     }
 
 }
 
 $(document).on('click', '.submit-key', function() {
+    /* var addDataRowRequest = new actionSDK.AddActionDataRow.Request(
+        getDataRow(contextActionId)
+    ); */
+    var closeViewRequest = new actionSDK.CloseView.Request();
+
     actionSDK
-        .executeApi(new actionSDK.GetContext.Request())
+        .executeApi(closeViewRequest)
+        .then(function(batchResponse) {
+            console.info("BatchResponse: " + JSON.stringify(batchResponse));
+        })
+        .catch(function(error) {
+            console.error("Error: " + JSON.stringify(error));
+        });
+
+    // addDataRows(contextActionId);
+    /* actionSDK
+        .executeApi(request)
         .then(function(response) {
             console.info("GetContext - Response: " + JSON.stringify(response));
             addDataRows(response.context.actionId);
         })
         .catch(function(error) {
             console.error("GetContext - Error: " + JSON.stringify(error));
-        });
+        }); */
 
 });
 

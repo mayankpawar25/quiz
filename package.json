@@ -3,7 +3,7 @@
     "description": "Quiz",
     "version": "1.0.0",
     "scripts": {
-        "build": "webpack --env.mode=pord --env.watch=false",
+        "build": "webpack --env.mode=prod --env.watch=false",
         "start": "webpack --env.mode=dev --env.watch=true",
         "zip": "cd ./output && bestzip ./ActionPackage.zip *",
         "create": "npm run build && npm run zip && upload-action-package -z ./output/ActionPackage.zip -t ./output/ -e https://int.actions.office365.com",
