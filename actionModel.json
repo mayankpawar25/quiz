@@ -5,11 +5,10 @@
     "dataTables": {
         "canAddMore": false,
         "values": [{
-            "name": "TestDataTable",
+            "name": "PollDataTable",
             "dataColumns": {
                 "canAddMore": true
-            },
-            "attachments": {}
+            }
         }]
     }
 }

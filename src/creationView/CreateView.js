@@ -1,16 +1,15 @@
-import * as actionSDK from "action-sdk-sunny";
+import * as actionSDK from "@microsoft/m365-action-sdk";
 import { Localizer } from '../common/ActionSdkHelper';
-// import { GetContext } from "action-sdk-sunny";
 
-// var question_counter = 1
 let request;
-var questionCount = 0;
+let questionCount = 0;
 let questions = new Array();
 let validate = true;
-// let setting_text = ' Due in 1 week, Results visible to everyone, Correct answer shown after every question';
 let setting_text = '';
 let question_section = '';
 let opt = '';
+let lastSession = '';
+
 let optionKey = '';
 let addMoreOptionsKey = '';
 let choicesKey = '';
@@ -28,17 +27,16 @@ let everyoneKey = '';
 let onlyMeKey = '';
 let showCorrectAnswerKey = '';
 let answerCannotChangeKey = '';
-let lastSession = '';
 
-/* Add Questions */
+/* Click Event for add the Question */
 $(document).on("click", "#add-questions", function() {
-    var question_counter;
+    let question_counter;
     $(this).parents("div.container").before(question_section.clone());
 
     $("div.container").each(function(ind, el) {
         $(el).find('div.option-div > div.input-group > input[type="text"]')
             .each(function(index, elem) {
-                var counter = index + 1;
+                let counter = index + 1;
                 Localizer.getString('option', counter).then(function(result) {
                     $(elem).attr({
                         placeholder: result,
@@ -76,9 +74,9 @@ $(document).on("click", "#add-questions", function() {
 
 });
 
-/* Remove Questions */
+/* Click Event for remove the Question */
 $(document).on("click", ".remove-question", function() {
-    var element = $(this);
+    let element = $(this);
     if ($("div.question-container:visible").length > 1) {
         $("#exampleModalCenter")
             .find("#exampleModalLongTitle")
@@ -97,7 +95,7 @@ $(document).on("click", ".remove-question", function() {
             $("#exampleModalCenter").modal("hide");
 
             element.parents("div.question-container").remove();
-            var question_counter;
+            let question_counter;
             $("div.question-container:visible").each(function(index, elem) {
                 question_counter = index + 1;
                 $(elem).find("span.question-number").text(question_counter);
@@ -120,15 +118,9 @@ $(document).on("click", ".remove-question", function() {
     }
 });
 
-/* Add Options */
+/* Click Event for add the Option */
 $(document).on("click", ".add-options", function() {
-    console.log('optionKey: ' + optionKey);
-    if (
-        $(this)
-        .parents("div.container")
-        .find("div.option-div > div.input-group > input[type='text']").length >=
-        10
-    ) {
+    if ($(this).parents("div.container").find("div.option-div > div.input-group > input[type='text']").length >= 10) {
         $("#exampleModalCenter")
             .find("#exampleModalLongTitle")
             .html(`<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve" class="gt gs mt--4">
@@ -155,17 +147,15 @@ $(document).on("click", ".add-options", function() {
                 '<button type="button" class="btn btn-outline-secondary btn-sm" data-dismiss="modal">Close</button>'
             );
         $("#exampleModalCenter").modal("show");
-        // alert("Maximum 10 options allowed for a Question");
         return false;
     }
     $(this).parents(".container").find("div.option-div:last").after(opt.clone());
-    // $("div.input-group.mb-2.option-div").last().find("input");
 
-    var selector = $(this).parents("div.container");
+    let selector = $(this).parents("div.container");
     $(selector)
         .find('div.option-div div.input-group input[type="text"]')
         .each(function(index, elem) {
-            var counter = index + 1;
+            let counter = index + 1;
             Localizer.getString('option', counter).then(function(result) {
 
                 $(elem).attr({
@@ -183,18 +173,16 @@ $(document).on("click", ".add-options", function() {
 
 });
 
-/* Remove Options */
+/* Click Event for remove the Option */
 $(document).on("click", ".remove-option", function(eve) {
-    if (
-        $(this).parents("div.question-container").find("div.option-div").length > 2
-    ) {
-        var selector = $(this).closest("div.container");
+    if ($(this).parents("div.question-container").find("div.option-div").length > 2) {
+        let selector = $(this).closest("div.container");
         $(this).parents("div.option-div").remove();
 
         $(selector)
             .find('div.option-div div.input-group input[type="text"]')
             .each(function(index, elem) {
-                var counter = index + 1;
+                let counter = index + 1;
                 Localizer.getString('option', counter).then(function(result) {
                     $(elem).attr({
                         placeholder: result,
@@ -237,92 +225,24 @@ $(document).on("click", ".remove-option", function(eve) {
     }
 });
 
+/* Click Event for show setting page */
 $(document).on("click", ".show-setting", function() {
     $(".section-1").hide();
     $(".section-1-footer").hide();
     $("form #setting").show();
 });
 
-$(document).on("click", "#next", function() {
-    /* Validate */
-    var error_text = "";
-    var question_number = 0;
-
-    $("form")
-        .find("input[type='text']")
-        .each(function() {
-            var element = $(this);
-            if (element.val() == "") {
-                validate = false;
-                if (element.attr("id") == "quiz-title") {
-                    error_text += "<p>Quiz title is required.</p>";
-                } else if (element.attr("id").startsWith("question-title")) {
-                    console.log("question_number.length" + question_number.length);
-                    if (
-                        question_number !=
-                        element
-                        .parents("div.form-group")
-                        .find("span.question-number")
-                        .text()
-                    ) {
-                        question_number = element
-                            .parents("div.form-group")
-                            .find("span.question-number")
-                            .text();
-                        error_text += "<h6><u>Question " + question_number + "</u> </h6>";
-                    }
-
-                    error_text += "<p>Question is required. </p>";
-                } else if (element.attr("id").startsWith("option")) {
-                    if (
-                        question_number !=
-                        element.parents("div.card").find("span.question-number").text()
-                    ) {
-                        question_number = element
-                            .parents("div.card")
-                            .find("span.question-number")
-                            .text();
-                        error_text += "<h6><u>Question " + question_number + "</u> </h6>";
-                    }
-
-                    error_text +=
-                        "<p>Blank option not allowed for " +
-                        element.attr("placeholder") +
-                        ".</p>";
-                }
-            }
-        });
-
-    console.log("error_text.length: " + error_text.length);
-    if ($.trim(error_text).length <= 0) {
-        $(".section-1").hide();
-        $("form").append($("#setting").clone());
-        $("form #setting").show();
-    } else {
-        // alert(error_text);
-        $("#exampleModalCenter")
-            .find("#exampleModalLongTitle")
-            .html('<img src="images/error.png"/> Error!');
-        $("#exampleModalCenter").find(".modal-body").html(error_text);
-        $("#exampleModalCenter")
-            .find(".modal-footer")
-            .html(
-                '<button type="button" class="btn btn-outline-secondary btn-sm" data-dismiss="modal">Close</button>'
-            );
-        $("#exampleModalCenter").find("#save-changes").hide();
-        $("#exampleModalCenter").modal("show");
-    }
-});
-
+/* Click Event for Submit Quiz */
 $(document).on("click", "#submit", function() {
     $("#submit").prop('disabled', true);
     submitForm();
 });
 
+/* Method for quiz data and submit the datas */
 function submitForm() {
     /* Validate */
-    var error_text = "";
-    var question_number = 0;
+    let error_text = "";
+    let question_number = 0;
     $("input[type='text']").removeClass("danger");
     $("label.label-alert").remove();
     $("div.card-box-alert").removeClass("card-box-alert").addClass("card-box");
@@ -330,7 +250,7 @@ function submitForm() {
     $("form")
         .find("input[type='text']")
         .each(function() {
-            var element = $(this);
+            let element = $(this);
             if (element.val() == "") {
                 validate = false;
 
@@ -346,7 +266,6 @@ function submitForm() {
                         '<label class="label-alert d-block"><small class="required-key">${requiredKey}</small></label>'
                     );
                 } else if (element.attr("id").startsWith("question-title")) {
-                    // console.log("question_number.length" + question_number.length);
                     $(this).addClass("danger");
                     $(this)
                         .parents("div.input-group")
@@ -388,53 +307,38 @@ function submitForm() {
     }
 }
 
+/* Method to get questions and return question object */
 function getQuestionSet() {
-    var questionCount = $("form").find("div.container.question-container").length;
+    let questionCount = $("form").find("div.container.question-container").length;
     questions = new Array();
-    var error = false;
-    for (var i = 1; i <= questionCount; i++) {
-        var option_type = actionSDK.ActionDataColumnValueType.SingleOption;
-
+    let error = false;
+    for (let i = 1; i <= questionCount; i++) {
+        let option_type = actionSDK.ActionDataColumnValueType.SingleOption;
         let option = [];
-        var is_selected = 0;
-
-
-        console.log('#question: #question' + i);
-
+        let is_selected = 0;
 
         /* Looping for options */
         $("#question" + i)
             .find("div.option-div")
             .each(function(index, elem) {
-                var count = index + 1;
-                var opt_id = "question" + i + "option" + count;
-                var opt_title = $("#question" + i).find("#option" + count).val();
+                let count = index + 1;
+                let opt_id = "question" + i + "option" + count;
+                let opt_title = $("#question" + i).find("#option" + count).val();
 
-                if (
-                    $("#question" + i)
-                    .find("#check" + count)
-                    .is(":checked")
-                ) {
+                if ($("#question" + i).find("#check" + count).is(":checked")) {
                     // if it is checked
                     is_selected++;
                 }
 
-                if (
-                    $("#question" + i).find("input[type=checkbox]:checked").length > 1
-                ) {
-                    console.log("multiselect");
+                if ($("#question" + i).find("input[type=checkbox]:checked").length > 1) {
                     option_type = actionSDK.ActionDataColumnValueType.MultiOption;
                 } else {
-                    console.log("singleselect");
                     option_type = actionSDK.ActionDataColumnValueType.SingleOption;
                 }
                 option.push({ name: opt_id, displayName: opt_title });
-
-                console.log('question set');
-
             });
 
-        var val = {
+        let val = {
             name: i.toString(),
             displayName: $("#question" + i)
                 .find("#question-title")
@@ -463,10 +367,6 @@ function getQuestionSet() {
                 .find("div.card-box")
                 .removeClass("card-box")
                 .addClass("card-box-alert");
-
-            // console.log("Alert validate: " + validate);
-            // alert("Please select correct answer for Question" + i);
-
             error = true;
         }
         questions.push(val);
@@ -477,25 +377,22 @@ function getQuestionSet() {
     }
 }
 
+/* Method to get correct answers and retrun property object */
 function getCorrectAnswer() {
-    var questionCount = $("form").find("div.container.question-container").length;
+    let questionCount = $("form").find("div.container.question-container").length;
     let correct_option = [];
 
-    for (var i = 1; i <= questionCount; i++) {
-        var correct = [];
+    for (let i = 1; i <= questionCount; i++) {
+        let correct = [];
 
         /* Looping for options */
         $("#question" + i)
             .find("div.option-div")
             .each(function(index, elem) {
-                var count = index + 1;
+                let count = index + 1;
 
-                if (
-                    $("#question" + i)
-                    .find("#check" + count)
-                    .is(":checked")
-                ) {
-                    var opt_id = "question" + i + "option" + count;
+                if ($("#question" + i).find("#check" + count).is(":checked")) {
+                    let opt_id = "question" + i + "option" + count;
 
                     // if it is checked
                     correct.push(opt_id);
@@ -503,7 +400,7 @@ function getCorrectAnswer() {
             });
         correct_option[i - 1] = correct;
     }
-    var property = {
+    let property = {
         name: "Question Answers",
         type: "LargeText",
         value: JSON.stringify(correct_option),
@@ -512,27 +409,28 @@ function getCorrectAnswer() {
     return property;
 }
 
+/* 
+ * @desc Method to create Action Request and submit data to server  
+ * @param action package id
+ */
 function createAction(actionPackageId) {
-    var quizTitle = $("#quiz-title").val();
-    var quizDescription = $("#quiz-description").val();
-    var quizExpireDate = $("input[name='expiry_date']").val();
-    var quizExpireTime = $("input[name='expiry_time']").val();
+    let quizTitle = $("#quiz-title").val();
+    let quizDescription = $("#quiz-description").val();
+    let quizExpireDate = $("input[name='expiry_date']").val();
+    let quizExpireTime = $("input[name='expiry_time']").val();
 
-    var resultVisible = $("input[name='visible_to']:checked").val();
-    var showCorrectAnswer = $("#show-correct-answer").is(":checked") ?
+    let resultVisible = $("input[name='visible_to']:checked").val();
+    let showCorrectAnswer = $("#show-correct-answer").is(":checked") ?
         "Yes" :
         "No";
-    var questionsSet = getQuestionSet();
-    var getcorrectanswers = getCorrectAnswer();
-
-    console.log(`questionsSet: `);
-    console.log(`${questionsSet}`);
+    let questionsSet = getQuestionSet();
+    let getcorrectanswers = getCorrectAnswer();
 
     if (questionsSet.length <= 0) {
         return;
     }
 
-    var properties = [];
+    let properties = [];
     properties.push({
         name: "Quiz Description",
         type: "LargeText",
@@ -551,9 +449,7 @@ function createAction(actionPackageId) {
         value: showCorrectAnswer,
     });
     properties.push(getcorrectanswers);
-    console.log(properties);
-    console.log("resultVisible: " + resultVisible);
-    var action = {
+    let action = {
         id: generateGUID(),
         actionPackageId: actionPackageId,
         version: 1,
@@ -564,17 +460,14 @@ function createAction(actionPackageId) {
         dataTables: [{
             name: "TestDataSet",
             itemsVisibility: actionSDK.Visibility.All,
-            rowsVisibility: resultVisible == "Everyone" ?
-                actionSDK.Visibility.All : actionSDK.Visibility.Sender,
+            rowsVisibility: actionSDK.Visibility.All,
             itemsEditable: false,
             canUserAddMultipleItems: false,
             dataColumns: questionsSet,
         }, ],
     };
-    console.log("action: ");
-    console.log(JSON.stringify(action));
 
-    var request = new actionSDK.CreateAction.Request(action);
+    let request = new actionSDK.CreateAction.Request(action);
     actionSDK
         .executeApi(request)
         .then(function(response) {
@@ -585,20 +478,23 @@ function createAction(actionPackageId) {
         });
 }
 
+/* Method to generate GUID */
 function generateGUID() {
     return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
-        var r = (Math.random() * 16) | 0,
+        let r = (Math.random() * 16) | 0,
             v = c == "x" ? r : (r & 0x3) | 0x8;
         return v.toString(16);
     });
 }
 
+/* Initiate Method */
 $(document).ready(function() {
     request = new actionSDK.GetContext.Request();
     getStringKeys();
     getTheme(request);
 });
 
+/* Asyn method for fetching localization strings */
 async function getStringKeys() {
     Localizer.getString('quizTitle').then(function(result) {
         $('#quiz-title').attr({ 'placeholder': result });
@@ -700,6 +596,10 @@ async function getStringKeys() {
 
 }
 
+/* 
+ * @desc Method to select theme based on the teams theme  
+ * @param request context request
+ */
 async function getTheme(request) {
 
     let response = await actionSDK.executeApi(request);
@@ -708,7 +608,7 @@ async function getTheme(request) {
 
     lastSession = context.lastSessionData;
 
-    var theme = context.theme;
+    let theme = context.theme;
     $("link#theme").attr("href", "css/style-" + theme + ".css");
     $('form.sec1').append(form_section);
     $('form.sec1').after(modal_section);
@@ -717,21 +617,17 @@ async function getTheme(request) {
     $('form.sec1').after(questions_section);
 
     getStringKeys();
-    console.log('questionTitleKey: ');
-    console.log(questionTitleKey);
 
     question_section = $("#question-section div.container").clone();
     opt = $("div#option-section .option-div").clone();
 
     /* If Edit back the quiz */
     if (lastSession != null) {
-        console.log(`lastSession: `);
-        console.log(JSON.stringify(lastSession));
-        var ddtt = ((lastSession.action.customProperties[1].value).split('T'));
-        var dt = ddtt[0].split('-');
-        var week_date_format = new Date(dt[1]).toLocaleString('default', { month: 'short' }) + " " + dt[2] + ", " + dt[0];
-        var tt_time = (ddtt[1].split('Z')[0]).split(':');
-        var current_time = `${tt_time[0]}:${tt_time[1]}`;
+        let ddtt = ((lastSession.action.customProperties[1].value).split('T'));
+        let dt = ddtt[0].split('-');
+        let week_date_format = new Date(dt[1]).toLocaleString('default', { month: 'short' }) + " " + dt[2] + ", " + dt[0];
+        let tt_time = (ddtt[1].split('Z')[0]).split(':');
+        let current_time = `${tt_time[0]}:${tt_time[1]}`;
 
         if (lastSession.action.customProperties[2].value == 'Everyone') {
             $('input[name="visible_to"][value="Everyone"]').prop("checked", true);
@@ -751,12 +647,12 @@ async function getTheme(request) {
 
 
         /* Due Setting String */
-        var end = new Date(week_date_format + ' ' + current_time);
-        var start = new Date();
-        var days = calc_date_diff(start, end);
+        let end = new Date(week_date_format + ' ' + current_time);
+        let start = new Date();
+        let days = calc_date_diff(start, end);
 
-        var result_visible = lastSession.action.customProperties[2].value == 'Everyone' ? resultEveryoneKey : resultMeKey;
-        var correct_answer = lastSession.action.customProperties[3].value == 'Yes' ? correctAnswerKey : '';
+        let result_visible = lastSession.action.customProperties[2].value == 'Everyone' ? resultEveryoneKey : resultMeKey;
+        let correct_answer = lastSession.action.customProperties[3].value == 'Yes' ? correctAnswerKey : '';
 
         Localizer.getString('dueIn', days, ', ' + result_visible, correct_answer).then(function(result) {
             setting_text = result;
@@ -764,22 +660,21 @@ async function getTheme(request) {
         });
 
     } else {
-        var week_date = new Date(new Date().setDate(new Date().getDate() + 7))
+        let week_date = new Date(new Date().setDate(new Date().getDate() + 7))
             .toISOString()
             .split("T")[0];
 
-        var week_month = new Date(week_date).toLocaleString('default', { month: 'short' });
-        var week_d = new Date(week_date).getDate();
-        var week_year = new Date(week_date).getFullYear();
-        var week_date_format = week_month + " " + week_d + ", " + week_year;
+        let week_month = new Date(week_date).toLocaleString('default', { month: 'short' });
+        let week_d = new Date(week_date).getDate();
+        let week_year = new Date(week_date).getFullYear();
+        let week_date_format = week_month + " " + week_d + ", " + week_year;
 
-        var current_time = (("0" + new Date().getHours()).substr(-2)) + ":" + (("0" + new Date().getMinutes()).substr(-2));
+        let current_time = (("0" + new Date().getHours()).substr(-2)) + ":" + (("0" + new Date().getMinutes()).substr(-2));
     }
 
-    var today = new Date()
+    let today = new Date()
         .toISOString()
         .split("T")[0];
-    // $(".form_date").attr({ "data-date": week_date_format });
     $("form").append($("#setting").clone());
     $("#add-questions").click();
 
@@ -790,17 +685,6 @@ async function getTheme(request) {
 
     $('.form_date input').val(week_date_format);
     $(".form_date").attr({ "data-date": week_date_format });
-
-    /* $('.form_date').datetimepicker({
-        language: 'en',
-        weekStart: 1,
-        todayBtn: 1,
-        autoclose: 1,
-        todayHighlight: 1,
-        startView: 2,
-        minView: 2,
-        forceParse: 0,
-    }); */
 
     $('.form_time').datetimepicker({
         language: 'en',
@@ -817,9 +701,9 @@ async function getTheme(request) {
     $('.form_time input').val(current_time);
 
 
-    var date_input = $('input[name="expiry_date"]'); //our date input has the name "date"
-    var container = $('.bootstrap-iso form').length > 0 ? $('.bootstrap-iso form').parent() : "body";
-    var options = {
+    let date_input = $('input[name="expiry_date"]');
+    let container = $('.bootstrap-iso form').length > 0 ? $('.bootstrap-iso form').parent() : "body";
+    let options = {
         format: 'M dd, yyyy',
         container: container,
         todayHighlight: true,
@@ -831,21 +715,15 @@ async function getTheme(request) {
 
     if (lastSession != null) {
         setTimeout(() => {
-            var option = $("div#option-section .option-div").clone();
+            let option = $("div#option-section .option-div").clone();
 
-            /* Generate Questions */
-            /* lastSession.action.dataTables[0].dataColumns.forEach((e, ind) => {
-                if (ind > 0) {
-                    $('#add-questions').parents("div.container").before(question_section.clone());
-                }
-            }); */
             lastSession.action.dataTables[0].dataColumns.forEach((e, ind) => {
-                var correct_ans_arr = JSON.parse(lastSession.action.customProperties[4].value);
+                let correct_ans_arr = JSON.parse(lastSession.action.customProperties[4].value);
 
                 if (ind == 0) {
                     $('#question1').find('#question-title').val(e.displayName);
                     e.options.forEach((opt, i) => {
-                        var counter = i + 1;
+                        let counter = i + 1;
                         if (i <= 1) {
                             $('#question1').find('#option' + counter).val(opt.displayName);
                         } else {
@@ -864,8 +742,6 @@ async function getTheme(request) {
                             });
                         }
                         $.each(correct_ans_arr, function(cindex, c_ans) {
-                            console.log("c_ans");
-                            console.log(c_ans);
                             if ($.inArray("question1option" + counter, c_ans) != -1) {
                                 $('#question1').find('#check' + counter).prop('checked', true);
                                 $('#question1').find('#option' + counter).parents('div.input-group.input-group-tpt.mb-2').find('.check-opt span.input-group-text.input-tpt').addClass('text-success');
@@ -874,12 +750,9 @@ async function getTheme(request) {
                         });
                     });
                 } else {
-                    var qcounter = ind + 1;
-                    var ocounter = 0;
+                    let qcounter = ind + 1;
+                    let ocounter = 0;
                     $('#add-questions').parents("div.container").before(question_section.clone());
-
-                    console.log(e.displayName);
-                    console.log('#question' + qcounter);
 
                     $("div.container.question-container:visible:last").attr('id', 'question' + qcounter);
                     $("#question" + qcounter).find("span.question-number").text(qcounter + ".");
@@ -917,67 +790,29 @@ async function getTheme(request) {
                             }
                         });
                     });
-
                 }
-
-                /* var question_counter;
-                $(this).parents("div.container").before(question_section.clone());
-
-                $("div.container").each(function(ind, el) {
-                    $(el).find('div.option-div > div.input-group > input[type="text"]')
-                        .each(function(index, elem) {
-                            var counter = index + 1;
-                            Localizer.getString('option', counter).then(function(result) {
-                                $(elem).attr({
-                                    placeholder: result,
-                                });
-                                $(elem).attr({ id: "option" + counter });
-                                $(elem)
-                                    .parents(".option-div")
-                                    .find("input.form-check-input")
-                                    .attr({ id: "check" + counter });
-                            });
-                        });
-                });
-
-                Localizer.getString('enterTheQuestion').then(function(result) {
-                    $("div.container").find('#question-title').attr({ 'placeholder': result });
-                });
-
-                $("div.question-container:visible").each(function(index, elem) {
-                    question_counter = index + 1;
-                    $(elem)
-                        .find("span.question-number")
-                        .text(question_counter + ".");
-                    $(elem).attr({ id: "question" + question_counter });
-                });
-                questionCount++;
-                $('.choice-label').text(choicesKey);
-                $('.check-me').text(checkMeKey);
-                $('.check-me-title').attr({ "title": checkMeKey });
-                $('.add-options').text(addMoreOptionsKey); */
             });
         }, 1000);
     }
 }
 
+/* Click event for back button */
 $(document).on("click", "#back", function() {
     $(".section-1").show();
     $(".section-1-footer").show();
 
     $("form #setting").hide();
-    console.log('setting_text ' + setting_text);
     $('#due').text(setting_text);
 
 });
 
+/* Change event for setting inputs */
 $(document).on("change", ".form_time input, .form_date input, .visible-to, #show-correct-answer", function() {
-    var end = new Date($('input[name="expiry_date"]').val() + ' ' + $('input[name="expiry_time"]').val());
-    var start = new Date();
-    var days = calc_date_diff(start, end);
+    let end = new Date($('input[name="expiry_date"]').val() + ' ' + $('input[name="expiry_time"]').val());
+    let start = new Date();
+    let days = calc_date_diff(start, end);
 
     if (days == undefined || days == NaN) {
-
         $("#exampleModalCenter")
             .find("#exampleModalLongTitle")
             .html('<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve" class="gt gs mt--4"><g><g><g><path d="M507.113,428.415L287.215,47.541c-6.515-11.285-18.184-18.022-31.215-18.022c-13.031,0-24.7,6.737-31.215,18.022L4.887,428.415c-6.516,11.285-6.516,24.76,0,36.044c6.515,11.285,18.184,18.022,31.215,18.022h439.796c13.031,0,24.7-6.737,31.215-18.022C513.629,453.175,513.629,439.7,507.113,428.415z M481.101,449.441c-0.647,1.122-2.186,3.004-5.202,3.004H36.102c-3.018,0-4.556-1.881-5.202-3.004c-0.647-1.121-1.509-3.394,0-6.007L250.797,62.559c1.509-2.613,3.907-3.004,5.202-3.004c1.296,0,3.694,0.39,5.202,3.004L481.1,443.434C482.61,446.047,481.748,448.32,481.101,449.441z"/><rect x="240.987" y="166.095" width="30.037" height="160.197" /><circle cx="256.005" cy="376.354" r="20.025" /></g></g></g > <g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g></svg > Notice!');
@@ -991,19 +826,16 @@ $(document).on("change", ".form_time input, .form_date input, .visible-to, #show
             );
         $("#exampleModalCenter").modal("show");
     } else {
-
-        var result_visible = $('.visible-to:checked').val() == 'Everyone' ? resultEveryoneKey : resultMeKey;
-        var correct_answer = $('#show-correct-answer:eq(0)').is(":checked") == true ? correctAnswerKey : '';
-
-        console.log('due: ' + days + ', ' + result_visible + correct_answer);
+        let result_visible = $('.visible-to:checked').val() == 'Everyone' ? resultEveryoneKey : resultMeKey;
+        let correct_answer = $('#show-correct-answer:eq(0)').is(":checked") == true ? correctAnswerKey : '';
 
         Localizer.getString('dueIn', days, ', ' + result_visible, correct_answer).then(function(result) {
             setting_text = result;
         });
-        // setting_text = ' Due in ' + days + ', ' + result_visible + correct_answer;
     }
 });
 
+/* Click event for correct answer inputs */
 $(document).on('click', '.check-me-title', function() {
     if ($(this).parents('div.col-12').find('input[type="checkbox"]').prop('checked') == false) {
         $(this).parents('div.col-12').find('input[type="checkbox"]').prop("checked", true);
@@ -1016,30 +848,30 @@ $(document).on('click', '.check-me-title', function() {
     }
 })
 
+/* Method for calculating date diff from current date in weeks, days, hours, minutes */
 function calc_date_diff(start, end) {
-    var days = (end - start) / (1000 * 60 * 60 * 24);
-    console.log('days: ' + days);
+    let days = (end - start) / (1000 * 60 * 60 * 24);
     if (days > 6) {
-        var weeks = Math.ceil(days) / 7;
+        let weeks = Math.ceil(days) / 7;
         return Math.floor(weeks) + ' week';
     } else {
         if (days < 1) {
-            var t1 = start.getTime();
-            var t2 = end.getTime();
+            let t1 = start.getTime();
+            let t2 = end.getTime();
 
-            var minsDiff = Math.floor((t2 - t1) / 1000 / 60);
-            var hourDiff = Math.floor(minsDiff / 60);
+            let minsDiff = Math.floor((t2 - t1) / 1000 / 60);
+            let hourDiff = Math.floor(minsDiff / 60);
             minsDiff = minsDiff % 60;
 
             if (hourDiff > 1) {
-                var hourText = 'hours';
+                let hourText = 'hours';
             } else {
-                var hourText = 'hour';
+                let hourText = 'hour';
             }
             if (hourDiff > 1) {
-                var minuteText = 'minutes';
+                let minuteText = 'minutes';
             } else {
-                var minuteText = 'minute';
+                let minuteText = 'minute';
             }
             if (hourDiff > 0 && minsDiff > 0) {
                 return hourDiff + ' ' + hourText + ', ' + minsDiff + ' ' + minuteText;
@@ -1056,8 +888,8 @@ function calc_date_diff(start, end) {
 
 
 /*  HTML Sections  */
-// form
-var form_section = `<div class="section-1">
+// form: first section when page init
+let form_section = `<div class="section-1">
             <div class="container pt-4">
                 <div id="root" class="">
                     <div class="form-group">
@@ -1105,8 +937,8 @@ var form_section = `<div class="section-1">
             </div>
         </div>`;
 
-// Question
-var questions_section = `<div style="display: none;" id="question-section">
+// Question Section
+let questions_section = `<div style="display: none;" id="question-section">
         <div class="container question-container" id="question1">
             <div class="card-box card-border card-bg">
                 <div class="form-group">
@@ -1219,8 +1051,8 @@ var questions_section = `<div style="display: none;" id="question-section">
         </div>
     </div>`;
 
-// Option
-var option_section = `<div style="display: none;" id="option-section">
+// Option Section
+let option_section = `<div style="display: none;" id="option-section">
         <div class="option-div">
             <div class="row">
                 <div class="col-12">
@@ -1257,8 +1089,8 @@ var option_section = `<div style="display: none;" id="option-section">
         </div>
     </div>`;
 
-// Setting 
-var setting_section = `<div style="display:none" id="setting">
+// Setting Section
+let setting_section = `<div style="display:none" id="setting">
         <div class="container pt-4 setting-section">
             <div class="row">
                 <div class="col-sm-12">
@@ -1340,8 +1172,8 @@ var setting_section = `<div style="display:none" id="setting">
         </div>
     </div>`;
 
-//  modal
-var modal_section = `<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
+//  Modal Section for alerts and confirmations
+let modal_section = `<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
         aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">

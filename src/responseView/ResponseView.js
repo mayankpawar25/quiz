@@ -1,4 +1,4 @@
-import * as actionSDK from "action-sdk-sunny";
+import * as actionSDK from "@microsoft/m365-action-sdk";
 import { Localizer } from '../common/ActionSdkHelper';
 
 // ActionSDK.APIs.actionViewDidLoad(true /*success*/ );

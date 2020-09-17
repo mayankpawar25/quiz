@@ -1,38 +1,18 @@
-import * as actionSDK from "action-sdk-sunny";
+import * as actionSDK from "@microsoft/m365-action-sdk";
 
 export class Localizer {
-    /* private static jsonObject: {
-        [key: string]: string
-    } = {}; */
     private static jsonObject = {};
-
-
-
-    /**
-     * Get localized Action strings. It will first try to fetch the proper locale strings
-     * i.e. content of string_<language>.json within the Action package. If that is not
-     * found it will fallback to default locale strings i.e. strings_en.json file.
-     * @return promise returning either success or ActionError
-     */
-    /* public static async initialize(): Promise<boolean> {
-          this.jsonObject = await Host.executeActionSDKApi<any>(ActionSdkCommand.GetLocalizedActionStrings);
-          return true;
-      }*/
-    /* public static async initialize(): Promise<boolean> {
-        let request = new actionSDK.GetLocalizedStrings.Request();
-        let response = (await actionSDK.executeApi(
-            request
-        )) as actionSDK.GetLocalizedStrings.Response;
-        let strings = response.strings;
-        this.jsonObject = strings;
-        return true;
-    } */
 
     /**
      * Get localized value of the given string id.
      * If any id is not found the same will be returned.
      * @param stringId id of the string to be localized
      * @param args any arguments which needs to passed
+     */
+    /**
+     * Method to get Local string and check contains argument to append or not
+     * @param id string identfier
+     * @param args additional string that want to append on response string to a position
      */
     public static async getString(id: string, ...args: any[]) {
         let request = new actionSDK.GetLocalizedStrings.Request();
@@ -46,6 +26,11 @@ export class Localizer {
         return this.getStringInternal(id, ...args);
     }
 
+    /**
+     * Method to get Local string from local file
+     * @param id string identfier
+     * @param args additional string that want to append on response string to a position
+     */
     public static getStringInternal(main: string, ...args: any[]) {
 
         let formatted = main;
