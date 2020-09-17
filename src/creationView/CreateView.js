@@ -28,6 +28,7 @@ let everyoneKey = '';
 let onlyMeKey = '';
 let showCorrectAnswerKey = '';
 let answerCannotChangeKey = '';
+let lastSession = '';
 
 /* Add Questions */
 $(document).on("click", "#add-questions", function() {
@@ -66,7 +67,12 @@ $(document).on("click", "#add-questions", function() {
     $('.choice-label').text(choicesKey);
     $('.check-me').text(checkMeKey);
     $('.check-me-title').attr({ "title": checkMeKey });
-    $('.add-options').text(addMoreOptionsKey);
+    $('.add-options').html(` <svg role="presentation" focusable="false" viewBox="8 8 16 16" class="cc gs gt tc gv">
+        <path class="ui-icon__outline cc" d="M23.352 16.117c.098.1.148.217.148.352 0 .136-.05.253-.148.351a.48.48 0 0 1-.352.149h-6v6c0 .136-.05.253-.148.351a.48.48 0 0 1-.352.149.477.477 0 0 1-.352-.149.477.477 0 0 1-.148-.351v-6h-6a.477.477 0 0 1-.352-.149.48.48 0 0 1-.148-.351c0-.135.05-.252.148-.352A.481.481 0 0 1 10 15.97h6v-6c0-.135.049-.253.148-.352a.48.48 0 0 1 .352-.148c.135 0 .252.05.352.148.098.1.148.216.148.352v6h6c.135 0 .252.05.352.148z">
+        </path>
+        <path class="ui-icon__filled gr" d="M23.5 15.969a1.01 1.01 0 0 1-.613.922.971.971 0 0 1-.387.078H17v5.5a1.01 1.01 0 0 1-.613.922.971.971 0 0 1-.387.078.965.965 0 0 1-.387-.079.983.983 0 0 1-.535-.535.97.97 0 0 1-.078-.386v-5.5H9.5a.965.965 0 0 1-.387-.078.983.983 0 0 1-.535-.535.972.972 0 0 1-.078-.387 1.002 1.002 0 0 1 1-1H15v-5.5a1.002 1.002 0 0 1 1.387-.922c.122.052.228.124.32.215a.986.986 0 0 1 .293.707v5.5h5.5a.989.989 0 0 1 .707.293c.09.091.162.198.215.32a.984.984 0 0 1 .078.387z">
+        </path>
+    </svg> ${addMoreOptionsKey}`);
 
 });
 
@@ -534,7 +540,7 @@ function createAction(actionPackageId) {
     }, {
         name: "Quiz Expire Date Time",
         type: "DateTime",
-        value: new Date(quizExpireDate + " " + quizExpireTime),
+        value: new Date(quizExpireDate + " " + $("input[name='expiry_time']").val()),
     }, {
         name: "Result Visible",
         type: "Text",
@@ -616,12 +622,12 @@ async function getStringKeys() {
     });
 
     Localizer.getString('addMoreOptions').then(function(result) {
-        $('.add-options').text(result);
-    });
-
-    Localizer.getString('addMoreOptions').then(function(result) {
-        addMoreOptionsKey = result;
-        $('.add-options').text(addMoreOptionsKey);
+        $('.add-options').html(`<svg role="presentation" focusable="false" viewBox="8 8 16 16" class="cc gs gt tc gv">
+        <path class="ui-icon__outline cc" d="M23.352 16.117c.098.1.148.217.148.352 0 .136-.05.253-.148.351a.48.48 0 0 1-.352.149h-6v6c0 .136-.05.253-.148.351a.48.48 0 0 1-.352.149.477.477 0 0 1-.352-.149.477.477 0 0 1-.148-.351v-6h-6a.477.477 0 0 1-.352-.149.48.48 0 0 1-.148-.351c0-.135.05-.252.148-.352A.481.481 0 0 1 10 15.97h6v-6c0-.135.049-.253.148-.352a.48.48 0 0 1 .352-.148c.135 0 .252.05.352.148.098.1.148.216.148.352v6h6c.135 0 .252.05.352.148z">
+        </path>
+        <path class="ui-icon__filled gr" d="M23.5 15.969a1.01 1.01 0 0 1-.613.922.971.971 0 0 1-.387.078H17v5.5a1.01 1.01 0 0 1-.613.922.971.971 0 0 1-.387.078.965.965 0 0 1-.387-.079.983.983 0 0 1-.535-.535.97.97 0 0 1-.078-.386v-5.5H9.5a.965.965 0 0 1-.387-.078.983.983 0 0 1-.535-.535.972.972 0 0 1-.078-.387 1.002 1.002 0 0 1 1-1H15v-5.5a1.002 1.002 0 0 1 1.387-.922c.122.052.228.124.32.215a.986.986 0 0 1 .293.707v5.5h5.5a.989.989 0 0 1 .707.293c.09.091.162.198.215.32a.984.984 0 0 1 .078.387z">
+        </path>
+    </svg> ${result}`);
     });
 
     Localizer.getString('choices').then(function(result) {
@@ -700,6 +706,8 @@ async function getTheme(request) {
 
     let context = response.context;
 
+    lastSession = context.lastSessionData;
+
     var theme = context.theme;
     $("link#theme").attr("href", "css/style-" + theme + ".css");
     $('form.sec1').append(form_section);
@@ -715,17 +723,58 @@ async function getTheme(request) {
     question_section = $("#question-section div.container").clone();
     opt = $("div#option-section .option-div").clone();
 
+    /* If Edit back the quiz */
+    if (lastSession != null) {
+        console.log(`lastSession: `);
+        console.log(JSON.stringify(lastSession));
+        var ddtt = ((lastSession.action.customProperties[1].value).split('T'));
+        var dt = ddtt[0].split('-');
+        var week_date_format = new Date(dt[1]).toLocaleString('default', { month: 'short' }) + " " + dt[2] + ", " + dt[0];
+        var tt_time = (ddtt[1].split('Z')[0]).split(':');
+        var current_time = `${tt_time[0]}:${tt_time[1]}`;
 
-    var week_date = new Date(new Date().setDate(new Date().getDate() + 7))
-        .toISOString()
-        .split("T")[0];
+        if (lastSession.action.customProperties[2].value == 'Everyone') {
+            $('input[name="visible_to"][value="Everyone"]').prop("checked", true);
+        } else {
+            $('input[name="visible_to"][value="Only me"]').prop("checked", true);
+        }
 
-    var week_month = new Date(week_date).toLocaleString('default', { month: 'short' });
-    var week_d = new Date(week_date).getDate();
-    var week_year = new Date(week_date).getFullYear();
-    var week_date_format = week_month + " " + week_d + ", " + week_year;
+        if (lastSession.action.customProperties[3].value == 'Yes') {
+            $('#show-correct-answer').prop("checked", true);
+        } else {
+            $('#show-correct-answer').prop("checked", false);
+        }
 
-    var current_time = (("0" + new Date().getHours()).substr(-2)) + ":" + (("0" + new Date().getMinutes()).substr(-2));
+        /* Quiz Section */
+        $('#quiz-title').val(lastSession.action.displayName);
+        $('#quiz-description').val(lastSession.action.customProperties[0].value);
+
+
+        /* Due Setting String */
+        var end = new Date(week_date_format + ' ' + current_time);
+        var start = new Date();
+        var days = calc_date_diff(start, end);
+
+        var result_visible = lastSession.action.customProperties[2].value == 'Everyone' ? resultEveryoneKey : resultMeKey;
+        var correct_answer = lastSession.action.customProperties[3].value == 'Yes' ? correctAnswerKey : '';
+
+        Localizer.getString('dueIn', days, ', ' + result_visible, correct_answer).then(function(result) {
+            setting_text = result;
+            $('#due').text(setting_text);
+        });
+
+    } else {
+        var week_date = new Date(new Date().setDate(new Date().getDate() + 7))
+            .toISOString()
+            .split("T")[0];
+
+        var week_month = new Date(week_date).toLocaleString('default', { month: 'short' });
+        var week_d = new Date(week_date).getDate();
+        var week_year = new Date(week_date).getFullYear();
+        var week_date_format = week_month + " " + week_d + ", " + week_year;
+
+        var current_time = (("0" + new Date().getHours()).substr(-2)) + ":" + (("0" + new Date().getMinutes()).substr(-2));
+    }
 
     var today = new Date()
         .toISOString()
@@ -779,6 +828,137 @@ async function getTheme(request) {
     };
     date_input.datepicker(options);
     await actionSDK.executeApi(new actionSDK.HideLoadingIndicator.Request());
+
+    if (lastSession != null) {
+        setTimeout(() => {
+            var option = $("div#option-section .option-div").clone();
+
+            /* Generate Questions */
+            /* lastSession.action.dataTables[0].dataColumns.forEach((e, ind) => {
+                if (ind > 0) {
+                    $('#add-questions').parents("div.container").before(question_section.clone());
+                }
+            }); */
+            lastSession.action.dataTables[0].dataColumns.forEach((e, ind) => {
+                var correct_ans_arr = JSON.parse(lastSession.action.customProperties[4].value);
+
+                if (ind == 0) {
+                    $('#question1').find('#question-title').val(e.displayName);
+                    e.options.forEach((opt, i) => {
+                        var counter = i + 1;
+                        if (i <= 1) {
+                            $('#question1').find('#option' + counter).val(opt.displayName);
+                        } else {
+                            $('#question1').find("div.option-div:last").after(option.clone());
+
+                            Localizer.getString('option', counter).then(function(result) {
+
+                                $('#question1').find("div.option-div:last input[type='text']").attr({
+                                    placeholder: result,
+                                });
+                                $('#question1').find("div.option-div:last input[type='text']").attr({ id: "option" + counter }).val(opt.displayName);
+                                $('#question1').find("div.option-div:last input[type='text']")
+                                    .parents(".option-div")
+                                    .find("input.form-check-input")
+                                    .attr({ id: "check" + counter });
+                            });
+                        }
+                        $.each(correct_ans_arr, function(cindex, c_ans) {
+                            console.log("c_ans");
+                            console.log(c_ans);
+                            if ($.inArray("question1option" + counter, c_ans) != -1) {
+                                $('#question1').find('#check' + counter).prop('checked', true);
+                                $('#question1').find('#option' + counter).parents('div.input-group.input-group-tpt.mb-2').find('.check-opt span.input-group-text.input-tpt').addClass('text-success');
+                                $('#question1').find('#option' + counter).parents('div.input-group.input-group-tpt.mb-2').find(' .checked-status').text('Correct Answer');
+                            }
+                        });
+                    });
+                } else {
+                    var qcounter = ind + 1;
+                    var ocounter = 0;
+                    $('#add-questions').parents("div.container").before(question_section.clone());
+
+                    console.log(e.displayName);
+                    console.log('#question' + qcounter);
+
+                    $("div.container.question-container:visible:last").attr('id', 'question' + qcounter);
+                    $("#question" + qcounter).find("span.question-number").text(qcounter + ".");
+                    $('#question' + qcounter).find('#question-title').val(e.displayName);
+
+                    Localizer.getString('enterTheQuestion').then(function(result) {
+                        $("div.container.question-container:visible:last").find('input[type="text"]').attr({
+                            placeholder: result,
+                        });
+                    });
+                    e.options.forEach((opt, i) => {
+                        ocounter = i + 1;
+                        if (i <= 1) {
+                            $('#question' + qcounter).find('#option' + ocounter).val(opt.displayName);
+                        } else {
+                            $('#question' + qcounter).find("div.option-div:last").after(option.clone());
+
+                            Localizer.getString('option', ocounter).then(function(result) {
+
+                                $('#question' + qcounter).find("div.option-div:visible:last input[type='text']").attr({
+                                    placeholder: result,
+                                });
+                                $('#question' + qcounter).find("div.option-div:last input[type='text']").attr({ id: "option" + ocounter }).val(opt.displayName);
+                                $('#question' + qcounter).find("div.option-div:last input[type='text']")
+                                    .parents(".option-div")
+                                    .find("input.form-check-input")
+                                    .attr({ id: "check" + ocounter });
+                            });
+                        }
+                        $.each(correct_ans_arr, (cindex, c_ans) => {
+                            if ($.inArray("question" + qcounter + "option" + ocounter, c_ans) != -1) {
+                                $('#question' + qcounter).find('#check' + ocounter).prop('checked', true);
+                                $('#question' + qcounter).find('#option' + ocounter).parents('div.input-group.input-group-tpt.mb-2').find('.check-opt span.input-group-text.input-tpt').addClass('text-success');
+                                $('#question' + qcounter).find('#option' + ocounter).parents('div.input-group.input-group-tpt.mb-2').find(' .checked-status').text('Correct Answer');
+                            }
+                        });
+                    });
+
+                }
+
+                /* var question_counter;
+                $(this).parents("div.container").before(question_section.clone());
+
+                $("div.container").each(function(ind, el) {
+                    $(el).find('div.option-div > div.input-group > input[type="text"]')
+                        .each(function(index, elem) {
+                            var counter = index + 1;
+                            Localizer.getString('option', counter).then(function(result) {
+                                $(elem).attr({
+                                    placeholder: result,
+                                });
+                                $(elem).attr({ id: "option" + counter });
+                                $(elem)
+                                    .parents(".option-div")
+                                    .find("input.form-check-input")
+                                    .attr({ id: "check" + counter });
+                            });
+                        });
+                });
+
+                Localizer.getString('enterTheQuestion').then(function(result) {
+                    $("div.container").find('#question-title').attr({ 'placeholder': result });
+                });
+
+                $("div.question-container:visible").each(function(index, elem) {
+                    question_counter = index + 1;
+                    $(elem)
+                        .find("span.question-number")
+                        .text(question_counter + ".");
+                    $(elem).attr({ id: "question" + question_counter });
+                });
+                questionCount++;
+                $('.choice-label').text(choicesKey);
+                $('.check-me').text(checkMeKey);
+                $('.check-me-title').attr({ "title": checkMeKey });
+                $('.add-options').text(addMoreOptionsKey); */
+            });
+        }, 1000);
+    }
 }
 
 $(document).on("click", "#back", function() {
@@ -1087,20 +1267,11 @@ var setting_section = `<div style="display:none" id="setting">
                 <div class="clearfix"></div>
                 <div class="col-1"></div>
                 <div class="col-5">
-                    <!-- <div class="input-group input-group-tpt mb-2">
-                        <input type="text" name="expiry_date" class="form-control in-t" placeholder="Date"
-                            aria-label="Expiry Date" aria-describedby="basic-addon2" id="expiry-date">
-                    </div> -->
                     <div class="input-group date form_date" data-date="1979-09-16T05:25:07Z" data-date-format="M dd, yyyy" data-link-field="dtp_input1">
                         <input class="form-control in-t" size="16" name="expiry_date" type="text" value="" readonly>
                     </div>
                 </div>
                 <div class="col-5">
-                    <!-- <div class="input-group input-group-tpt mb-2">
-                        <input type="time" name="expiry_time" class="form-control in-t" placeholder="Time"
-                            aria-label="Time" aria-describedby="basic-addon2" id="expiry-time" value="23:59">
-                    </div> -->
-
                     <div class="input-group date form_time" data-date="" data-date-format="hh:ii" data-link-field="dtp_input3" data-link-format="hh:ii">
                         <input class="form-control in-t" name="expiry_time" size="16" type="text" value="" readonly>
                         <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
