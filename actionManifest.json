@@ -1,8 +1,10 @@
 {
+    "tag": "quiz-teams-app",
     "id": "com.microsoft.sample.quiz.mike06072001",
     "name": "Quiz(Mike)",
     "$schema": "https://int.actions.office365.com/ActionCommon/jsons/ActionManifest.schema.json",
     "description": "Create Quiz",
+    "showLoadingIndicator": true,
     "developer": {
         "name": "Microsoft",
         "websiteUrl": "https://www.microsoft.com/",
@@ -11,7 +13,7 @@
     },
     "icon": "images/appIcon.png",
     "actionModel": "actionModel.json",
-    "version": "1.2.47",
+    "version": "1.2.49",
     "views": {
         "CardView": {
             "sourceLocation": "json/cardView.json"
@@ -35,7 +37,6 @@
             "en-us": "strings/en-us/strings.json"
         }
     },
-    "showLoadingIndicator": true,
     "msTeamsProps": {
         "name": {
             "short": "Quiz",

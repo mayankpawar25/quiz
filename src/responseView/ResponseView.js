@@ -1,16 +1,20 @@
 import * as actionSDK from "@microsoft/m365-action-sdk";
 import { Localizer } from '../common/ActionSdkHelper';
 
-// ActionSDK.APIs.actionViewDidLoad(true /*success*/ );
-
 // Fetching HTML Elements in Variables by ID.
 let request;
-var $root = "";
+let $root = "";
 let row = {};
 let actionInstance = null;
 let max_question_count = 0;
 let current_page = 0;
 let summary_answer_resp = [];
+let actionDataRows = null;
+let actionDataRowsLength = 0;
+let memberIds = [];
+let myUserId = [];
+let contextActionId;
+
 let questionKey = '';
 let questionsKey = '';
 let startKey = '';
@@ -30,11 +34,6 @@ let quizSummaryKey = '';
 let nextKey = '';
 let backKey = '';
 let quizExpiredKey = '';
-let actionDataRows = null;
-let actionDataRowsLength = 0;
-let memberIds = [];
-let myUserId = [];
-let contextActionId;
 
 async function getStringKeys() {
     Localizer.getString('question').then(function(result) {
@@ -122,16 +121,12 @@ async function getStringKeys() {
 async function getTheme(request) {
     let response = await actionSDK.executeApi(request);
     let context = response.context;
-    console.log("getContext response: ");
-    console.log(JSON.stringify(context));
     $("form.section-1").show();
-    var theme = context.theme;
-    console.log(`theme: ${context.theme}`)
+    let theme = context.theme;
     $("link#theme").attr("href", "css/style-" + theme + ".css");
 
     $('div.section-1').append(`<div class="row"><div class="col-12"><div id="root"></div></div></div>`);
     $('div.section-1').after(modal_section);
-    // $('div.section-1').after(modal_section1);
     $('div.section-1').after(modal_section2);
 
     $root = $("#root")
@@ -146,8 +141,6 @@ async function getTheme(request) {
     OnPageLoad();
 }
 
-
-
 // *********************************************** HTML ELEMENT***********************************************
 $(document).ready(function() {
     request = new actionSDK.GetContext.Request();
@@ -158,7 +151,6 @@ function OnPageLoad() {
     actionSDK
         .executeApi(request)
         .then(function(response) {
-            console.info("GetContext - Response: " + JSON.stringify(response));
             myUserId = response.context.userId;
             contextActionId = response.context.actionId
             getResponderIds(contextActionId);
@@ -170,7 +162,6 @@ function OnPageLoad() {
 }
 
 async function getResponderIds(actionId) {
-    console.log('getResponderIds');
     actionSDK
         .executeApi(new actionSDK.GetActionDataRows.Request(actionId))
         .then(function(batchResponse) {
@@ -181,12 +172,10 @@ async function getResponderIds(actionId) {
                 for (let i = 0; i < actionDataRowsLength; i++) {
                     memberIds.push(actionDataRows[i].creatorId);
                 }
-                console.log("memberIds" + JSON.stringify(memberIds));
-                console.log("myUserId" + JSON.stringify(myUserId));
             }
         })
         .catch(function(error) {
-            console.log("Console log: Error: " + JSON.stringify(error));
+            console.error("Console log: Error: " + JSON.stringify(error));
         });
 }
 
@@ -194,23 +183,22 @@ function getActionInstance(actionId) {
     actionSDK
         .executeApi(new actionSDK.GetAction.Request(actionId))
         .then(function(response) {
-            console.info("Response: " + JSON.stringify(response));
             actionInstance = response.action;
             createBody();
         })
         .catch(function(error) {
-            console.log("Error: " + JSON.stringify(error));
+            console.error("Error: " + JSON.stringify(error));
         });
 }
 
 function createBody() {
 
     /*  Check Expiry date time  */
-    var current_time = new Date().getTime();
+    let current_time = new Date().getTime();
     if (actionInstance.expiryTime <= current_time) {
-        var $card = $('<div class="card"></div>');
-        var $spDiv = $('<div class="col-sm-12"></div>');
-        var $sDiv = $(`<div class="form-group" id="quiz-expired-key">${quizExpiredKey}</div>`);
+        let $card = $('<div class="card"></div>');
+        let $spDiv = $('<div class="col-sm-12"></div>');
+        let $sDiv = $(`<div class="form-group" id="quiz-expired-key">${quizExpiredKey}</div>`);
         $card.append($spDiv);
         $spDiv.append($sDiv);
         $root.append($card);
@@ -219,17 +207,16 @@ function createBody() {
     } else {
         getStringKeys();
 
-        var $card = $('<div class=""></div>');
-        var $title = $("<h4>" + actionInstance.displayName + "</h4>");
-        var $hr = $("<hr>");
-        var $description = $('<p class="">' + actionInstance.customProperties[0].value + '</p>');
-        console.log(actionInstance);
+        let $card = $('<div class=""></div>');
+        let $title = $("<h4>" + actionInstance.displayName + "</h4>");
+        let $hr = $("<hr>");
+        let $description = $('<p class="">' + actionInstance.customProperties[0].value + '</p>');
         $card.append($title);
         $card.append($description);
         $root.append($card);
         $root.append('<hr>');
 
-        var counter = actionInstance.dataTables[0].dataColumns.length
+        let counter = actionInstance.dataTables[0].dataColumns.length
         $root.append(text_section1);
 
         if (counter > 1) {
@@ -248,8 +235,6 @@ function createBody() {
             });
         }
 
-        console.log(myUserId);
-        console.log(memberIds);
         if ($.inArray(myUserId, memberIds) > -1) {
             $root.append('<hr>');
 
@@ -260,20 +245,8 @@ function createBody() {
                 $root.append(`<div><small>${result}</small></div>`);
             });
         }
-
         $root.after(footer_section1);
-
         getStringKeys();
-
-        // createQuestionView();
-        // $root.append($hr);
-
-        /* var $spDiv = $('<div class="col-sm-12"></div>');
-        var $sDiv = $('<div class="form-group"></div>');
-        var $submit = $('<button class="btn btn-primary btn-sm float-right submit-form" >Submit</button>'); // Create a <button> element
-        $sDiv.append($submit);
-        $spDiv.append($sDiv);
-        $root.append($spDiv); */
         return;
     }
 }
@@ -294,7 +267,6 @@ function createQuestionView() {
     $('.footer.section-1-footer').remove();
     $root.after(pagination_footer_section);
 
-    console.log('create Question' + current_page);
     if (current_page > 0) {
         $('#previous').prop('disabled', false);
     } else {
@@ -310,12 +282,12 @@ function createQuestionView() {
     });
 
     actionInstance.dataTables.forEach((dataTable) => {
-        var question = dataTable.dataColumns[current_page];
-        var count = parseInt(current_page) + 1;
+        let question = dataTable.dataColumns[current_page];
+        let count = parseInt(current_page) + 1;
         $root.append(question_section);
         $('#root div.card-box:visible .question-title').text(`${count}. ${question.displayName}`);
 
-        var choice_occurance = 0;
+        let choice_occurance = 0;
         /* Check multichoice or single choice options  */
         if (question.valueType == "SingleOption") {
             choice_occurance = 1;
@@ -323,13 +295,10 @@ function createQuestionView() {
             choice_occurance = 2;
         }
 
-        console.log("choice occurance" + choice_occurance);
-        console.log("question" + question.valueType);
-
         //add radio button
         if (choice_occurance > 1) {
             question.options.forEach((option) => {
-                var $radioOption = getCheckboxButton(
+                let $radioOption = getCheckboxButton(
                     option.displayName,
                     question.name,
                     option.name
@@ -339,7 +308,7 @@ function createQuestionView() {
         } else {
             //add checkbox button
             question.options.forEach((option) => {
-                var $radioOption = getRadioButton(
+                let $radioOption = getRadioButton(
                     option.displayName,
                     question.name,
                     option.name
@@ -348,37 +317,19 @@ function createQuestionView() {
             });
         }
     });
-
-
-
-    /*  */
-
 }
 
 function getRadioButton(text, name, id) {
-    var $div_data = $(`<div class="form-group radio-section custom-radio-outer" id="${id}" columnId="${name}" ><label class="custom-radio"><input type="radio" name="${name}" id="${id}"> <span class="radio-block"></span> ${text}</label></div>`)
+    let $div_data = $(`<div class="form-group radio-section custom-radio-outer" id="${id}" columnId="${name}" ><label class="custom-radio"><input type="radio" name="${name}" id="${id}"> <span class="radio-block"></span> ${text}</label></div>`)
     return $div_data;
 }
 
 function getCheckboxButton(text, name, id) {
-    /* var $oDiv = $('<div class="form-group radio-section custom-check-outer" id="' + id + '" columnId="' + name + '" ></div>');
-    var $soDiv = $('<label class="custom-check form-check-label"></label>');
-    var radiobox = '<input type="checkbox" class="form-check-input" name="' + name + '" id="' + id + '">';
-    var $lDiv = $(radiobox + ' <span class="checkmark"></span>' + text);
-    $oDiv.append($soDiv);
-    $soDiv.append($lDiv);
-    return $oDiv; */
-    var div_data = $(`<div class="form-group radio-section custom-check-outer" id="${id}" columnId="${name}" ><label class="custom-check form-check-label"><input type="checkbox" class="form-check-input" name="${name}" id="${id}"><span class="checkmark"></span> ${text}</label></div>`)
+    let div_data = $(`<div class="form-group radio-section custom-check-outer" id="${id}" columnId="${name}" ><label class="custom-check form-check-label"><input type="checkbox" class="form-check-input" name="${name}" id="${id}"><span class="checkmark"></span> ${text}</label></div>`)
     return div_data;
 }
 
 function nextButtonName() {
-    /* var current_p = 0;
-    $('.card-box.card-blank').each(function() {
-        current_p++;
-        if ($(this).is('visible'))
-            return;
-    }); */
     if (parseInt(current_page) + 1 >= max_question_count) {
         setTimeout(function() {
             $('.section-1-footer').find('#next').text('Done');
@@ -395,19 +346,19 @@ $(document).on('click', 'div.radio-section', function() {
 })
 
 $(document).on("click", '#next', function() {
-    var answerKeys = JSON.parse(actionInstance.customProperties[4].value);
-    var correct_ans_arr = [];
-    var selected_answer = [];
-    var check_counter = 0;
-    var correct_answer = false;
-    var attr_name = '';
-    var pagenumber = $(this).attr('data-next-id');
+    let answerKeys = JSON.parse(actionInstance.customProperties[4].value);
+    let correct_ans_arr = [];
+    let selected_answer = [];
+    let check_counter = 0;
+    let correct_answer = false;
+    let attr_name = '';
+    let pagenumber = $(this).attr('data-next-id');
     current_page = pagenumber;
 
     getStringKeys();
 
     /* Check if radio or checkbox is checked */
-    var is_checked = false;
+    let is_checked = false;
 
 
     $('div.card-box:visible').find("input[type='checkbox']:checked").each(function(ind, ele) {
@@ -432,9 +383,9 @@ $(document).on("click", '#next', function() {
 
     if (is_checked == true) {
 
-        var is_checked = false;
+        let is_checked = false;
 
-        var ans_res = [];
+        let ans_res = [];
         $.each(selected_answer, function(i, selected_subarray) {
             if ($.inArray(selected_subarray, answerKeys[(attr_name - 1)]) !== -1) {
                 ans_res.push("true");
@@ -443,10 +394,6 @@ $(document).on("click", '#next', function() {
             }
         });
 
-        console.log(ans_res);
-        console.log(answerKeys[(attr_name - 1)].length);
-        console.log(ans_res.length);
-        console.log($.inArray("false", ans_res));
         if ((answerKeys[(attr_name - 1)].length == ans_res.length) && ($.inArray("false", ans_res) == -1)) {
             correct_answer = true
         } else {
@@ -455,20 +402,12 @@ $(document).on("click", '#next', function() {
 
         summary_answer_resp.push(correct_answer);
 
-        console.log('summary_answer_resp: ');
-        console.log(summary_answer_resp);
-        console.log(correct_answer);
-        // return false;
-
-        /* console.log(attr_name - 1);
-        console.log(answerKeys[(attr_name - 1)].toString()); */
         $.each(answerKeys[(attr_name - 1)], function(ii, subarr) {
             correct_ans_arr.push($.trim($('#' + subarr).text()));
         });
 
 
-        var correct_value = correct_ans_arr.join();
-        // console.log('correct_value: ' + correct_value);
+        let correct_value = correct_ans_arr.join();
         if (actionInstance.customProperties[3].value == 'Yes' && $('div.card-box:visible').find("label.custom-radio").hasClass('disabled') !== "disabled") {
 
             if (correct_answer == true) {
@@ -502,12 +441,11 @@ $(document).on("click", '#next', function() {
 
                     $root.find('.card-box').hide();
 
-                    console.log(`${parseInt(current_page)} == ${$root.find('div.card-box').length} && (${parseInt(current_page)}) < ${max_question_count}`);
                     if ((parseInt(current_page) == $root.find('div.card-box').length) && (parseInt(current_page)) < max_question_count) {
                         createQuestionView();
                     } else if (parseInt(current_page) == max_question_count) {
                         /*  Submit your question  */
-                        var addDataRowRequest = new actionSDK.AddActionDataRow.Request(
+                        let addDataRowRequest = new actionSDK.AddActionDataRow.Request(
                             getDataRow(contextActionId)
                         );
                         actionSDK
@@ -521,7 +459,6 @@ $(document).on("click", '#next', function() {
                             });
 
                     } else {
-                        // $root.find('div.card-box.card-blank:nth-child(' + current_page + ')').show();
                         $('#previous').attr('data-prev-id', (parseInt(current_page) - 1));
                         Localizer.getString('xofy', parseInt(current_page) + 1, max_question_count).then(function(result) {
                             $('#xofy').text(result);
@@ -541,18 +478,13 @@ $(document).on("click", '#next', function() {
 
 
         } else {
-            /* $root.find('div.card-box:visible').find("input").each(function(ind, ele) {
-                $(ele).parents('label').prop('disabled', true);
-                $(ele).parents('div.custom-radio-outer').addClass('disabled');
-            }); */
-
             $root.find('.card-box').hide();
 
             if ((parseInt(current_page) == $root.find('div.card-box').length) && (parseInt(current_page)) < max_question_count) {
                 createQuestionView();
             } else if (parseInt(current_page) == max_question_count) {
                 /*  Submit your question  */
-                var addDataRowRequest = new actionSDK.AddActionDataRow.Request(
+                let addDataRowRequest = new actionSDK.AddActionDataRow.Request(
                     getDataRow(contextActionId)
                 );
                 actionSDK
@@ -565,14 +497,12 @@ $(document).on("click", '#next', function() {
                         console.error("Error: " + JSON.stringify(error));
                     });
             } else {
-                // $root.find('root < div.card-box.card-blank:nth-child(' + current_page + ')').show();
                 $root.find('.card-box:nth-child(' + (parseInt(current_page) + 1) + ')').show();
                 $('#previous').attr('data-prev-id', (parseInt(current_page) - 1));
                 Localizer.getString('xofy', parseInt(current_page) + 1, max_question_count).then(function(result) {
                     $('#xofy').text(result);
                     nextButtonName();
                 });
-                // $('#xofy').text(`${parseInt(current_page)} of ${max_question_count}`);
                 $('#next').attr('data-next-id', (parseInt(current_page) + 1));
                 $('#previous').attr('disabled', false);
             }
@@ -581,10 +511,6 @@ $(document).on("click", '#next', function() {
                 $('#next').attr('disabled', false)
             }
         }
-
-        console.log(` Prev: ${parseInt(pagenumber) - 1} Current: ${parseInt(pagenumber)} Next: ${parseInt(pagenumber) + 1}`);
-        console.log(` current_page: ${parseInt(current_page)} max_question_count: ${parseInt(max_question_count)} `);
-
     } else {
         $('#exampleModalCenter2').find('#exampleModalLongTitle').html(`<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve" class="gt gs mt--4"><g><g><g><path d="M507.113,428.415L287.215,47.541c-6.515-11.285-18.184-18.022-31.215-18.022c-13.031,0-24.7,6.737-31.215,18.022L4.887,428.415c-6.516,11.285-6.516,24.76,0,36.044c6.515,11.285,18.184,18.022,31.215,18.022h439.796c13.031,0,24.7-6.737,31.215-18.022C513.629,453.175,513.629,439.7,507.113,428.415z M481.101,449.441c-0.647,1.122-2.186,3.004-5.202,3.004H36.102c-3.018,0-4.556-1.881-5.202-3.004c-0.647-1.121-1.509-3.394,0-6.007L250.797,62.559c1.509-2.613,3.907-3.004,5.202-3.004c1.296,0,3.694,0.39,5.202,3.004L481.1,443.434C482.61,446.047,481.748,448.32,481.101,449.441z"/><rect x="240.987" y="166.095" width="30.037" height="160.197" /><circle cx="256.005" cy="376.354" r="20.025" /></g></g></g > <g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g><g></g></svg > <span class="note-key">${noteKey}</span>`);
         $('#exampleModalCenter2').find('.modal-body').html(`<label>${choiceAnyChoiceKey}<label>`);
@@ -596,28 +522,11 @@ $(document).on("click", '#next', function() {
             $('#next').attr('disabled', false);
         });
     }
-
-    /* var current_p = 0;
-    $('.card-box.card-blank').each(function() {
-        current_p++;
-        if ($(this).is('visible'))
-            return;
-    });
-
-    if (parseInt(current_page) >= (max_question_count - 1) && current_p >= max_question_count) {
-        setTimeout(function() {
-            $('.section-1-footer').find('#next').text('Done');
-        }, 1000);
-    } else {
-        $('.section-1-footer').find('#next').text('Next');
-    } */
 });
 
 $(document).on("click", '#previous', function() {
-    var pagenumber = $(this).attr('data-prev-id');
+    let pagenumber = $(this).attr('data-prev-id');
     current_page = pagenumber;
-    console.log(` Prev: ${parseInt(current_page)} Current: ${parseInt(current_page) + 1} Next: ${parseInt(current_page) + 2}`)
-    console.log(` current_page: ${parseInt(current_page)} max_question_count: ${parseInt(max_question_count)} `);
     getStringKeys();
 
     $root.find('.card-box').hide();
@@ -628,7 +537,6 @@ $(document).on("click", '#previous', function() {
         $('#xofy').text(result);
         nextButtonName();
     });
-    // $('#xofy').text(`${(parseInt(current_page) + 1)} of ${max_question_count}`);
 
     if (current_page <= 0) {
         $('#previous').attr('disabled', true);
@@ -650,30 +558,27 @@ function summarySection() {
 
     /*  Check Show Correct Answer  */
     if (Object.keys(row).length > 0) {
-        // if (actionInstance.customProperties[3].value == 'Yes') {
-        var correct_answer = $.parseJSON(actionInstance.customProperties[4].value);
-        console.log('correct_answer: ');
-        console.log(correct_answer);
-        var count = 0;
+        let correct_answer = $.parseJSON(actionInstance.customProperties[4].value);
+        let count = 0;
 
-        var ans_rsp = '';
-        var score = 0;
+        let ans_rsp = '';
+        let score = 0;
 
         $('#root').find('div.card-box').each(function(i, val) {
 
-            var searchIDs = $(val).find('input:checked').map(function() {
+            let searchIDs = $(val).find('input:checked').map(function() {
                 return $(this).attr('id');
             });
 
-            var correct_ans = '';
-            var your_ans = '';
+            let correct_ans = '';
+            let your_ans = '';
 
             if (JSON.stringify(correct_answer[count]) == JSON.stringify(searchIDs.get())) {
                 /*  Answer is correct  */
                 score = score + 1;
-                var $summary_card = $('<div class="card-box card-blank bt"></div>');
-                var $summary_dtable = $('<div class="d-table"></div>');
-                var question = $(val).find('.question-title').text();
+                let $summary_card = $('<div class="card-box card-blank bt"></div>');
+                let $summary_dtable = $('<div class="d-table"></div>');
+                let question = $(val).find('.question-title').text();
                 $summary_card.append($summary_dtable);
                 Localizer.getString('correct').then(function(result) {
                     $summary_dtable.append(`<label>
@@ -686,7 +591,7 @@ function summarySection() {
                 });
 
                 $(val).find('label.custom-radio, label.custom-check').each(function(opt_ind, opt_val) {
-                    var opt_id = $(opt_val).find('input').attr('id');
+                    let opt_id = $(opt_val).find('input').attr('id');
                     if ($.inArray(opt_id, correct_answer[count]) !== -1) {
                         $summary_card.append(`<div class="form-group">
                                         <div class="form-group alert alert-success">
@@ -709,9 +614,9 @@ function summarySection() {
 
             } else {
                 /*  Answer is incorrect  */
-                var $summary_card = $('<div class="card-box card-blank bt"></div>');
-                var $summary_dtable = $('<div class="d-table"></div>');
-                var question = $(val).find('.question-title').text();
+                let $summary_card = $('<div class="card-box card-blank bt"></div>');
+                let $summary_dtable = $('<div class="d-table"></div>');
+                let question = $(val).find('.question-title').text();
                 $summary_card.append($summary_dtable);
                 Localizer.getString('incorrect').then(function(result) {
                     $summary_dtable.append(`<label>
@@ -724,7 +629,7 @@ function summarySection() {
                 });
 
                 $(val).find('label.custom-radio, label.custom-check').each(function(opt_ind, opt_val) {
-                    var opt_id = $(opt_val).find('input').attr('id');
+                    let opt_id = $(opt_val).find('input').attr('id');
                     if ($.inArray(opt_id, correct_answer[count]) !== -1) {
                         if ($(opt_val).find('input').prop('checked') == true) {
                             $summary_card.append(`<div class="form-group">
@@ -772,10 +677,7 @@ function summarySection() {
             count++;
         });
         $('.summary-section').append('<div class="ht-100"></div>');
-
-        console.log('total score: ');
-        console.log(score);
-        var score_is = Math.round((score / correct_answer.length) * 100);
+        let score_is = Math.round((score / correct_answer.length) * 100);
         $('.summary-section').prepend(`<div class="">
                         <label>
                             <strong>Score: </strong>${score_is}%
@@ -784,19 +686,11 @@ function summarySection() {
         Localizer.getString('quiz_summary').then(function(result) {
             $('.summary-section').prepend(`<div><h4>${result}</h4></div><hr>`);
         });
-
-        /* } else {
-            $('.submit-key').click();
-        } */
     }
-
 }
 
 $(document).on('click', '.submit-key', function() {
-    /* var addDataRowRequest = new actionSDK.AddActionDataRow.Request(
-        getDataRow(contextActionId)
-    ); */
-    var closeViewRequest = new actionSDK.CloseView.Request();
+    let closeViewRequest = new actionSDK.CloseView.Request();
 
     actionSDK
         .executeApi(closeViewRequest)
@@ -806,25 +700,13 @@ $(document).on('click', '.submit-key', function() {
         .catch(function(error) {
             console.error("Error: " + JSON.stringify(error));
         });
-
-    // addDataRows(contextActionId);
-    /* actionSDK
-        .executeApi(request)
-        .then(function(response) {
-            console.info("GetContext - Response: " + JSON.stringify(response));
-            addDataRows(response.context.actionId);
-        })
-        .catch(function(error) {
-            console.error("GetContext - Error: " + JSON.stringify(error));
-        }); */
-
 });
 
 function radiobuttonclick(questionResponse, colomnId) {
-    var data = [];
+    let data = [];
     row = {};
     $.each($("input[type='checkbox']:checked"), function(ind, v) {
-        var col = $(this).parents("div.form-group").attr("columnid");
+        let col = $(this).parents("div.form-group").attr("columnid");
         data.push($(this).attr("id"));
 
         if (!row[col]) row[col] = [];
@@ -832,41 +714,37 @@ function radiobuttonclick(questionResponse, colomnId) {
     });
 
     $.each($("input[type='radio']:checked"), function() {
-        var col = $(this).parents("div.form-group").attr("columnid");
+        let col = $(this).parents("div.form-group").attr("columnid");
 
         if (!row[col]) row[col] = [];
         row[col] = $(this).attr("id");
     });
-
-    console.log(row);
 }
 
 function generateGUID() {
     return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
-        var r = (Math.random() * 16) | 0,
+        let r = (Math.random() * 16) | 0,
             v = c == "x" ? r : (r & 0x3) | 0x8;
         return v.toString(16);
     });
 }
 
 function getDataRow(actionId) {
-    var data = {
+    let data = {
         id: generateGUID(),
         actionId: actionId,
         dataTableId: "TestDataSet",
         columnValues: row,
     };
-    console.log("data-:  " + JSON.stringify(data));
-    console.log(data);
     return data;
 }
 
 function addDataRows(actionId) {
-    var addDataRowRequest = new actionSDK.AddActionDataRow.Request(
+    let addDataRowRequest = new actionSDK.AddActionDataRow.Request(
         getDataRow(actionId)
     );
-    var closeViewRequest = new actionSDK.CloseView.Request();
-    var batchRequest = new actionSDK.BaseApi.BatchRequest([
+    let closeViewRequest = new actionSDK.CloseView.Request();
+    let batchRequest = new actionSDK.BaseApi.BatchRequest([
         addDataRowRequest,
         closeViewRequest,
     ]);
@@ -882,7 +760,7 @@ function addDataRows(actionId) {
 
 // *********************************************** SUBMIT ACTION END***********************************************
 
-var footer_section = `<div class="footer" style="display:none;">
+let footer_section = `<div class="footer" style="display:none;">
         <div class="footer-padd bt">
             <div class="container ">
                 <div class="row">
@@ -895,7 +773,7 @@ var footer_section = `<div class="footer" style="display:none;">
         </div>
     </div>`;
 
-var modal_section = `<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
+let modal_section = `<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
         aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
@@ -916,7 +794,7 @@ var modal_section = `<div class="modal fade" id="exampleModalCenter" tabindex="-
         </div>
     </div>`;
 
-var modal_section1 = `<div class="modal fade" id="exampleModalCenter1" tabindex="-1" role="dialog"
+let modal_section1 = `<div class="modal fade" id="exampleModalCenter1" tabindex="-1" role="dialog"
         aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
@@ -937,7 +815,7 @@ var modal_section1 = `<div class="modal fade" id="exampleModalCenter1" tabindex=
         </div>
     </div>`;
 
-var modal_section2 = `<div class="modal fade" id="exampleModalCenter2" tabindex="-1" role="dialog"
+let modal_section2 = `<div class="modal fade" id="exampleModalCenter2" tabindex="-1" role="dialog"
     aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -960,7 +838,7 @@ var modal_section2 = `<div class="modal fade" id="exampleModalCenter2" tabindex=
 
 
 
-var text_section1 = `<div class="card-box card-blank">
+let text_section1 = `<div class="card-box card-blank">
                         <div class="form-group">
                             <div class="hover-btn ">
                                 <label><strong><span class="training-type question-key">${questionKey}</span></strong> </label><span class="float-right result"></span>
@@ -972,7 +850,7 @@ var text_section1 = `<div class="card-box card-blank">
                             specimen book.</p>
                     </div>`;
 
-var footer_section1 = `<div class="footer section-1-footer">
+let footer_section1 = `<div class="footer section-1-footer">
                             <div class="footer-padd bt">
                                 <div class="container ">
                                     <div class="row">
@@ -984,13 +862,13 @@ var footer_section1 = `<div class="footer section-1-footer">
                             </div>
                         </div>`;
 
-var question_section = `<div class="card-box card-blank"><label><strong class="question-title">1. ksklaskdl</strong></label>
+let question_section = `<div class="card-box card-blank"><label><strong class="question-title">1. ksklaskdl</strong></label>
                             <div class="indent-20">
                                 
                             </div>
                         </div>`;
 
-var pagination_footer_section = `<div class="footer section-1-footer">
+let pagination_footer_section = `<div class="footer section-1-footer">
             <div class="footer-padd bt">
                 <div class="container ">
                     <div class="row">
@@ -1002,8 +880,8 @@ var pagination_footer_section = `<div class="footer section-1-footer">
             </div>
         </div>`;
 
-var summary_section = `<div class="summary-section"></div>`;
-var summary_footer = `<div class="footer section-1-footer">
+let summary_section = `<div class="summary-section"></div>`;
+let summary_footer = `<div class="footer section-1-footer">
                             <div class="footer-padd bt">
                                 <div class="container ">
                                     <div class="row">
